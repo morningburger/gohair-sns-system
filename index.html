@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0035)https://xllgkovv.gensparkspace.com/ -->
+<!-- saved from url=(0035)https://jzwlqcnv.gensparkspace.com/ -->
 <html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOHAIR SNS 마케팅 관리 시스템</title>
     <link href="./index_files/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./index_files/all.min.css">
     <script src="./index_files/chart.js.다운로드"></script>
     <style>
         .gradient-bg {
@@ -88,6 +87,18 @@
             color: white;
             font-size: 20px;
             font-weight: bold;
+        }
+
+        /* 이모지 아이콘 스타일 */
+        .emoji-icon {
+            font-size: 20px;
+            margin-right: 8px;
+            display: inline-block;
+        }
+
+        .nav-emoji {
+            font-size: 18px;
+            margin-right: 6px;
         }
     </style>
 <style>
@@ -197,29 +208,29 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center space-x-4">
-                    <i class="fas fa-chart-line text-2xl"></i>
+                    <span class="text-2xl">✂️</span>
                     <h1 class="text-xl font-bold">GOHAIR SNS 마케팅 관리 시스템</h1>
                 </div>
                 <div class="flex items-center space-x-6">
                     <button onclick="showSection(&#39;dashboard&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <i class="fas fa-tachometer-alt mr-2"></i>대시보드
+                        <span class="nav-emoji">🏠</span>대시보드
                     </button>
                     <button onclick="showSection(&#39;designer-management&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <i class="fas fa-users mr-2"></i>디자이너 관리
+                        <span class="nav-emoji">👥</span>디자이너 관리
                     </button>
                     <button onclick="showSection(&#39;checklist&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <i class="fas fa-clipboard-list mr-2"></i>체크리스트 입력
+                        <span class="nav-emoji">📝</span>체크리스트 입력
                     </button>
                     <button onclick="showSection(&#39;statistics&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <i class="fas fa-chart-bar mr-2"></i>통계 분석
+                        <span class="nav-emoji">📊</span>통계 분석
                     </button>
                     <button onclick="showSection(&#39;compare&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors admin-only" style="display: none;">
-                        <i class="fas fa-balance-scale mr-2"></i>지점 비교
+                        <span class="nav-emoji">⚖️</span>지점 비교
                     </button>
                     <div class="flex items-center space-x-2">
                         <span id="user-info" class="text-sm"></span>
                         <button onclick="logout()" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                            <i class="fas fa-sign-out-alt"></i>
+                            <span class="nav-emoji">🚪</span>
                         </button>
                     </div>
                 </div>
@@ -232,7 +243,7 @@
         <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full">
             <div class="text-center mb-8">
                 <div class="logo-icon mx-auto mb-4">
-                    <i class="fas fa-chart-line"></i>
+                    <span class="text-2xl">✂️</span>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">SNS 리더 로그인</h2>
                 <p class="text-gray-600">GOHAIR SNS 마케팅 관리 시스템</p>
@@ -253,7 +264,7 @@
             </form>
             
             <div class="mt-6 text-center">
-                <a href="https://xllgkovv.gensparkspace.com/#" onclick="showRegistration()" class="text-indigo-600 hover:text-indigo-800">SNS 리더로 가입하기</a>
+                <a href="https://jzwlqcnv.gensparkspace.com/#" onclick="showRegistration()" class="text-indigo-600 hover:text-indigo-800">SNS 리더로 가입하기</a>
             </div>
         </div>
     </div>
@@ -262,7 +273,7 @@
     <div id="registration-section" class="min-h-screen flex items-center justify-center" style="display: none;">
         <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full">
             <div class="text-center mb-8">
-                <i class="fas fa-user-plus text-4xl text-indigo-600 mb-4"></i>
+                <span class="text-4xl text-indigo-600 mb-4 block">👤➕</span>
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">SNS 리더 가입</h2>
                 <p class="text-gray-600">새로운 SNS 리더 계정을 생성합니다</p>
             </div>
@@ -297,7 +308,7 @@
             </form>
             
             <div class="mt-6 text-center">
-                <a href="https://xllgkovv.gensparkspace.com/#" onclick="showLogin()" class="text-indigo-600 hover:text-indigo-800">이미 계정이 있으신가요? 로그인하기</a>
+                <a href="https://jzwlqcnv.gensparkspace.com/#" onclick="showLogin()" class="text-indigo-600 hover:text-indigo-800">이미 계정이 있으신가요? 로그인하기</a>
             </div>
         </div>
     </div>
@@ -323,7 +334,7 @@
                             <input type="date" id="dashboard-end-date" onchange="updateDashboard()" class="px-3 py-2 border border-gray-300 rounded-md">
                         </div>
                         <button onclick="exportData(&#39;dashboard&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                            <i class="fas fa-download mr-2"></i>Excel 다운로드
+                            <span class="emoji-icon">📥</span>Excel 다운로드
                         </button>
                     </div>
                 </div>
@@ -336,7 +347,7 @@
                                 <p class="text-blue-100">네이버 리뷰</p>
                                 <p class="text-2xl font-bold" id="total-reviews">41</p>
                             </div>
-                            <i class="fas fa-star text-3xl text-blue-200"></i>
+                            <span class="text-3xl text-blue-200">⭐</span>
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg custom-shadow">
@@ -345,7 +356,7 @@
                                 <p class="text-green-100">블로그 포스팅</p>
                                 <p class="text-2xl font-bold" id="total-posts">18</p>
                             </div>
-                            <i class="fas fa-blog text-3xl text-green-200"></i>
+                            <span class="text-3xl text-green-200">📝</span>
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg custom-shadow">
@@ -354,7 +365,7 @@
                                 <p class="text-purple-100">체험단 운영</p>
                                 <p class="text-2xl font-bold" id="total-experiences">7</p>
                             </div>
-                            <i class="fas fa-users text-3xl text-purple-200"></i>
+                            <span class="text-3xl text-purple-200">👥</span>
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-pink-500 to-pink-600 text-white p-6 rounded-lg custom-shadow">
@@ -363,7 +374,7 @@
                                 <p class="text-pink-100">인스타 릴스</p>
                                 <p class="text-2xl font-bold" id="total-reels">28</p>
                             </div>
-                            <i class="fab fa-instagram text-3xl text-pink-200"></i>
+                            <span class="text-3xl text-pink-200">📸</span>
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-lg custom-shadow">
@@ -372,7 +383,7 @@
                                 <p class="text-orange-100">인스타 사진</p>
                                 <p class="text-2xl font-bold" id="total-photos">52</p>
                             </div>
-                            <i class="fas fa-camera text-3xl text-orange-200"></i>
+                            <span class="text-3xl text-orange-200">📷</span>
                         </div>
                     </div>
                 </div>
@@ -407,37 +418,37 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         리뷰
                                         <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;reviews&#39;)" data-sort="reviews">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         포스팅
                                         <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;posts&#39;)" data-sort="posts">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         체험단
                                         <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;experiences&#39;)" data-sort="experiences">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         릴스
                                         <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;reels&#39;)" data-sort="reels">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         사진
                                         <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;photos&#39;)" data-sort="photos">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         총합
                                         <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;total&#39;)" data-sort="total">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                 </tr>
@@ -456,7 +467,7 @@
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-3xl font-bold text-gray-800">디자이너 관리</h2>
                     <button onclick="showAddDesignerModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-                        <i class="fas fa-plus mr-2"></i>디자이너 추가
+                        <span class="emoji-icon">➕</span>디자이너 추가
                     </button>
                 </div>
 
@@ -488,37 +499,37 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         이름
                                         <button class="sort-btn ml-1" onclick="sortDesigners(&#39;name&#39;)" data-sort="name">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         지점
                                         <button class="sort-btn ml-1" onclick="sortDesigners(&#39;branch&#39;)" data-sort="branch">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         직급
                                         <button class="sort-btn ml-1" onclick="sortDesigners(&#39;position&#39;)" data-sort="position">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         전화번호
                                         <button class="sort-btn ml-1" onclick="sortDesigners(&#39;phone&#39;)" data-sort="phone">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         등록일
                                         <button class="sort-btn ml-1" onclick="sortDesigners(&#39;createdAt&#39;)" data-sort="createdAt">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         총 활동량
                                         <button class="sort-btn ml-1" onclick="sortDesigners(&#39;totalActivity&#39;)" data-sort="totalActivity">
-                                            <i class="fas fa-sort"></i>
+                                            <span>↕️</span>
                                         </button>
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
@@ -561,21 +572,21 @@
                                         
                                         <div>
                                             <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <i class="fas fa-star text-yellow-500 mr-2"></i>리뷰 수
+                                                <span class="emoji-icon text-yellow-500">⭐</span>리뷰 수
                                             </label>
                                             <input type="number" id="naver-reviews" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
                                         </div>
 
                                         <div>
                                             <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <i class="fas fa-blog text-green-500 mr-2"></i>블로그 포스팅 수
+                                                <span class="emoji-icon text-green-500">📝</span>블로그 포스팅 수
                                             </label>
                                             <input type="number" id="blog-posts" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
                                         </div>
 
                                         <div>
                                             <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <i class="fas fa-users text-purple-500 mr-2"></i>체험단 운영 건수
+                                                <span class="emoji-icon text-purple-500">👥</span>체험단 운영 건수
                                             </label>
                                             <input type="number" id="experience-groups" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
                                         </div>
@@ -587,14 +598,14 @@
                                         
                                         <div>
                                             <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <i class="fab fa-instagram text-pink-500 mr-2"></i>릴스 게시 수
+                                                <span class="emoji-icon text-pink-500">📸</span>릴스 게시 수
                                             </label>
                                             <input type="number" id="instagram-reels" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
                                         </div>
 
                                         <div>
                                             <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <i class="fas fa-camera text-orange-500 mr-2"></i>사진 게시 수
+                                                <span class="emoji-icon text-orange-500">📷</span>사진 게시 수
                                             </label>
                                             <input type="number" id="instagram-photos" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
                                         </div>
@@ -603,7 +614,7 @@
 
                                 <div class="mt-8">
                                     <button type="submit" class="w-full gradient-bg text-white py-3 px-4 rounded-md hover:opacity-90 transition-opacity font-semibold">
-                                        <i class="fas fa-save mr-2"></i>체크리스트 제출
+                                        <span class="emoji-icon">💾</span>체크리스트 제출
                                     </button>
                                 </div>
                             </form>
@@ -616,7 +627,7 @@
                             <h3 class="text-lg font-semibold text-gray-800 mb-4">디자이너 히스토리</h3>
                             <div id="designer-history" class="designer-history-panel">
                                 <div class="text-center text-gray-500 py-8">
-                                    <i class="fas fa-user-circle text-4xl mb-2"></i>
+                                    <span class="text-4xl mb-2 block">👤</span>
                                     <p>디자이너를 선택하면<br>히스토리가 표시됩니다</p>
                                 </div>
                             </div>
@@ -632,7 +643,7 @@
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-3xl font-bold text-gray-800">통계 분석</h2>
                     <button onclick="exportData(&#39;statistics&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                        <i class="fas fa-download mr-2"></i>Excel 다운로드
+                        <span class="emoji-icon">📥</span>Excel 다운로드
                     </button>
                 </div>
 
@@ -768,7 +779,7 @@
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-3xl font-bold text-gray-800">지점 비교 분석</h2>
                     <button onclick="exportData(&#39;compare&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                        <i class="fas fa-download mr-2"></i>Excel 다운로드
+                        <span class="emoji-icon">📥</span>Excel 다운로드
                     </button>
                 </div>
 
@@ -861,7 +872,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg font-semibold">디자이너 추가</h3>
                 <button onclick="hideAddDesignerModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times text-xl"></i>
+                    <span class="text-xl">❌</span>
                 </button>
             </div>
             
@@ -1174,14 +1185,14 @@
 
             document.querySelectorAll('[data-sort]').forEach(btn => {
                 btn.classList.remove('active');
-                btn.innerHTML = '<i class="fas fa-sort"></i>';
+                btn.innerHTML = '<span>↕️</span>';
             });
 
             const activeBtn = document.querySelector(`[data-sort="${column}"]`);
             if (activeBtn) {
                 activeBtn.classList.add('active');
                 activeBtn.innerHTML = branchRankingSortConfig.direction === 'asc' ? 
-                    '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+                    '<span>⬆️</span>' : '<span>⬇️</span>';
             }
 
             const period = document.getElementById('dashboard-period')?.value || 'today';
@@ -1291,10 +1302,10 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.totalActivity}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button onclick="editDesigner(${designer.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                            <i class="fas fa-edit"></i>
+                            <span>✏️</span>
                         </button>
                         <button onclick="deleteDesigner(${designer.id})" class="text-red-600 hover:text-red-900">
-                            <i class="fas fa-trash"></i>
+                            <span>🗑️</span>
                         </button>
                     </td>
                 </tr>
@@ -1313,14 +1324,14 @@
 
             document.querySelectorAll('.sort-btn').forEach(btn => {
                 btn.classList.remove('active');
-                btn.innerHTML = '<i class="fas fa-sort"></i>';
+                btn.innerHTML = '<span>↕️</span>';
             });
 
             const activeBtn = document.querySelector(`[data-sort="${column}"]`);
             if (activeBtn) {
                 activeBtn.classList.add('active');
                 activeBtn.innerHTML = designerSortConfig.direction === 'asc' ? 
-                    '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+                    '<span>⬆️</span>' : '<span>⬇️</span>';
             }
 
             filterDesigners();
@@ -1414,7 +1425,7 @@
             if (!designerId) {
                 historyContainer.innerHTML = `
                     <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-user-circle text-4xl mb-2"></i>
+                        <span class="text-4xl mb-2 block">👤</span>
                         <p>디자이너를 선택하면<br>히스토리가 표시됩니다</p>
                     </div>
                 `;
@@ -1430,7 +1441,7 @@
             if (designerHistory.length === 0) {
                 historyContainer.innerHTML = `
                     <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-history text-4xl mb-2"></i>
+                        <span class="text-4xl mb-2 block">📋</span>
                         <p>${designer.name}의<br>기록이 없습니다</p>
                     </div>
                 `;
@@ -1784,7 +1795,7 @@
                     <tr class="${index === 0 ? 'bg-yellow-50' : ''}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             ${index + 1}
-                            ${index === 0 ? '<i class="fas fa-crown text-yellow-500 ml-2"></i>' : ''}
+                            ${index === 0 ? '<span class="text-yellow-500 ml-2">👑</span>' : ''}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${getBranchName(branch.branch)}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.reviews}</td>
@@ -2211,9 +2222,9 @@
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDjKj7Jxml9h8PbKTCknLI2zXe2OQ2MoGdwLslu7fsWMr6bXJ%2BWBtWEFlwuR721n3cXzHOhZI%2BiFPpm2lZ7wVSJyZaGzqiKqKx57XETvakgKVB5iUOglg5HyDcvAV7b1KDyRFJf4y46rxRatBStrfvVmRpO2iwNP1Rakq18hPuHvS9MYS098r3iNoL4fA9H5RydCAwT7k1mcAqtRmb4nbSudpWQZY1kS41GMDWhlCHiFgCrR%2F1ysMJ2dR4GHeuHQWOEKs9DUdiaUVS5Ud8RUIJHkgZiO3GDjNycJ3Dsh0jsDc7r0IwRFWdec23%2B1PiKSKzYb%2BwXp5zWTWvexP4Rply6pM9ehttck%2FEDBWOT92v6ZO9w74icNcIkwWsIjW9h9%2BHIVLaoAiLoqIZUrV3ha93woPW%2FfHYcBfKpNhqNkDJ6f48MAfZk9zGFGlGy1%2FRw9XVOiHcyxbj8sYy33ha0FkPnON07knv1FhfES1ldqIzDrTM04Beb%2BcwRdvqyQJcuzeI1B1lZAyi1bu9HIdE2%2FjX64%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDtJO%2BWvXDQGp27%2BiTE2DQsbwJR4feHEwoUKW85EQQaxcp9Kgq3%2F2A8O8Q6LzH77tiqkEQAQ%2B1jk1P%2BM9LbHtJFoaavB633RoEIEnvrrqEoOVquSunNibyQkz3xxY0XCmLp9Zaa3yycdJ1OOBriFZrRFT9IUq5TlpiuLuPanzOskCLUyNO8jgCdmK1Cn3uEProq3jdbe%2BferjRBB8ZSlepfTiOInnfhOlENYYAUBuWWmxR89z%2B2rRAC2vLw1rYE1LBzvur1%2F1Z2aa2%2FMYS5EFo3f0PGHbdrFCLzniHk3fnSjdxuHlvHXNmBwimz3jv1B%2BKw1oHrREZuL8V6756dvTukfBBb8qzXFA0njl2VzP8xAc2nF7Uce9bs7mUKIw%2FkOreWKKgyfHA6oPJskmfmKlXIZh2F8X0TNQHSJJYYt89BoqB890GLAd%2FdieIyyR%2F7oFRKCdQMGQzCubqne9rr4EmiK5Hji3EwNa3A0Ir2XzMhaomJRzvr0%2BnXk%2BaqtKl0CrxQ%3D%3D";
         window.__genspark_locale = "ko-KR";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDjKj7Jxml9h8PbKTCknLI2zXe2OQ2MoGdwLslu7fsWMr6bXJ+WBtWEFlwuR721n3cXzHOhZI+iFPpm2lZ7wVSJyZaGzqiKqKx57XETvakgKVB5iUOglg5HyDcvAV7b1KDyRFJf4y46rxRatBStrfvVmRpO2iwNP1Rakq18hPuHvS9MYS098r3iNoL4fA9H5RydCAwT7k1mcAqtRmb4nbSudpWQZY1kS41GMDWhlCHiFgCrR/1ysMJ2dR4GHeuHQWOEKs9DUdiaUVS5Ud8RUIJHkgZiO3GDjNycJ3Dsh0jsDc7r0IwRFWdec23+1PiKSKzYb+wXp5zWTWvexP4Rply6pM9ehttck/EDBWOT92v6ZO9w74icNcIkwWsIjW9h9+HIVLaoAiLoqIZUrV3ha93woPW/fHYcBfKpNhqNkDJ6f48MAfZk9zGFGlGy1/Rw9XVOiHcyxbj8sYy33ha0FkPnON07knv1FhfES1ldqIzDrTM04Beb+cwRdvqyQJcuzeI1B1lZAyi1bu9HIdE2/jX64=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDtJO+WvXDQGp27+iTE2DQsbwJR4feHEwoUKW85EQQaxcp9Kgq3/2A8O8Q6LzH77tiqkEQAQ+1jk1P+M9LbHtJFoaavB633RoEIEnvrrqEoOVquSunNibyQkz3xxY0XCmLp9Zaa3yycdJ1OOBriFZrRFT9IUq5TlpiuLuPanzOskCLUyNO8jgCdmK1Cn3uEProq3jdbe+ferjRBB8ZSlepfTiOInnfhOlENYYAUBuWWmxR89z+2rRAC2vLw1rYE1LBzvur1/1Z2aa2/MYS5EFo3f0PGHbdrFCLzniHk3fnSjdxuHlvHXNmBwimz3jv1B+Kw1oHrREZuL8V6756dvTukfBBb8qzXFA0njl2VzP8xAc2nF7Uce9bs7mUKIw/kOreWKKgyfHA6oPJskmfmKlXIZh2F8X0TNQHSJJYYt89BoqB890GLAd/dieIyyR/7oFRKCdQMGQzCubqne9rr4EmiK5Hji3EwNa3A0Ir2XzMhaomJRzvr0+nXk+aqtKl0CrxQ==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.다운로드"></script>
