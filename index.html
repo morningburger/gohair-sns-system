@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)https://xllgkovv.gensparkspace.com/ -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOHAIR SNS 마케팅 관리 시스템</title>
+    <link href="./index_files/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./index_files/all.min.css">
+    <script src="./index_files/chart.js.다운로드"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .hover-scale {
+            transition: transform 0.2s;
+        }
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .designer-history-panel {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .sort-btn {
+            background: none;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 2px;
+        }
+        .sort-btn:hover {
+            color: #374151;
+        }
+        .sort-btn.active {
+            color: #4F46E5;
+        }
+        
+        /* 차트 컨테이너 고정 크기 설정 */
+        .chart-container {
+            position: relative;
+            height: 300px !important;
+            width: 100% !important;
+            max-height: 300px !important;
+            overflow: hidden;
+        }
+        
+        .large-chart-container {
+            position: relative;
+            height: 400px !important;
+            width: 100% !important;
+            max-height: 400px !important;
+            overflow: hidden;
+        }
+        
+        .dashboard-chart-container {
+            position: relative;
+            height: 250px !important;
+            width: 100% !important;
+            max-height: 250px !important;
+            overflow: hidden;
+        }
+        
+        /* 차트 캔버스 크기 제한 */
+        .chart-container canvas,
+        .large-chart-container canvas,
+        .dashboard-chart-container canvas {
+            max-width: 100% !important;
+            max-height: 100% !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* 로고 스타일 */
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+<style>
+    .genspark-notice-dialog {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .genspark-notice-content {
+      background-color: white;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      box-sizing: border-box;
+      padding: 10px 30px 30px 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+    }
+
+    .genspark-notice-title {
+      color: #000;
+      font-family: Arial;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 150%; 
+    }
+
+    .genspark-notice-list {
+      margin: 24px 0;
+      
+      color: #606366;
+      font-family: Arial;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 150%;
+      padding-left: 12px;
+    }
+
+    .genspark-notice-list li {
+      margin-bottom: 12px;
+      list-style-type: disc;
+    }
+
+    .genspark-notice-list li a {
+      color: #606366;
+      text-decoration: underline;
+    }
+
+    .genspark-notice-checkbox {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+      gap: 10px;
+
+      color: #232425;
+
+      font-family: Arial;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .genspark-notice-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+      
+    .genspark-notice-ok {
+      color: #232425;
+
+      text-align: center;
+      font-family: Arial;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 150%; 
+
+      cursor: pointer;
+      display: flex;
+      height: 40px;
+      padding: 6px 14px;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      align-self: stretch;
+      border-radius: 8px;
+      border: 1px solid #000;
+      box-sizing: border-box;
+      width: 100%;
+    }
+  </style></head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-chart-line text-2xl"></i>
+                    <h1 class="text-xl font-bold">GOHAIR SNS 마케팅 관리 시스템</h1>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <button onclick="showSection(&#39;dashboard&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>대시보드
+                    </button>
+                    <button onclick="showSection(&#39;designer-management&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
+                        <i class="fas fa-users mr-2"></i>디자이너 관리
+                    </button>
+                    <button onclick="showSection(&#39;checklist&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
+                        <i class="fas fa-clipboard-list mr-2"></i>체크리스트 입력
+                    </button>
+                    <button onclick="showSection(&#39;statistics&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
+                        <i class="fas fa-chart-bar mr-2"></i>통계 분석
+                    </button>
+                    <button onclick="showSection(&#39;compare&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors admin-only" style="display: none;">
+                        <i class="fas fa-balance-scale mr-2"></i>지점 비교
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <span id="user-info" class="text-sm"></span>
+                        <button onclick="logout()" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Section -->
+    <div id="login-section" class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full">
+            <div class="text-center mb-8">
+                <div class="logo-icon mx-auto mb-4">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">SNS 리더 로그인</h2>
+                <p class="text-gray-600">GOHAIR SNS 마케팅 관리 시스템</p>
+            </div>
+            
+            <form onsubmit="login(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">이메일</label>
+                    <input type="email" id="login-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">비밀번호</label>
+                    <input type="password" id="login-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <button type="submit" class="w-full gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
+                    로그인
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <a href="https://xllgkovv.gensparkspace.com/#" onclick="showRegistration()" class="text-indigo-600 hover:text-indigo-800">SNS 리더로 가입하기</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Section -->
+    <div id="registration-section" class="min-h-screen flex items-center justify-center" style="display: none;">
+        <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full">
+            <div class="text-center mb-8">
+                <i class="fas fa-user-plus text-4xl text-indigo-600 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">SNS 리더 가입</h2>
+                <p class="text-gray-600">새로운 SNS 리더 계정을 생성합니다</p>
+            </div>
+            
+            <form onsubmit="register(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">이름</label>
+                    <input type="text" id="reg-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">이메일</label>
+                    <input type="email" id="reg-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">비밀번호</label>
+                    <input type="password" id="reg-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">지점 선택</label>
+                    <select id="reg-branch" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                        <option value="">지점을 선택하세요</option>
+                        <option value="songdo1">송도1지점</option>
+                        <option value="geomdan">검단테라스점</option>
+                        <option value="bupyeong">부평점</option>
+                        <option value="incheon">인천점</option>
+                        <option value="gimpo">김포점</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
+                    가입하기
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <a href="https://xllgkovv.gensparkspace.com/#" onclick="showLogin()" class="text-indigo-600 hover:text-indigo-800">이미 계정이 있으신가요? 로그인하기</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" style="display: none;">
+        
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="section">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">대시보드</h2>
+                    <div class="flex space-x-4">
+                        <select id="dashboard-period" onchange="updateDashboard()" class="px-4 py-2 border border-gray-300 rounded-md">
+                            <option value="today">오늘</option>
+                            <option value="week">이번 주</option>
+                            <option value="month">이번 달</option>
+                            <option value="quarter">이번 분기</option>
+                            <option value="custom">기간 설정</option>
+                        </select>
+                        <div id="dashboard-custom-dates" style="display: none;" class="flex space-x-2">
+                            <input type="date" id="dashboard-start-date" onchange="updateDashboard()" class="px-3 py-2 border border-gray-300 rounded-md">
+                            <input type="date" id="dashboard-end-date" onchange="updateDashboard()" class="px-3 py-2 border border-gray-300 rounded-md">
+                        </div>
+                        <button onclick="exportData(&#39;dashboard&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-download mr-2"></i>Excel 다운로드
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg custom-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-100">네이버 리뷰</p>
+                                <p class="text-2xl font-bold" id="total-reviews">41</p>
+                            </div>
+                            <i class="fas fa-star text-3xl text-blue-200"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg custom-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100">블로그 포스팅</p>
+                                <p class="text-2xl font-bold" id="total-posts">18</p>
+                            </div>
+                            <i class="fas fa-blog text-3xl text-green-200"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg custom-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-100">체험단 운영</p>
+                                <p class="text-2xl font-bold" id="total-experiences">7</p>
+                            </div>
+                            <i class="fas fa-users text-3xl text-purple-200"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-pink-500 to-pink-600 text-white p-6 rounded-lg custom-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-pink-100">인스타 릴스</p>
+                                <p class="text-2xl font-bold" id="total-reels">28</p>
+                            </div>
+                            <i class="fab fa-instagram text-3xl text-pink-200"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-lg custom-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-orange-100">인스타 사진</p>
+                                <p class="text-2xl font-bold" id="total-photos">52</p>
+                            </div>
+                            <i class="fas fa-camera text-3xl text-orange-200"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-white p-6 rounded-lg custom-shadow">
+                        <h3 class="text-lg font-semibold mb-4">카테고리별 활동량</h3>
+                        <div class="dashboard-chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg custom-shadow">
+                        <h3 class="text-lg font-semibold mb-4">일별 활동 추이</h3>
+                        <div class="dashboard-chart-container">
+                            <canvas id="dailyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branch Ranking Table -->
+                <div class="bg-white rounded-lg custom-shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold">지점별 순위</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순위</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        리뷰
+                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;reviews&#39;)" data-sort="reviews">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        포스팅
+                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;posts&#39;)" data-sort="posts">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        체험단
+                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;experiences&#39;)" data-sort="experiences">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        릴스
+                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;reels&#39;)" data-sort="reels">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        사진
+                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;photos&#39;)" data-sort="photos">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        총합
+                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;total&#39;)" data-sort="total">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="branch-ranking-table" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Designer Management Section -->
+        <div id="designer-management-section" class="section" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">디자이너 관리</h2>
+                    <button onclick="showAddDesignerModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                        <i class="fas fa-plus mr-2"></i>디자이너 추가
+                    </button>
+                </div>
+
+                <!-- Filters (Admin only) -->
+                <div id="designer-filters" class="bg-white p-4 rounded-lg custom-shadow mb-6 admin-only">
+                    <div class="flex space-x-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">지점 필터</label>
+                            <select id="designer-branch-filter" onchange="filterDesigners()" class="px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="all">전체 지점</option>
+                                <option value="songdo1">송도1지점</option>
+                                <option value="geomdan">검단테라스점</option>
+                                <option value="bupyeong">부평점</option>
+                                <option value="incheon">인천점</option>
+                                <option value="gimpo">김포점</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg custom-shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold">등록된 디자이너</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        이름
+                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;name&#39;)" data-sort="name">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        지점
+                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;branch&#39;)" data-sort="branch">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        직급
+                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;position&#39;)" data-sort="position">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        전화번호
+                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;phone&#39;)" data-sort="phone">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        등록일
+                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;createdAt&#39;)" data-sort="createdAt">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        총 활동량
+                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;totalActivity&#39;)" data-sort="totalActivity">
+                                            <i class="fas fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="designers-table" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist Section -->
+        <div id="checklist-section" class="section" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8">체크리스트 입력</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Input Form -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white p-6 rounded-lg custom-shadow">
+                            <form onsubmit="submitChecklist(event)">
+                                <div class="mb-6">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">디자이너 선택</label>
+                                    <select id="designer-select" onchange="loadDesignerHistory()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                                        <option value="">디자이너를 선택하세요</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-6">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">날짜</label>
+                                    <input type="date" id="checklist-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- 네이버 섹션 -->
+                                    <div class="space-y-4">
+                                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">네이버</h3>
+                                        
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <i class="fas fa-star text-yellow-500 mr-2"></i>리뷰 수
+                                            </label>
+                                            <input type="number" id="naver-reviews" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <i class="fas fa-blog text-green-500 mr-2"></i>블로그 포스팅 수
+                                            </label>
+                                            <input type="number" id="blog-posts" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <i class="fas fa-users text-purple-500 mr-2"></i>체험단 운영 건수
+                                            </label>
+                                            <input type="number" id="experience-groups" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                                        </div>
+                                    </div>
+
+                                    <!-- 인스타그램 섹션 -->
+                                    <div class="space-y-4">
+                                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">인스타그램</h3>
+                                        
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <i class="fab fa-instagram text-pink-500 mr-2"></i>릴스 게시 수
+                                            </label>
+                                            <input type="number" id="instagram-reels" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <i class="fas fa-camera text-orange-500 mr-2"></i>사진 게시 수
+                                            </label>
+                                            <input type="number" id="instagram-photos" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-8">
+                                    <button type="submit" class="w-full gradient-bg text-white py-3 px-4 rounded-md hover:opacity-90 transition-opacity font-semibold">
+                                        <i class="fas fa-save mr-2"></i>체크리스트 제출
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Designer History Panel -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white p-6 rounded-lg custom-shadow">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">디자이너 히스토리</h3>
+                            <div id="designer-history" class="designer-history-panel">
+                                <div class="text-center text-gray-500 py-8">
+                                    <i class="fas fa-user-circle text-4xl mb-2"></i>
+                                    <p>디자이너를 선택하면<br>히스토리가 표시됩니다</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div id="statistics-section" class="section" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">통계 분석</h2>
+                    <button onclick="exportData(&#39;statistics&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                        <i class="fas fa-download mr-2"></i>Excel 다운로드
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white p-6 rounded-lg custom-shadow mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">기간</label>
+                            <select id="stats-period" onchange="toggleCustomDates(&#39;stats&#39;); updateStatisticsData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="week">이번 주</option>
+                                <option value="month">이번 달</option>
+                                <option value="quarter">이번 분기</option>
+                                <option value="year">올해</option>
+                                <option value="custom">기간 설정</option>
+                            </select>
+                        </div>
+                        <div id="stats-custom-dates" style="display: none;" class="md:col-span-2">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">기간 설정</label>
+                            <div class="flex space-x-2">
+                                <input type="date" id="stats-start-date" onchange="updateStatisticsData()" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
+                                <input type="date" id="stats-end-date" onchange="updateStatisticsData()" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+                        <div class="admin-only">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">지점</label>
+                            <select id="stats-branch" onchange="updateStatisticsData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="all">전체 지점</option>
+                                <option value="songdo1">송도1지점</option>
+                                <option value="geomdan">검단테라스점</option>
+                                <option value="bupyeong">부평점</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">카테고리</label>
+                            <select id="stats-category" onchange="updateStatisticsData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="all">전체</option>
+                                <option value="reviews">네이버 리뷰</option>
+                                <option value="posts">블로그 포스팅</option>
+                                <option value="experiences">체험단</option>
+                                <option value="reels">인스타 릴스</option>
+                                <option value="photos">인스타 사진</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">정렬</label>
+                            <select id="stats-sort" onchange="updateStatisticsData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="desc">높은 순</option>
+                                <option value="asc">낮은 순</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="bg-white rounded-lg custom-shadow">
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex">
+                            <button onclick="showStatsTab(&#39;branch&#39;)" id="branch-tab" class="stats-tab py-4 px-6 border-b-2 border-indigo-500 text-indigo-600 font-medium">
+                                지점별 통계
+                            </button>
+                            <button onclick="showStatsTab(&#39;designer&#39;)" id="designer-tab" class="stats-tab py-4 px-6 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
+                                디자이너별 통계
+                            </button>
+                            <button onclick="showStatsTab(&#39;integrated&#39;)" id="integrated-tab" class="stats-tab py-4 px-6 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
+                                전체 통합
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Branch Statistics -->
+                    <div id="branch-stats" class="tab-content p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순위</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">합계</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">평균</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">최고</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">최저</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="branch-stats-table" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Designer Statistics -->
+                    <div id="designer-stats" class="tab-content p-6" style="display: none;">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순위</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">디자이너</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">합계</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">평균</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="designer-stats-table" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Integrated Statistics -->
+                    <div id="integrated-stats" class="tab-content p-6" style="display: none;">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4">전체 통합 통계</h3>
+                                <div class="chart-container">
+                                    <canvas id="integratedChart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4">카테고리별 비교</h3>
+                                <div class="chart-container">
+                                    <canvas id="categoryCompareChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compare Section (Admin Only) -->
+        <div id="compare-section" class="section" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">지점 비교 분석</h2>
+                    <button onclick="exportData(&#39;compare&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                        <i class="fas fa-download mr-2"></i>Excel 다운로드
+                    </button>
+                </div>
+
+                <!-- Multi-Branch Selection -->
+                <div class="bg-white p-6 rounded-lg custom-shadow mb-8">
+                    <h3 class="text-lg font-semibold mb-4">비교할 지점 선택</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="branch-checkboxes">
+                        <label class="flex items-center">
+                            <input type="checkbox" value="songdo1" onchange="updateComparisonData()" class="mr-2">
+                            <span>송도1지점</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="geomdan" onchange="updateComparisonData()" class="mr-2">
+                            <span>검단테라스점</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="bupyeong" onchange="updateComparisonData()" class="mr-2">
+                            <span>부평점</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="incheon" onchange="updateComparisonData()" class="mr-2">
+                            <span>인천점</span>
+                        </label>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">비교 기간</label>
+                            <select id="compare-period" onchange="toggleCustomDates(&#39;compare&#39;); updateComparisonData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="week">이번 주</option>
+                                <option value="month">이번 달</option>
+                                <option value="quarter">이번 분기</option>
+                                <option value="year">올해</option>
+                                <option value="custom">기간 설정</option>
+                            </select>
+                        </div>
+                        <div id="compare-custom-dates" style="display: none;">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">기간 설정</label>
+                            <div class="flex space-x-2">
+                                <input type="date" id="compare-start-date" onchange="updateComparisonData()" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
+                                <input type="date" id="compare-end-date" onchange="updateComparisonData()" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">카테고리</label>
+                            <select id="compare-category" onchange="updateComparisonData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="all">전체</option>
+                                <option value="reviews">네이버 리뷰</option>
+                                <option value="posts">블로그 포스팅</option>
+                                <option value="experiences">체험단</option>
+                                <option value="reels">인스타 릴스</option>
+                                <option value="photos">인스타 사진</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Chart -->
+                <div class="bg-white p-6 rounded-lg custom-shadow mb-8">
+                    <h3 class="text-lg font-semibold mb-4">지점별 비교 차트</h3>
+                    <div class="large-chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="bg-white rounded-lg custom-shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold">상세 비교 표</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr id="comparison-table-header">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">항목</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparison-table-body" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Designer Modal -->
+    <div id="add-designer-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold">디자이너 추가</h3>
+                <button onclick="hideAddDesignerModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="addDesigner(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">이름</label>
+                    <input type="text" id="designer-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">직급</label>
+                    <select id="designer-position" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                        <option value="">직급을 선택하세요</option>
+                        <option value="인턴">인턴</option>
+                        <option value="디자이너">디자이너</option>
+                        <option value="팀장">팀장</option>
+                        <option value="실장">실장</option>
+                        <option value="부원장">부원장</option>
+                        <option value="원장">원장</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">전화번호</label>
+                    <input type="tel" id="designer-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">이메일</label>
+                    <input type="email" id="designer-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex space-x-4">
+                    <button type="button" onclick="hideAddDesignerModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors">
+                        취소
+                    </button>
+                    <button type="submit" class="flex-1 gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
+                        추가
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let designers = [];
+        let checklistData = [];
+        let charts = {};
+        let designerSortConfig = { column: 'name', direction: 'asc' };
+        let branchRankingSortConfig = { column: 'total', direction: 'desc' };
+        let isUpdating = false;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = ['checklist-date', 'dashboard-start-date', 'dashboard-end-date', 'stats-start-date', 'stats-end-date', 'compare-start-date', 'compare-end-date'];
+            dateInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.value = today;
+            });
+            initializeSampleData();
+        });
+
+        function initializeSampleData() {
+            designers = [
+                { id: 1, name: '김민수', branch: 'songdo1', position: '디자이너', phone: '010-1234-5678', email: 'kim@gohair.com', createdAt: '2024-01-15' },
+                { id: 2, name: '이영희', branch: 'songdo1', position: '팀장', phone: '010-2345-6789', email: 'lee@gohair.com', createdAt: '2024-01-20' },
+                { id: 3, name: '박철수', branch: 'geomdan', position: '실장', phone: '010-3456-7890', email: 'park@gohair.com', createdAt: '2024-02-01' },
+                { id: 4, name: '최수진', branch: 'geomdan', position: '디자이너', phone: '010-4567-8901', email: 'choi@gohair.com', createdAt: '2024-02-10' },
+                { id: 5, name: '정현우', branch: 'bupyeong', position: '원장', phone: '010-5678-9012', email: 'jung@gohair.com', createdAt: '2024-02-15' }
+            ];
+
+            const today = new Date();
+            const dates = [];
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                dates.push(date.toISOString().split('T')[0]);
+            }
+
+            checklistData = [];
+            designers.forEach(designer => {
+                dates.forEach((date, index) => {
+                    if (Math.random() > 0.3) {
+                        checklistData.push({
+                            id: checklistData.length + 1,
+                            designerId: designer.id,
+                            date: date,
+                            naverReviews: Math.floor(Math.random() * 10) + 1,
+                            blogPosts: Math.floor(Math.random() * 5) + 1,
+                            experienceGroups: Math.floor(Math.random() * 3),
+                            instagramReels: Math.floor(Math.random() * 8) + 1,
+                            instagramPhotos: Math.floor(Math.random() * 12) + 1,
+                            createdAt: date
+                        });
+                    }
+                });
+            });
+        }
+
+        function toggleCustomDates(section) {
+            const periodSelect = document.getElementById(section + '-period');
+            const customDates = document.getElementById(section + '-custom-dates');
+            
+            if (periodSelect && customDates) {
+                customDates.style.display = periodSelect.value === 'custom' ? 'block' : 'none';
+            }
+        }
+
+        // 차트 생성/업데이트 시 완전한 삭제 보장
+        function destroyChart(chartKey) {
+            if (charts[chartKey]) {
+                charts[chartKey].destroy();
+                charts[chartKey] = null;
+                delete charts[chartKey];
+            }
+        }
+
+        function createChart(canvasId, chartKey, config) {
+            destroyChart(chartKey);
+            
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return null;
+            
+            // 캔버스 크기 강제 설정
+            const container = canvas.parentElement;
+            if (container) {
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                canvas.width = container.offsetWidth;
+                canvas.height = container.offsetHeight;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            charts[chartKey] = new Chart(ctx, {
+                ...config,
+                options: {
+                    ...config.options,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        ...config.options?.plugins,
+                        legend: {
+                            ...config.options?.plugins?.legend,
+                            display: true
+                        }
+                    }
+                }
+            });
+            
+            return charts[chartKey];
+        }
+
+        function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const validAccounts = {
+                'admin@gohair.com': { password: 'GoHair2024!', role: 'admin', name: '관리자', branch: 'all' },
+                'songdo@gohair.com': { password: 'Songdo123!', role: 'leader', name: '송도리더', branch: 'songdo1' },
+                'geomdan@gohair.com': { password: 'Geomdan123!', role: 'leader', name: '검단리더', branch: 'geomdan' },
+                'bupyeong@gohair.com': { password: 'Bupyeong123!', role: 'leader', name: '부평리더', branch: 'bupyeong' }
+            };
+
+            if (validAccounts[email] && validAccounts[email].password === password) {
+                currentUser = {
+                    email: email,
+                    role: validAccounts[email].role,
+                    name: validAccounts[email].name,
+                    branch: validAccounts[email].branch
+                };
+
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                
+                updateUserInfo();
+                initializeApp();
+                showSection('dashboard');
+            } else {
+                alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+            }
+        }
+
+        function showRegistration() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('registration-section').style.display = 'flex';
+        }
+
+        function showLogin() {
+            document.getElementById('registration-section').style.display = 'none';
+            document.getElementById('login-section').style.display = 'flex';
+        }
+
+        function register(event) {
+            event.preventDefault();
+            alert('가입 요청이 처리되었습니다. 이메일 인증 후 로그인해주세요.');
+            showLogin();
+        }
+
+        function logout() {
+            currentUser = null;
+            
+            // 모든 차트 삭제
+            Object.keys(charts).forEach(key => {
+                destroyChart(key);
+            });
+            
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('login-section').style.display = 'flex';
+            
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+        }
+
+        function updateUserInfo() {
+            const userInfo = document.getElementById('user-info');
+            userInfo.textContent = `${currentUser.name} (${currentUser.role === 'admin' ? '관리자' : 'SNS리더'})`;
+            
+            const adminElements = document.querySelectorAll('.admin-only');
+            adminElements.forEach(element => {
+                element.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+            });
+        }
+
+        function initializeApp() {
+            loadDesigners();
+            updateDashboard();
+        }
+
+        function showSection(sectionName) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.style.display = 'none');
+            
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('bg-white', 'bg-opacity-20'));
+            
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            switch(sectionName) {
+                case 'dashboard':
+                    setTimeout(() => {
+                        toggleCustomDates('dashboard');
+                        updateDashboard();
+                    }, 100);
+                    break;
+                case 'designer-management':
+                    loadDesigners();
+                    break;
+                case 'checklist':
+                    loadDesignerSelect();
+                    break;
+                case 'statistics':
+                    setTimeout(() => {
+                        toggleCustomDates('stats');
+                        updateStatisticsData();
+                    }, 100);
+                    break;
+                case 'compare':
+                    setTimeout(() => {
+                        toggleCustomDates('compare');
+                        updateComparisonData();
+                    }, 100);
+                    break;
+            }
+        }
+
+        function updateDashboard() {
+            if (isUpdating) return;
+            isUpdating = true;
+
+            const period = document.getElementById('dashboard-period')?.value || 'today';
+            let filteredData = getFilteredData(period, 'dashboard');
+            
+            if (currentUser.role !== 'admin') {
+                const branchDesigners = designers.filter(d => d.branch === currentUser.branch).map(d => d.id);
+                filteredData = filteredData.filter(d => branchDesigners.includes(d.designerId));
+            }
+            
+            const totals = filteredData.reduce((acc, curr) => ({
+                reviews: acc.reviews + curr.naverReviews,
+                posts: acc.posts + curr.blogPosts,
+                experiences: acc.experiences + curr.experienceGroups,
+                reels: acc.reels + curr.instagramReels,
+                photos: acc.photos + curr.instagramPhotos
+            }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
+            
+            if (document.getElementById('total-reviews')) {
+                document.getElementById('total-reviews').textContent = totals.reviews;
+                document.getElementById('total-posts').textContent = totals.posts;
+                document.getElementById('total-experiences').textContent = totals.experiences;
+                document.getElementById('total-reels').textContent = totals.reels;
+                document.getElementById('total-photos').textContent = totals.photos;
+            }
+            
+            updateDashboardCharts(filteredData);
+            updateBranchRanking(period);
+
+            isUpdating = false;
+        }
+
+        function sortBranchRanking(column) {
+            if (branchRankingSortConfig.column === column) {
+                branchRankingSortConfig.direction = branchRankingSortConfig.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                branchRankingSortConfig.column = column;
+                branchRankingSortConfig.direction = 'desc';
+            }
+
+            document.querySelectorAll('[data-sort]').forEach(btn => {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-sort"></i>';
+            });
+
+            const activeBtn = document.querySelector(`[data-sort="${column}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.innerHTML = branchRankingSortConfig.direction === 'asc' ? 
+                    '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+            }
+
+            const period = document.getElementById('dashboard-period')?.value || 'today';
+            updateBranchRanking(period);
+        }
+
+        function updateDashboardCharts(data) {
+            const categoryData = data.reduce((acc, curr) => ({
+                reviews: acc.reviews + curr.naverReviews,
+                posts: acc.posts + curr.blogPosts,
+                experiences: acc.experiences + curr.experienceGroups,
+                reels: acc.reels + curr.instagramReels,
+                photos: acc.photos + curr.instagramPhotos
+            }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
+            
+            createChart('categoryChart', 'categoryChart', {
+                type: 'doughnut',
+                data: {
+                    labels: ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진'],
+                    datasets: [{
+                        data: [categoryData.reviews, categoryData.posts, categoryData.experiences, categoryData.reels, categoryData.photos],
+                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B']
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            const dailyData = getDailyChartData(data);
+            
+            createChart('dailyChart', 'dailyChart', {
+                type: 'line',
+                data: {
+                    labels: dailyData.labels,
+                    datasets: [{
+                        label: '총 활동량',
+                        data: dailyData.values,
+                        borderColor: '#6366F1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadDesigners() {
+            filterDesigners();
+        }
+
+        function filterDesigners() {
+            if (isUpdating) return;
+            isUpdating = true;
+
+            const branchFilter = document.getElementById('designer-branch-filter')?.value || 'all';
+            const designersTable = document.getElementById('designers-table');
+            
+            let filteredDesigners = designers;
+            
+            if (currentUser.role !== 'admin') {
+                filteredDesigners = designers.filter(d => d.branch === currentUser.branch);
+            } else if (branchFilter !== 'all') {
+                filteredDesigners = designers.filter(d => d.branch === branchFilter);
+            }
+            
+            filteredDesigners = filteredDesigners.map(designer => {
+                const designerData = checklistData.filter(c => c.designerId === designer.id);
+                const totalActivity = designerData.reduce((sum, record) => {
+                    return sum + record.naverReviews + record.blogPosts + record.experienceGroups + 
+                           record.instagramReels + record.instagramPhotos;
+                }, 0);
+                
+                return { ...designer, totalActivity };
+            });
+
+            filteredDesigners.sort((a, b) => {
+                const aVal = a[designerSortConfig.column];
+                const bVal = b[designerSortConfig.column];
+                
+                if (typeof aVal === 'string') {
+                    const result = aVal.localeCompare(bVal);
+                    return designerSortConfig.direction === 'asc' ? result : -result;
+                } else {
+                    const result = aVal - bVal;
+                    return designerSortConfig.direction === 'asc' ? result : -result;
+                }
+            });
+            
+            designersTable.innerHTML = filteredDesigners.map(designer => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${designer.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getBranchName(designer.branch)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.position}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.phone}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.createdAt}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.totalActivity}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editDesigner(${designer.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteDesigner(${designer.id})" class="text-red-600 hover:text-red-900">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            isUpdating = false;
+        }
+
+        function sortDesigners(column) {
+            if (designerSortConfig.column === column) {
+                designerSortConfig.direction = designerSortConfig.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                designerSortConfig.column = column;
+                designerSortConfig.direction = 'asc';
+            }
+
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-sort"></i>';
+            });
+
+            const activeBtn = document.querySelector(`[data-sort="${column}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.innerHTML = designerSortConfig.direction === 'asc' ? 
+                    '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+            }
+
+            filterDesigners();
+        }
+
+        function loadDesignerSelect() {
+            const designerSelect = document.getElementById('designer-select');
+            let filteredDesigners = designers;
+            
+            if (currentUser.role !== 'admin') {
+                filteredDesigners = designers.filter(d => d.branch === currentUser.branch);
+            }
+            
+            designerSelect.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
+                filteredDesigners.map(designer => `
+                    <option value="${designer.id}">${designer.name} (${getBranchName(designer.branch)})</option>
+                `).join('');
+        }
+
+        function showAddDesignerModal() {
+            document.getElementById('add-designer-modal').classList.remove('hidden');
+            document.getElementById('add-designer-modal').classList.add('flex');
+        }
+
+        function hideAddDesignerModal() {
+            document.getElementById('add-designer-modal').classList.add('hidden');
+            document.getElementById('add-designer-modal').classList.remove('flex');
+            
+            document.getElementById('designer-name').value = '';
+            document.getElementById('designer-position').value = '';
+            document.getElementById('designer-phone').value = '';
+            document.getElementById('designer-email').value = '';
+        }
+
+        function addDesigner(event) {
+            event.preventDefault();
+            const name = document.getElementById('designer-name').value;
+            const position = document.getElementById('designer-position').value;
+            const phone = document.getElementById('designer-phone').value;
+            const email = document.getElementById('designer-email').value;
+            
+            const newDesigner = {
+                id: designers.length + 1,
+                name: name,
+                branch: currentUser.branch,
+                position: position,
+                phone: phone,
+                email: email,
+                createdAt: new Date().toISOString().split('T')[0]
+            };
+            
+            designers.push(newDesigner);
+            loadDesigners();
+            loadDesignerSelect();
+            hideAddDesignerModal();
+            
+            alert('디자이너가 성공적으로 추가되었습니다.');
+        }
+
+        function editDesigner(id) {
+            const designer = designers.find(d => d.id === id);
+            if (designer) {
+                const newName = prompt('디자이너 이름:', designer.name);
+                const newPosition = prompt('직급:', designer.position);
+                const newPhone = prompt('전화번호:', designer.phone);
+                
+                if (newName && newPosition && newPhone) {
+                    designer.name = newName;
+                    designer.position = newPosition;
+                    designer.phone = newPhone;
+                    loadDesigners();
+                    loadDesignerSelect();
+                }
+            }
+        }
+
+        function deleteDesigner(id) {
+            if (confirm('정말로 이 디자이너를 삭제하시겠습니까?')) {
+                designers = designers.filter(d => d.id !== id);
+                checklistData = checklistData.filter(c => c.designerId !== id);
+                loadDesigners();
+                loadDesignerSelect();
+                updateDashboard();
+            }
+        }
+
+        function loadDesignerHistory() {
+            const designerId = document.getElementById('designer-select').value;
+            const historyContainer = document.getElementById('designer-history');
+            
+            if (!designerId) {
+                historyContainer.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-user-circle text-4xl mb-2"></i>
+                        <p>디자이너를 선택하면<br>히스토리가 표시됩니다</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const designer = designers.find(d => d.id == designerId);
+            const designerHistory = checklistData
+                .filter(c => c.designerId == designerId)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10);
+            
+            if (designerHistory.length === 0) {
+                historyContainer.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-history text-4xl mb-2"></i>
+                        <p>${designer.name}의<br>기록이 없습니다</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const total = designerHistory.reduce((acc, curr) => ({
+                reviews: acc.reviews + curr.naverReviews,
+                posts: acc.posts + curr.blogPosts,
+                experiences: acc.experiences + curr.experienceGroups,
+                reels: acc.reels + curr.instagramReels,
+                photos: acc.photos + curr.instagramPhotos
+            }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
+            
+            const weeklyData = designerHistory.slice(0, 7);
+            const weekly = weeklyData.reduce((acc, curr) => ({
+                reviews: acc.reviews + curr.naverReviews,
+                posts: acc.posts + curr.blogPosts,
+                experiences: acc.experiences + curr.experienceGroups,
+                reels: acc.reels + curr.instagramReels,
+                photos: acc.photos + curr.instagramPhotos
+            }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
+            
+            historyContainer.innerHTML = `
+                <div class="space-y-4">
+                    <div class="text-center">
+                        <h4 class="font-semibold text-gray-800">${designer.name}</h4>
+                        <p class="text-sm text-gray-600">${getBranchName(designer.branch)} - ${designer.position}</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded">
+                        <h5 class="font-medium text-sm mb-2">요약 통계</h5>
+                        <table class="w-full text-xs">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-1">기간</th>
+                                    <th class="text-center py-1">리뷰</th>
+                                    <th class="text-center py-1">포스팅</th>
+                                    <th class="text-center py-1">체험단</th>
+                                    <th class="text-center py-1">릴스</th>
+                                    <th class="text-center py-1">사진</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="py-1">주간</td>
+                                    <td class="text-center">${weekly.reviews}</td>
+                                    <td class="text-center">${weekly.posts}</td>
+                                    <td class="text-center">${weekly.experiences}</td>
+                                    <td class="text-center">${weekly.reels}</td>
+                                    <td class="text-center">${weekly.photos}</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1">전체</td>
+                                    <td class="text-center">${total.reviews}</td>
+                                    <td class="text-center">${total.posts}</td>
+                                    <td class="text-center">${total.experiences}</td>
+                                    <td class="text-center">${total.reels}</td>
+                                    <td class="text-center">${total.photos}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div>
+                        <h5 class="font-medium text-sm mb-2">최근 기록</h5>
+                        <div class="space-y-2 max-h-48 overflow-y-auto">
+                            ${designerHistory.map(record => `
+                                <div class="bg-gray-50 p-2 rounded text-xs">
+                                    <div class="font-medium">${record.date}</div>
+                                    <div class="grid grid-cols-5 gap-1 mt-1 text-center">
+                                        <div><span class="text-blue-600">${record.naverReviews}</span></div>
+                                        <div><span class="text-green-600">${record.blogPosts}</span></div>
+                                        <div><span class="text-purple-600">${record.experienceGroups}</span></div>
+                                        <div><span class="text-pink-600">${record.instagramReels}</span></div>
+                                        <div><span class="text-orange-600">${record.instagramPhotos}</span></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitChecklist(event) {
+            event.preventDefault();
+            
+            const designerId = document.getElementById('designer-select').value;
+            const date = document.getElementById('checklist-date').value;
+            const naverReviews = parseInt(document.getElementById('naver-reviews').value);
+            const blogPosts = parseInt(document.getElementById('blog-posts').value);
+            const experienceGroups = parseInt(document.getElementById('experience-groups').value);
+            const instagramReels = parseInt(document.getElementById('instagram-reels').value);
+            const instagramPhotos = parseInt(document.getElementById('instagram-photos').value);
+            
+            const existingEntry = checklistData.find(c => c.designerId == designerId && c.date === date);
+            
+            if (existingEntry) {
+                if (!confirm('이 날짜에 이미 기록이 있습니다. 덮어쓰시겠습니까?')) {
+                    return;
+                }
+                existingEntry.naverReviews = naverReviews;
+                existingEntry.blogPosts = blogPosts;
+                existingEntry.experienceGroups = experienceGroups;
+                existingEntry.instagramReels = instagramReels;
+                existingEntry.instagramPhotos = instagramPhotos;
+            } else {
+                const newEntry = {
+                    id: checklistData.length + 1,
+                    designerId: parseInt(designerId),
+                    date: date,
+                    naverReviews: naverReviews,
+                    blogPosts: blogPosts,
+                    experienceGroups: experienceGroups,
+                    instagramReels: instagramReels,
+                    instagramPhotos: instagramPhotos,
+                    createdAt: new Date().toISOString()
+                };
+                
+                checklistData.push(newEntry);
+            }
+            
+            document.getElementById('naver-reviews').value = '';
+            document.getElementById('blog-posts').value = '';
+            document.getElementById('experience-groups').value = '';
+            document.getElementById('instagram-reels').value = '';
+            document.getElementById('instagram-photos').value = '';
+            
+            loadDesignerHistory();
+            updateDashboard();
+            
+            alert('체크리스트가 성공적으로 제출되었습니다.');
+        }
+
+        function showStatsTab(tabName) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.style.display = 'none');
+            
+            const tabs = document.querySelectorAll('.stats-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('border-indigo-500', 'text-indigo-600');
+                tab.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            const targetContent = document.getElementById(tabName + '-stats');
+            if (targetContent) {
+                targetContent.style.display = 'block';
+            }
+            
+            const activeTab = document.getElementById(tabName + '-tab');
+            if (activeTab) {
+                activeTab.classList.remove('border-transparent', 'text-gray-500');
+                activeTab.classList.add('border-indigo-500', 'text-indigo-600');
+            }
+            
+            switch(tabName) {
+                case 'branch':
+                    updateBranchStats();
+                    break;
+                case 'designer':
+                    updateDesignerStats();
+                    break;
+                case 'integrated':
+                    setTimeout(() => updateIntegratedStats(), 100);
+                    break;
+            }
+        }
+
+        function updateStatisticsData() {
+            if (isUpdating) return;
+            
+            const activeTab = document.querySelector('.stats-tab.border-indigo-500');
+            if (activeTab) {
+                const tabType = activeTab.id.replace('-tab', '');
+                showStatsTab(tabType);
+            } else {
+                showStatsTab('branch');
+            }
+        }
+
+        function updateBranchStats() {
+            const period = document.getElementById('stats-period')?.value || 'week';
+            const category = document.getElementById('stats-category')?.value || 'all';
+            const sort = document.getElementById('stats-sort')?.value || 'desc';
+            
+            const branchStats = calculateDetailedBranchStats(period, category, sort);
+            const tableBody = document.getElementById('branch-stats-table');
+            
+            if (tableBody) {
+                tableBody.innerHTML = branchStats.map((branch, index) => `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${index + 1}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${getBranchName(branch.branch)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.total}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.average}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.max}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.min}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function updateDesignerStats() {
+            const period = document.getElementById('stats-period')?.value || 'week';
+            const branch = currentUser.role === 'admin' ? (document.getElementById('stats-branch')?.value || 'all') : currentUser.branch;
+            const category = document.getElementById('stats-category')?.value || 'all';
+            const sort = document.getElementById('stats-sort')?.value || 'desc';
+            
+            const designerStats = calculateDesignerStats(period, branch, category, sort);
+            const tableBody = document.getElementById('designer-stats-table');
+            
+            if (tableBody) {
+                tableBody.innerHTML = designerStats.map((designer, index) => `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${index + 1}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${designer.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getBranchName(designer.branch)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.total}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.average}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function updateIntegratedStats() {
+            const period = document.getElementById('stats-period')?.value || 'week';
+            const data = getFilteredData(period, 'stats');
+            
+            const branchData = getBranchComparisonData(data);
+            
+            createChart('integratedChart', 'integratedChart', {
+                type: 'bar',
+                data: {
+                    labels: branchData.labels,
+                    datasets: [{
+                        label: '총 활동량',
+                        data: branchData.totals,
+                        backgroundColor: 'rgba(99, 102, 241, 0.8)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            const categoryData = getCategoryComparisonData(data);
+            
+            createChart('categoryCompareChart', 'categoryCompareChart', {
+                type: 'radar',
+                data: {
+                    labels: ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진'],
+                    datasets: categoryData.datasets
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateComparisonData() {
+            if (currentUser.role !== 'admin' || isUpdating) return;
+            isUpdating = true;
+            
+            const selectedBranches = Array.from(document.querySelectorAll('#branch-checkboxes input:checked')).map(cb => cb.value);
+            const period = document.getElementById('compare-period')?.value || 'week';
+            const category = document.getElementById('compare-category')?.value || 'all';
+            
+            if (selectedBranches.length === 0) {
+                const tableBody = document.getElementById('comparison-table-body');
+                if (tableBody) {
+                    tableBody.innerHTML = '<tr><td colspan="100%" class="text-center py-8 text-gray-500">비교할 지점을 선택해주세요</td></tr>';
+                }
+                isUpdating = false;
+                return;
+            }
+            
+            updateComparisonChart(selectedBranches, period, category);
+            updateComparisonTable(selectedBranches, period, category);
+            
+            isUpdating = false;
+        }
+
+        function updateComparisonChart(branches, period, category) {
+            const data = getComparisonChartData(branches, period, category);
+            
+            createChart('comparisonChart', 'comparisonChart', {
+                type: 'bar',
+                data: data,
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '지점별 비교 분석'
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateComparisonTable(branches, period, category) {
+            const tableHeader = document.getElementById('comparison-table-header');
+            const tableBody = document.getElementById('comparison-table-body');
+            
+            if (!tableHeader || !tableBody) return;
+            
+            tableHeader.innerHTML = '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">항목</th>' +
+                branches.map(branch => `<th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">${getBranchName(branch)}</th>`).join('');
+            
+            const comparisonData = getComparisonTableData(branches, period, category);
+            
+            tableBody.innerHTML = comparisonData.map(row => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${row.label}</td>
+                    ${row.values.map(value => `<td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">${value}</td>`).join('')}
+                </tr>
+            `).join('');
+        }
+
+        function updateBranchRanking(period) {
+            const branchStats = calculateBranchStats(period);
+            
+            // Apply sorting
+            branchStats.sort((a, b) => {
+                const aVal = a[branchRankingSortConfig.column];
+                const bVal = b[branchRankingSortConfig.column];
+                const result = aVal - bVal;
+                return branchRankingSortConfig.direction === 'asc' ? result : -result;
+            });
+            
+            const tableBody = document.getElementById('branch-ranking-table');
+            
+            if (tableBody) {
+                tableBody.innerHTML = branchStats.map((branch, index) => `
+                    <tr class="${index === 0 ? 'bg-yellow-50' : ''}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            ${index + 1}
+                            ${index === 0 ? '<i class="fas fa-crown text-yellow-500 ml-2"></i>' : ''}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${getBranchName(branch.branch)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.reviews}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.posts}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.experiences}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.reels}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.photos}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${branch.total}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Utility functions
+        function getBranchName(branchCode) {
+            const branchNames = {
+                'songdo1': '송도1지점',
+                'geomdan': '검단테라스점',
+                'bupyeong': '부평점',
+                'incheon': '인천점',
+                'gimpo': '김포점',
+                'all': '전체'
+            };
+            return branchNames[branchCode] || branchCode;
+        }
+
+        function getFilteredData(period, section = '') {
+            const now = new Date();
+            let startDate, endDate = now;
+            
+            if (period === 'custom') {
+                const startInput = document.getElementById(section + '-start-date');
+                const endInput = document.getElementById(section + '-end-date');
+                if (startInput && endInput && startInput.value && endInput.value) {
+                    startDate = new Date(startInput.value);
+                    endDate = new Date(endInput.value);
+                    endDate.setHours(23, 59, 59, 999); // Include the entire end date
+                } else {
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                }
+            } else {
+                switch(period) {
+                    case 'today':
+                        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                        break;
+                    case 'week':
+                        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        break;
+                    case 'month':
+                        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                        break;
+                    case 'quarter':
+                        const quarter = Math.floor(now.getMonth() / 3);
+                        startDate = new Date(now.getFullYear(), quarter * 3, 1);
+                        break;
+                    case 'year':
+                        startDate = new Date(now.getFullYear(), 0, 1);
+                        break;
+                    default:
+                        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                }
+            }
+            
+            return checklistData.filter(item => {
+                const itemDate = new Date(item.date);
+                return itemDate >= startDate && itemDate <= endDate;
+            });
+        }
+
+        function calculateBranchStats(period) {
+            const data = getFilteredData(period, 'dashboard');
+            const branchMap = {};
+            
+            const branches = currentUser.role === 'admin' ? 
+                ['songdo1', 'geomdan', 'bupyeong', 'incheon', 'gimpo'] : 
+                [currentUser.branch];
+            
+            branches.forEach(branch => {
+                branchMap[branch] = { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 };
+            });
+            
+            data.forEach(item => {
+                const designer = designers.find(d => d.id === item.designerId);
+                if (designer && branchMap[designer.branch] !== undefined) {
+                    branchMap[designer.branch].reviews += item.naverReviews;
+                    branchMap[designer.branch].posts += item.blogPosts;
+                    branchMap[designer.branch].experiences += item.experienceGroups;
+                    branchMap[designer.branch].reels += item.instagramReels;
+                    branchMap[designer.branch].photos += item.instagramPhotos;
+                }
+            });
+            
+            return Object.entries(branchMap).map(([branch, stats]) => ({
+                branch,
+                ...stats,
+                total: stats.reviews + stats.posts + stats.experiences + stats.reels + stats.photos
+            }));
+        }
+
+        function calculateDetailedBranchStats(period, category, sort) {
+            const data = getFilteredData(period, 'stats');
+            const branchStats = calculateBranchStats(period);
+            
+            return branchStats.map(branch => {
+                const branchData = data.filter(item => {
+                    const designer = designers.find(d => d.id === item.designerId);
+                    return designer && designer.branch === branch.branch;
+                });
+                
+                let values = [];
+                switch(category) {
+                    case 'reviews':
+                        values = branchData.map(item => item.naverReviews);
+                        break;
+                    case 'posts':
+                        values = branchData.map(item => item.blogPosts);
+                        break;
+                    case 'experiences':
+                        values = branchData.map(item => item.experienceGroups);
+                        break;
+                    case 'reels':
+                        values = branchData.map(item => item.instagramReels);
+                        break;
+                    case 'photos':
+                        values = branchData.map(item => item.instagramPhotos);
+                        break;
+                    default:
+                        values = branchData.map(item => 
+                            item.naverReviews + item.blogPosts + item.experienceGroups + 
+                            item.instagramReels + item.instagramPhotos
+                        );
+                }
+                
+                const total = values.reduce((sum, val) => sum + val, 0);
+                const average = values.length > 0 ? Math.round(total / values.length * 10) / 10 : 0;
+                const max = values.length > 0 ? Math.max(...values) : 0;
+                const min = values.length > 0 ? Math.min(...values) : 0;
+                
+                return {
+                    ...branch,
+                    total,
+                    average,
+                    max,
+                    min
+                };
+            }).sort((a, b) => sort === 'desc' ? b.total - a.total : a.total - b.total);
+        }
+
+        function calculateDesignerStats(period, branch, category, sort) {
+            const data = getFilteredData(period, 'stats');
+            let filteredDesigners = designers;
+            
+            if (branch !== 'all') {
+                filteredDesigners = designers.filter(d => d.branch === branch);
+            }
+            
+            if (currentUser.role !== 'admin') {
+                filteredDesigners = filteredDesigners.filter(d => d.branch === currentUser.branch);
+            }
+            
+            return filteredDesigners.map(designer => {
+                const designerData = data.filter(item => item.designerId === designer.id);
+                
+                let values = [];
+                switch(category) {
+                    case 'reviews':
+                        values = designerData.map(item => item.naverReviews);
+                        break;
+                    case 'posts':
+                        values = designerData.map(item => item.blogPosts);
+                        break;
+                    case 'experiences':
+                        values = designerData.map(item => item.experienceGroups);
+                        break;
+                    case 'reels':
+                        values = designerData.map(item => item.instagramReels);
+                        break;
+                    case 'photos':
+                        values = designerData.map(item => item.instagramPhotos);
+                        break;
+                    default:
+                        values = designerData.map(item => 
+                            item.naverReviews + item.blogPosts + item.experienceGroups + 
+                            item.instagramReels + item.instagramPhotos
+                        );
+                }
+                
+                const total = values.reduce((sum, val) => sum + val, 0);
+                const average = values.length > 0 ? Math.round(total / values.length * 10) / 10 : 0;
+                
+                return {
+                    ...designer,
+                    total,
+                    average
+                };
+            }).sort((a, b) => sort === 'desc' ? b.total - a.total : a.total - b.total);
+        }
+
+        function getDailyChartData(data) {
+            const dailyMap = {};
+            
+            data.forEach(item => {
+                const date = item.date;
+                if (!dailyMap[date]) {
+                    dailyMap[date] = 0;
+                }
+                dailyMap[date] += item.naverReviews + item.blogPosts + item.experienceGroups + 
+                                 item.instagramReels + item.instagramPhotos;
+            });
+            
+            const sortedDates = Object.keys(dailyMap).sort();
+            const last7Days = sortedDates.slice(-7);
+            
+            return {
+                labels: last7Days.map(date => new Date(date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })),
+                values: last7Days.map(date => dailyMap[date] || 0)
+            };
+        }
+
+        function getBranchComparisonData(data) {
+            const branchStats = calculateBranchStats('week');
+            return {
+                labels: branchStats.map(branch => getBranchName(branch.branch)),
+                totals: branchStats.map(branch => branch.total)
+            };
+        }
+
+        function getCategoryComparisonData(data) {
+            const branches = [...new Set(designers.map(d => d.branch))];
+            const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B'];
+            
+            return {
+                datasets: branches.slice(0, 5).map((branch, index) => {
+                    const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
+                    const branchData = data.filter(item => branchDesigners.includes(item.designerId));
+                    
+                    const totals = branchData.reduce((acc, curr) => ({
+                        reviews: acc.reviews + curr.naverReviews,
+                        posts: acc.posts + curr.blogPosts,
+                        experiences: acc.experiences + curr.experienceGroups,
+                        reels: acc.reels + curr.instagramReels,
+                        photos: acc.photos + curr.instagramPhotos
+                    }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
+                    
+                    return {
+                        label: getBranchName(branch),
+                        data: [totals.reviews, totals.posts, totals.experiences, totals.reels, totals.photos],
+                        borderColor: colors[index],
+                        backgroundColor: colors[index] + '33'
+                    };
+                })
+            };
+        }
+
+        function getComparisonChartData(branches, period, category) {
+            const data = getFilteredData(period, 'compare');
+            const labels = ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진'];
+            const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B'];
+            
+            if (category === 'all') {
+                return {
+                    labels: labels,
+                    datasets: branches.map((branch, index) => {
+                        const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
+                        const branchData = data.filter(item => branchDesigners.includes(item.designerId));
+                        
+                        const totals = branchData.reduce((acc, curr) => ({
+                            reviews: acc.reviews + curr.naverReviews,
+                            posts: acc.posts + curr.blogPosts,
+                            experiences: acc.experiences + curr.experienceGroups,
+                            reels: acc.reels + curr.instagramReels,
+                            photos: acc.photos + curr.instagramPhotos
+                        }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
+                        
+                        return {
+                            label: getBranchName(branch),
+                            data: [totals.reviews, totals.posts, totals.experiences, totals.reels, totals.photos],
+                            backgroundColor: colors[index % colors.length]
+                        };
+                    })
+                };
+            } else {
+                return {
+                    labels: branches.map(branch => getBranchName(branch)),
+                    datasets: [{
+                        label: category,
+                        data: branches.map(branch => {
+                            const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
+                            const branchData = data.filter(item => branchDesigners.includes(item.designerId));
+                            
+                            switch(category) {
+                                case 'reviews':
+                                    return branchData.reduce((sum, item) => sum + item.naverReviews, 0);
+                                case 'posts':
+                                    return branchData.reduce((sum, item) => sum + item.blogPosts, 0);
+                                case 'experiences':
+                                    return branchData.reduce((sum, item) => sum + item.experienceGroups, 0);
+                                case 'reels':
+                                    return branchData.reduce((sum, item) => sum + item.instagramReels, 0);
+                                case 'photos':
+                                    return branchData.reduce((sum, item) => sum + item.instagramPhotos, 0);
+                                default:
+                                    return 0;
+                            }
+                        }),
+                        backgroundColor: colors[0]
+                    }]
+                };
+            }
+        }
+
+        function getComparisonTableData(branches, period, category) {
+            const data = getFilteredData(period, 'compare');
+            const items = category === 'all' ? 
+                ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진', '총합', '평균'] :
+                [category, '총합', '평균'];
+            
+            return items.map(item => {
+                const values = branches.map(branch => {
+                    const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
+                    const branchData = data.filter(item => branchDesigners.includes(item.designerId));
+                    
+                    if (item === '총합') {
+                        return branchData.reduce((sum, record) => sum + 
+                            record.naverReviews + record.blogPosts + record.experienceGroups + 
+                            record.instagramReels + record.instagramPhotos, 0);
+                    } else if (item === '평균') {
+                        const total = branchData.reduce((sum, record) => sum + 
+                            record.naverReviews + record.blogPosts + record.experienceGroups + 
+                            record.instagramReels + record.instagramPhotos, 0);
+                        return branchData.length > 0 ? Math.round(total / branchData.length * 10) / 10 : 0;
+                    } else {
+                        switch(item) {
+                            case '네이버 리뷰':
+                                return branchData.reduce((sum, record) => sum + record.naverReviews, 0);
+                            case '블로그 포스팅':
+                                return branchData.reduce((sum, record) => sum + record.blogPosts, 0);
+                            case '체험단':
+                                return branchData.reduce((sum, record) => sum + record.experienceGroups, 0);
+                            case '인스타 릴스':
+                                return branchData.reduce((sum, record) => sum + record.instagramReels, 0);
+                            case '인스타 사진':
+                                return branchData.reduce((sum, record) => sum + record.instagramPhotos, 0);
+                            default:
+                                return 0;
+                        }
+                    }
+                });
+                
+                return {
+                    label: item,
+                    values: values
+                };
+            });
+        }
+
+        function exportData(section) {
+            let csvContent = '';
+            let filename = '';
+            
+            switch(section) {
+                case 'dashboard':
+                    csvContent = generateDashboardCSV();
+                    filename = 'dashboard_data.csv';
+                    break;
+                case 'statistics':
+                    csvContent = generateStatisticsCSV();
+                    filename = 'statistics_data.csv';
+                    break;
+                case 'compare':
+                    csvContent = generateComparisonCSV();
+                    filename = 'comparison_data.csv';
+                    break;
+            }
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('데이터가 성공적으로 다운로드되었습니다.');
+        }
+
+        function generateDashboardCSV() {
+            const period = document.getElementById('dashboard-period')?.value || 'today';
+            let data = getFilteredData(period, 'dashboard');
+            
+            if (currentUser.role !== 'admin') {
+                const branchDesigners = designers.filter(d => d.branch === currentUser.branch).map(d => d.id);
+                data = data.filter(d => branchDesigners.includes(d.designerId));
+            }
+            
+            let csv = '날짜,디자이너,지점,직급,네이버리뷰,블로그포스팅,체험단,인스타릴스,인스타사진,총합\n';
+            
+            data.forEach(record => {
+                const designer = designers.find(d => d.id === record.designerId);
+                const total = record.naverReviews + record.blogPosts + record.experienceGroups + 
+                             record.instagramReels + record.instagramPhotos;
+                
+                csv += `${record.date},${designer?.name || ''},${getBranchName(designer?.branch || '')},${designer?.position || ''},` +
+                       `${record.naverReviews},${record.blogPosts},${record.experienceGroups},` +
+                       `${record.instagramReels},${record.instagramPhotos},${total}\n`;
+            });
+            
+            return csv;
+        }
+
+        function generateStatisticsCSV() {
+            return 'Statistics CSV data...';
+        }
+
+        function generateComparisonCSV() {
+            return 'Comparison CSV data...';
+        }
+    </script>
+
+
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDjKj7Jxml9h8PbKTCknLI2zXe2OQ2MoGdwLslu7fsWMr6bXJ%2BWBtWEFlwuR721n3cXzHOhZI%2BiFPpm2lZ7wVSJyZaGzqiKqKx57XETvakgKVB5iUOglg5HyDcvAV7b1KDyRFJf4y46rxRatBStrfvVmRpO2iwNP1Rakq18hPuHvS9MYS098r3iNoL4fA9H5RydCAwT7k1mcAqtRmb4nbSudpWQZY1kS41GMDWhlCHiFgCrR%2F1ysMJ2dR4GHeuHQWOEKs9DUdiaUVS5Ud8RUIJHkgZiO3GDjNycJ3Dsh0jsDc7r0IwRFWdec23%2B1PiKSKzYb%2BwXp5zWTWvexP4Rply6pM9ehttck%2FEDBWOT92v6ZO9w74icNcIkwWsIjW9h9%2BHIVLaoAiLoqIZUrV3ha93woPW%2FfHYcBfKpNhqNkDJ6f48MAfZk9zGFGlGy1%2FRw9XVOiHcyxbj8sYy33ha0FkPnON07knv1FhfES1ldqIzDrTM04Beb%2BcwRdvqyQJcuzeI1B1lZAyi1bu9HIdE2%2FjX64%3D";
+        window.__genspark_locale = "ko-KR";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDjKj7Jxml9h8PbKTCknLI2zXe2OQ2MoGdwLslu7fsWMr6bXJ+WBtWEFlwuR721n3cXzHOhZI+iFPpm2lZ7wVSJyZaGzqiKqKx57XETvakgKVB5iUOglg5HyDcvAV7b1KDyRFJf4y46rxRatBStrfvVmRpO2iwNP1Rakq18hPuHvS9MYS098r3iNoL4fA9H5RydCAwT7k1mcAqtRmb4nbSudpWQZY1kS41GMDWhlCHiFgCrR/1ysMJ2dR4GHeuHQWOEKs9DUdiaUVS5Ud8RUIJHkgZiO3GDjNycJ3Dsh0jsDc7r0IwRFWdec23+1PiKSKzYb+wXp5zWTWvexP4Rply6pM9ehttck/EDBWOT92v6ZO9w74icNcIkwWsIjW9h9+HIVLaoAiLoqIZUrV3ha93woPW/fHYcBfKpNhqNkDJ6f48MAfZk9zGFGlGy1/Rw9XVOiHcyxbj8sYy33ha0FkPnON07knv1FhfES1ldqIzDrTM04Beb+cwRdvqyQJcuzeI1B1lZAyi1bu9HIdE2/jX64=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.다운로드"></script>
+    <div class="genspark-notice-dialog" style="display: none;">
+      <div class="genspark-notice-content">
+        <h2 class="genspark-notice-title">이 사이트는 사용자가 만들었습니다. 참고하세요:</h2>
+        <ul class="genspark-notice-list">
+          <li>콘텐츠에 부정확한 정보가 포함될 수 있으니, 사용하기 전에 정보를 확인하세요.</li>
+          <li>부적절한 콘텐츠를 발견하시면 <a href="mailto:support@genspark.ai">support@genspark.ai</a>로 연락해 주세요.</li>
+        </ul>
+        <div class="genspark-notice-checkbox">
+          <input type="checkbox" id="genspark-dont-show">
+          <label for="genspark-dont-show">이 메시지를 다시 표시하지 않음.</label>
+        </div>
+        <div class="genspark-notice-actions">
+          <button class="genspark-notice-ok">확인</button>
+        </div>
+      </div>
+    </div></body></html>
