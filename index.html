@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0035)https://qskvrbic.gensparkspace.com/ -->
+<!-- saved from url=(0036)https://gmcxdflv.gensparkspace.com/? -->
 <html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,11 +64,21 @@
             max-height: 250px !important;
             overflow: hidden;
         }
+
+        .category-chart-container {
+            position: relative;
+            height: 250px !important;
+            width: 100% !important;
+            max-height: 250px !important;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
         
         /* 차트 캔버스 크기 제한 */
         .chart-container canvas,
         .large-chart-container canvas,
-        .dashboard-chart-container canvas {
+        .dashboard-chart-container canvas,
+        .category-chart-container canvas {
             max-width: 100% !important;
             max-height: 100% !important;
             width: 100% !important;
@@ -124,6 +134,76 @@
             white-space: nowrap;
             font-size: 14px;
             font-weight: 500;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+            }
+            
+            .nav-btn {
+                font-size: 12px;
+                padding: 8px 12px !important;
+            }
+            
+            h1 {
+                font-size: 16px !important;
+                text-align: center;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .lg\:col-span-2 {
+                grid-column: span 1 !important;
+            }
+            
+            .md\:grid-cols-5 {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            
+            .md\:grid-cols-4 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .md\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .overflow-x-auto {
+                font-size: 12px;
+            }
+            
+            .px-6 {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+            
+            .py-8 {
+                padding-top: 16px !important;
+                padding-bottom: 16px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-btn {
+                font-size: 11px;
+                padding: 6px 8px !important;
+            }
+            
+            .nav-icon {
+                font-size: 14px;
+                margin-right: 4px;
+            }
         }
     </style>
 <style>
@@ -237,24 +317,27 @@
                 </div>
                 <div class="nav-menu">
                     <button onclick="showSection(&#39;dashboard&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <span class="nav-icon">■</span>대시보드
+                        <span class="nav-icon">◦</span>대시보드
                     </button>
                     <button onclick="showSection(&#39;designer-management&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <span class="nav-icon">●</span>디자이너 관리
+                        <span class="nav-icon">◦</span>디자이너 관리
                     </button>
                     <button onclick="showSection(&#39;checklist&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <span class="nav-icon">□</span>체크리스트 입력
+                        <span class="nav-icon">◦</span>체크리스트 입력
                     </button>
                     <button onclick="showSection(&#39;statistics&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <span class="nav-icon">≡</span>통계 분석
+                        <span class="nav-icon">◦</span>통계 분석
+                    </button>
+                    <button onclick="showSection(&#39;branch-management&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors admin-only" style="display: none;">
+                        <span class="nav-icon">◦</span>지점 관리
                     </button>
                     <button onclick="showSection(&#39;compare&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors admin-only" style="display: none;">
-                        <span class="nav-icon">≈</span>지점 비교
+                        <span class="nav-icon">◦</span>지점 비교
                     </button>
                     <div class="flex items-center space-x-2 ml-4">
                         <span id="user-info" class="text-sm"></span>
                         <button onclick="logout()" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                            <span class="nav-icon">⊗</span>
+                            <span class="nav-icon">×</span>
                         </button>
                     </div>
                 </div>
@@ -288,7 +371,7 @@
             </form>
             
             <div class="mt-6 text-center">
-                <a href="https://qskvrbic.gensparkspace.com/#" onclick="showRegistration()" class="text-indigo-600 hover:text-indigo-800">SNS 리더로 가입하기</a>
+                <a href="https://gmcxdflv.gensparkspace.com/?#" onclick="showRegistration()" class="text-indigo-600 hover:text-indigo-800">SNS 리더로 가입하기</a>
             </div>
         </div>
     </div>
@@ -332,7 +415,7 @@
             </form>
             
             <div class="mt-6 text-center">
-                <a href="https://qskvrbic.gensparkspace.com/#" onclick="showLogin()" class="text-indigo-600 hover:text-indigo-800">이미 계정이 있으신가요? 로그인하기</a>
+                <a href="https://gmcxdflv.gensparkspace.com/?#" onclick="showLogin()" class="text-indigo-600 hover:text-indigo-800">이미 계정이 있으신가요? 로그인하기</a>
             </div>
         </div>
     </div>
@@ -560,6 +643,40 @@
                                 </tr>
                             </thead>
                             <tbody id="designers-table" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branch Management Section (Admin Only) -->
+        <div id="branch-management-section" class="section" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">지점 관리</h2>
+                    <button onclick="showAddBranchModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                        <span class="emoji-icon">+</span>새 지점 추가
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg custom-shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold">등록된 지점</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점명</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점코드</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SNS 리더</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">디자이너 수</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">등록일</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branches-table" class="bg-white divide-y divide-gray-200">
                             </tbody>
                         </table>
                     </div>
@@ -810,22 +927,32 @@
                 <!-- Multi-Branch Selection -->
                 <div class="bg-white p-6 rounded-lg custom-shadow mb-8">
                     <h3 class="text-lg font-semibold mb-4">비교할 지점 선택</h3>
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="select-all-branches" onchange="toggleAllBranches()" class="mr-2">
+                            <span class="font-medium">전지점 선택</span>
+                        </label>
+                    </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="branch-checkboxes">
                         <label class="flex items-center">
-                            <input type="checkbox" value="songdo1" onchange="updateComparisonData()" class="mr-2">
+                            <input type="checkbox" value="songdo1" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
                             <span>송도1지점</span>
                         </label>
                         <label class="flex items-center">
-                            <input type="checkbox" value="geomdan" onchange="updateComparisonData()" class="mr-2">
+                            <input type="checkbox" value="geomdan" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
                             <span>검단테라스점</span>
                         </label>
                         <label class="flex items-center">
-                            <input type="checkbox" value="bupyeong" onchange="updateComparisonData()" class="mr-2">
+                            <input type="checkbox" value="bupyeong" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
                             <span>부평점</span>
                         </label>
                         <label class="flex items-center">
-                            <input type="checkbox" value="incheon" onchange="updateComparisonData()" class="mr-2">
+                            <input type="checkbox" value="incheon" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
                             <span>인천점</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="gimpo" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
+                            <span>김포점</span>
                         </label>
                     </div>
                     
@@ -861,11 +988,48 @@
                     </div>
                 </div>
 
-                <!-- Comparison Chart -->
+                <!-- Category Charts Container -->
                 <div class="bg-white p-6 rounded-lg custom-shadow mb-8">
-                    <h3 class="text-lg font-semibold mb-4">지점별 비교 차트</h3>
-                    <div class="large-chart-container">
-                        <canvas id="comparisonChart"></canvas>
+                    <h3 class="text-lg font-semibold mb-4">카테고리별 비교 차트</h3>
+                    
+                    <!-- 네이버 리뷰 차트 -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium mb-2 text-blue-600">네이버 리뷰</h4>
+                        <div class="category-chart-container">
+                            <canvas id="reviewsComparisonChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 블로그 포스팅 차트 -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium mb-2 text-green-600">블로그 포스팅</h4>
+                        <div class="category-chart-container">
+                            <canvas id="postsComparisonChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 체험단 운영 차트 -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium mb-2 text-purple-600">체험단 운영</h4>
+                        <div class="category-chart-container">
+                            <canvas id="experiencesComparisonChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 인스타 릴스 차트 -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium mb-2 text-pink-600">인스타 릴스</h4>
+                        <div class="category-chart-container">
+                            <canvas id="reelsComparisonChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 인스타 사진 차트 -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium mb-2 text-orange-600">인스타 사진</h4>
+                        <div class="category-chart-container">
+                            <canvas id="photosComparisonChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -937,12 +1101,48 @@
         </div>
     </div>
 
+    <!-- Add Branch Modal -->
+    <div id="add-branch-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold">새 지점 추가</h3>
+                <button onclick="hideAddBranchModal()" class="text-gray-400 hover:text-gray-600">
+                    <span class="text-xl">×</span>
+                </button>
+            </div>
+            
+            <form onsubmit="addBranch(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">지점명</label>
+                    <input type="text" id="branch-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">지점코드</label>
+                    <input type="text" id="branch-code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">주소</label>
+                    <input type="text" id="branch-address" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex space-x-4">
+                    <button type="button" onclick="hideAddBranchModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors">
+                        취소
+                    </button>
+                    <button type="submit" class="flex-1 gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
+                        추가
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Global variables
         let currentUser = null;
         let designers = [];
         let checklistData = [];
         let charts = {};
+        let branches = [];
         let designerSortConfig = { column: 'name', direction: 'asc' };
         let branchRankingSortConfig = { column: 'total', direction: 'desc' };
         let isUpdating = false;
@@ -959,6 +1159,14 @@
         });
 
         function initializeSampleData() {
+            branches = [
+                { id: 1, name: '송도1지점', code: 'songdo1', address: '인천시 연수구 송도동', createdAt: '2024-01-01' },
+                { id: 2, name: '검단테라스점', code: 'geomdan', address: '인천시 서구 검단신도시', createdAt: '2024-01-01' },
+                { id: 3, name: '부평점', code: 'bupyeong', address: '인천시 부평구 부평동', createdAt: '2024-01-01' },
+                { id: 4, name: '인천점', code: 'incheon', address: '인천시 남동구 구월동', createdAt: '2024-01-01' },
+                { id: 5, name: '김포점', code: 'gimpo', address: '경기도 김포시 김포동', createdAt: '2024-01-01' }
+            ];
+
             designers = [
                 { id: 1, name: '김민수', branch: 'songdo1', position: '디자이너', phone: '010-1234-5678', email: 'kim@gohair.com', createdAt: '2024-01-15' },
                 { id: 2, name: '이영희', branch: 'songdo1', position: '팀장', phone: '010-2345-6789', email: 'lee@gohair.com', createdAt: '2024-01-20' },
@@ -1002,6 +1210,17 @@
             if (periodSelect && customDates) {
                 customDates.style.display = periodSelect.value === 'custom' ? 'block' : 'none';
             }
+        }
+
+        function toggleAllBranches() {
+            const selectAll = document.getElementById('select-all-branches');
+            const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
+            
+            branchCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateComparisonData();
         }
 
         // 차트 생성/업데이트 시 완전한 삭제 보장
@@ -1118,10 +1337,19 @@
             adminElements.forEach(element => {
                 element.style.display = currentUser.role === 'admin' ? 'block' : 'none';
             });
+
+            // SNS 리더의 경우 통계분석에서 지점 선택 숨기기
+            if (currentUser.role !== 'admin') {
+                const statsBranchDiv = document.querySelector('#stats-branch').parentElement;
+                if (statsBranchDiv) {
+                    statsBranchDiv.style.display = 'none';
+                }
+            }
         }
 
         function initializeApp() {
             loadDesigners();
+            loadBranches();
             updateDashboard();
         }
 
@@ -1146,6 +1374,9 @@
                     break;
                 case 'designer-management':
                     loadDesigners();
+                    break;
+                case 'branch-management':
+                    loadBranches();
                     break;
                 case 'checklist':
                     loadDesignerSelect();
@@ -1278,6 +1509,36 @@
             filterDesigners();
         }
 
+        function loadBranches() {
+            if (currentUser.role !== 'admin') return;
+            
+            const branchesTable = document.getElementById('branches-table');
+            if (!branchesTable) return;
+            
+            branchesTable.innerHTML = branches.map(branch => {
+                const branchDesigners = designers.filter(d => d.branch === branch.code);
+                const snsLeader = getSNSLeaderForBranch(branch.code);
+                
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${branch.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.code}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${snsLeader}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branchDesigners.length}명</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.createdAt}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="editBranch(${branch.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                <span>✎</span>
+                            </button>
+                            <button onclick="deleteBranch(${branch.id})" class="text-red-600 hover:text-red-900">
+                                <span>✗</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function filterDesigners() {
             if (isUpdating) return;
             isUpdating = true;
@@ -1395,6 +1656,20 @@
             document.getElementById('designer-email').value = '';
         }
 
+        function showAddBranchModal() {
+            document.getElementById('add-branch-modal').classList.remove('hidden');
+            document.getElementById('add-branch-modal').classList.add('flex');
+        }
+
+        function hideAddBranchModal() {
+            document.getElementById('add-branch-modal').classList.add('hidden');
+            document.getElementById('add-branch-modal').classList.remove('flex');
+            
+            document.getElementById('branch-name').value = '';
+            document.getElementById('branch-code').value = '';
+            document.getElementById('branch-address').value = '';
+        }
+
         function addDesigner(event) {
             event.preventDefault();
             const name = document.getElementById('designer-name').value;
@@ -1420,6 +1695,33 @@
             alert('디자이너가 성공적으로 추가되었습니다.');
         }
 
+        function addBranch(event) {
+            event.preventDefault();
+            const name = document.getElementById('branch-name').value;
+            const code = document.getElementById('branch-code').value;
+            const address = document.getElementById('branch-address').value;
+            
+            // 중복 체크
+            if (branches.find(b => b.code === code)) {
+                alert('이미 존재하는 지점코드입니다.');
+                return;
+            }
+            
+            const newBranch = {
+                id: branches.length + 1,
+                name: name,
+                code: code,
+                address: address,
+                createdAt: new Date().toISOString().split('T')[0]
+            };
+            
+            branches.push(newBranch);
+            loadBranches();
+            hideAddBranchModal();
+            
+            alert('지점이 성공적으로 추가되었습니다.');
+        }
+
         function editDesigner(id) {
             const designer = designers.find(d => d.id === id);
             if (designer) {
@@ -1437,6 +1739,20 @@
             }
         }
 
+        function editBranch(id) {
+            const branch = branches.find(b => b.id === id);
+            if (branch) {
+                const newName = prompt('지점명:', branch.name);
+                const newAddress = prompt('주소:', branch.address);
+                
+                if (newName) {
+                    branch.name = newName;
+                    if (newAddress) branch.address = newAddress;
+                    loadBranches();
+                }
+            }
+        }
+
         function deleteDesigner(id) {
             if (confirm('정말로 이 디자이너를 삭제하시겠습니까?')) {
                 designers = designers.filter(d => d.id !== id);
@@ -1444,6 +1760,19 @@
                 loadDesigners();
                 loadDesignerSelect();
                 updateDashboard();
+            }
+        }
+
+        function deleteBranch(id) {
+            if (confirm('정말로 이 지점을 삭제하시겠습니까? 해당 지점의 모든 데이터가 삭제됩니다.')) {
+                const branch = branches.find(b => b.id === id);
+                if (branch) {
+                    // 해당 지점의 디자이너들도 삭제
+                    designers = designers.filter(d => d.branch !== branch.code);
+                    branches = branches.filter(b => b.id !== id);
+                    loadBranches();
+                    loadDesigners();
+                }
             }
         }
 
@@ -1743,7 +2072,7 @@
             if (currentUser.role !== 'admin' || isUpdating) return;
             isUpdating = true;
             
-            const selectedBranches = Array.from(document.querySelectorAll('#branch-checkboxes input:checked')).map(cb => cb.value);
+            const selectedBranches = Array.from(document.querySelectorAll('.branch-checkbox:checked')).map(cb => cb.value);
             const period = document.getElementById('compare-period')?.value || 'week';
             const category = document.getElementById('compare-category')?.value || 'all';
             
@@ -1752,38 +2081,80 @@
                 if (tableBody) {
                     tableBody.innerHTML = '<tr><td colspan="100%" class="text-center py-8 text-gray-500">비교할 지점을 선택해주세요</td></tr>';
                 }
+                
+                // 모든 카테고리 차트 숨기기
+                ['reviews', 'posts', 'experiences', 'reels', 'photos'].forEach(cat => {
+                    destroyChart(cat + 'ComparisonChart');
+                });
+                
                 isUpdating = false;
                 return;
             }
             
-            updateComparisonChart(selectedBranches, period, category);
+            updateCategoryCharts(selectedBranches, period);
             updateComparisonTable(selectedBranches, period, category);
             
             isUpdating = false;
         }
 
-        function updateComparisonChart(branches, period, category) {
-            const data = getComparisonChartData(branches, period, category);
+        function updateCategoryCharts(branches, period) {
+            const data = getFilteredData(period, 'compare');
+            const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B'];
             
-            createChart('comparisonChart', 'comparisonChart', {
-                type: 'bar',
-                data: data,
-                options: {
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: '지점별 비교 분석'
-                        },
-                        legend: {
-                            position: 'top'
-                        }
+            const categories = [
+                { key: 'reviews', name: '네이버 리뷰', color: '#3B82F6' },
+                { key: 'posts', name: '블로그 포스팅', color: '#10B981' },
+                { key: 'experiences', name: '체험단 운영', color: '#8B5CF6' },
+                { key: 'reels', name: '인스타 릴스', color: '#EC4899' },
+                { key: 'photos', name: '인스타 사진', color: '#F59E0B' }
+            ];
+            
+            categories.forEach(category => {
+                const chartData = branches.map(branch => {
+                    const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
+                    const branchData = data.filter(item => branchDesigners.includes(item.designerId));
+                    
+                    switch(category.key) {
+                        case 'reviews':
+                            return branchData.reduce((sum, item) => sum + item.naverReviews, 0);
+                        case 'posts':
+                            return branchData.reduce((sum, item) => sum + item.blogPosts, 0);
+                        case 'experiences':
+                            return branchData.reduce((sum, item) => sum + item.experienceGroups, 0);
+                        case 'reels':
+                            return branchData.reduce((sum, item) => sum + item.instagramReels, 0);
+                        case 'photos':
+                            return branchData.reduce((sum, item) => sum + item.instagramPhotos, 0);
+                        default:
+                            return 0;
+                    }
+                });
+                
+                createChart(category.key + 'ComparisonChart', category.key + 'ComparisonChart', {
+                    type: 'bar',
+                    data: {
+                        labels: branches.map(branch => getBranchName(branch)),
+                        datasets: [{
+                            label: category.name,
+                            data: chartData,
+                            backgroundColor: category.color,
+                            borderColor: category.color,
+                            borderWidth: 1
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         }
                     }
-                }
+                });
             });
         }
 
@@ -1840,15 +2211,19 @@
 
         // Utility functions
         function getBranchName(branchCode) {
-            const branchNames = {
-                'songdo1': '송도1지점',
-                'geomdan': '검단테라스점',
-                'bupyeong': '부평점',
-                'incheon': '인천점',
-                'gimpo': '김포점',
-                'all': '전체'
+            const branch = branches.find(b => b.code === branchCode);
+            return branch ? branch.name : branchCode;
+        }
+
+        function getSNSLeaderForBranch(branchCode) {
+            const leaderMap = {
+                'songdo1': '송도리더',
+                'geomdan': '검단리더',
+                'bupyeong': '부평리더',
+                'incheon': '인천리더',
+                'gimpo': '김포리더'
             };
-            return branchNames[branchCode] || branchCode;
+            return leaderMap[branchCode] || '-';
         }
 
         function getFilteredData(period, section = '') {
@@ -2079,197 +2454,16 @@
             };
         }
 
-        function getComparisonChartData(branches, period, category) {
-            const data = getFilteredData(period, 'compare');
-            const labels = ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진'];
-            const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B'];
-            
-            if (category === 'all') {
-                return {
-                    labels: labels,
-                    datasets: branches.map((branch, index) => {
-                        const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
-                        const branchData = data.filter(item => branchDesigners.includes(item.designerId));
-                        
-                        const totals = branchData.reduce((acc, curr) => ({
-                            reviews: acc.reviews + curr.naverReviews,
-                            posts: acc.posts + curr.blogPosts,
-                            experiences: acc.experiences + curr.experienceGroups,
-                            reels: acc.reels + curr.instagramReels,
-                            photos: acc.photos + curr.instagramPhotos
-                        }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
-                        
-                        return {
-                            label: getBranchName(branch),
-                            data: [totals.reviews, totals.posts, totals.experiences, totals.reels, totals.photos],
-                            backgroundColor: colors[index % colors.length]
-                        };
-                    })
-                };
-            } else {
-                return {
-                    labels: branches.map(branch => getBranchName(branch)),
-                    datasets: [{
-                        label: category,
-                        data: branches.map(branch => {
-                            const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
-                            const branchData = data.filter(item => branchDesigners.includes(item.designerId));
-                            
-                            switch(category) {
-                                case 'reviews':
-                                    return branchData.reduce((sum, item) => sum + item.naverReviews, 0);
-                                case 'posts':
-                                    return branchData.reduce((sum, item) => sum + item.blogPosts, 0);
-                                case 'experiences':
-                                    return branchData.reduce((sum, item) => sum + item.experienceGroups, 0);
-                                case 'reels':
-                                    return branchData.reduce((sum, item) => sum + item.instagramReels, 0);
-                                case 'photos':
-                                    return branchData.reduce((sum, item) => sum + item.instagramPhotos, 0);
-                                default:
-                                    return 0;
-                            }
-                        }),
-                        backgroundColor: colors[0]
-                    }]
-                };
-            }
-        }
-
         function getComparisonTableData(branches, period, category) {
             const data = getFilteredData(period, 'compare');
             const items = category === 'all' ? 
-                ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진', '총합', '평균'] :
-                [category, '총합', '평균'];
-            
-            return items.map(item => {
-                const values = branches.map(branch => {
-                    const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
-                    const branchData = data.filter(item => branchDesigners.includes(item.designerId));
-                    
-                    if (item === '총합') {
-                        return branchData.reduce((sum, record) => sum + 
-                            record.naverReviews + record.blogPosts + record.experienceGroups + 
-                            record.instagramReels + record.instagramPhotos, 0);
-                    } else if (item === '평균') {
-                        const total = branchData.reduce((sum, record) => sum + 
-                            record.naverReviews + record.blogPosts + record.experienceGroups + 
-                            record.instagramReels + record.instagramPhotos, 0);
-                        return branchData.length > 0 ? Math.round(total / branchData.length * 10) / 10 : 0;
-                    } else {
-                        switch(item) {
-                            case '네이버 리뷰':
-                                return branchData.reduce((sum, record) => sum + record.naverReviews, 0);
-                            case '블로그 포스팅':
-                                return branchData.reduce((sum, record) => sum + record.blogPosts, 0);
-                            case '체험단':
-                                return branchData.reduce((sum, record) => sum + record.experienceGroups, 0);
-                            case '인스타 릴스':
-                                return branchData.reduce((sum, record) => sum + record.instagramReels, 0);
-                            case '인스타 사진':
-                                return branchData.reduce((sum, record) => sum + record.instagramPhotos, 0);
-                            default:
-                                return 0;
-                        }
-                    }
-                });
-                
-                return {
-                    label: item,
-                    values: values
-                };
-            });
-        }
-
-        function exportData(section) {
-            let csvContent = '';
-            let filename = '';
-            
-            switch(section) {
-                case 'dashboard':
-                    csvContent = generateDashboardCSV();
-                    filename = 'dashboard_data.csv';
-                    break;
-                case 'statistics':
-                    csvContent = generateStatisticsCSV();
-                    filename = 'statistics_data.csv';
-                    break;
-                case 'compare':
-                    csvContent = generateComparisonCSV();
-                    filename = 'comparison_data.csv';
-                    break;
-            }
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            alert('데이터가 성공적으로 다운로드되었습니다.');
-        }
-
-        function generateDashboardCSV() {
-            const period = document.getElementById('dashboard-period')?.value || 'today';
-            let data = getFilteredData(period, 'dashboard');
-            
-            if (currentUser.role !== 'admin') {
-                const branchDesigners = designers.filter(d => d.branch === currentUser.branch).map(d => d.id);
-                data = data.filter(d => branchDesigners.includes(d.designerId));
-            }
-            
-            let csv = '날짜,디자이너,지점,직급,네이버리뷰,블로그포스팅,체험단,인스타릴스,인스타사진,총합\n';
-            
-            data.forEach(record => {
-                const designer = designers.find(d => d.id === record.designerId);
-                const total = record.naverReviews + record.blogPosts + record.experienceGroups + 
-                             record.instagramReels + record.instagramPhotos;
-                
-                csv += `${record.date},${designer?.name || ''},${getBranchName(designer?.branch || '')},${designer?.position || ''},` +
-                       `${record.naverReviews},${record.blogPosts},${record.experienceGroups},` +
-                       `${record.instagramReels},${record.instagramPhotos},${total}\n`;
-            });
-            
-            return csv;
-        }
-
-        function generateStatisticsCSV() {
-            return 'Statistics CSV data...';
-        }
-
-        function generateComparisonCSV() {
-            return 'Comparison CSV data...';
-        }
-    </script>
-
-
+                ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진', '총합', '평
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDruvQenC2RdKTPQM1X5tz%2BtVMST55BR1RGrju2O6s4k%2Bj35gkCRd0zCqH94B3RhBM2M0ykwIHCUdzsAyJiyNR9T9C5gn3%2BdzZ6yU%2BxbzsyAVkvVSoCA4lV2TJMlXrjDd7kiMcRGl%2BNCLN%2FxbGArvZrpcw91mu5H3ssqaCZhqnriv8ivnOgCiF%2B0o%2BH%2FucWtSzIlbrWEwPwT9Cf9kRlGyOcGOBoz1dfkiYUSjIyTFOIMGve4LRuG1DgTbEmSHHxptECBt9EGJp%2FrYDuWfGewugq2HXTACVu5bjSIPhUrdH1XzPZpYqe%2BU1wwS8hESwrOxy7BrJRBCdBin66z6KdlDc7eUGVC9Vh5w7fKaOjDy8iKVWWJpMSDW2xwaRlmW3epZ%2B8WTRyJOKMrbIKGwkz4CeNvUQzSE8h%2FyFMWTULTg0b4dd13OqDOSJBiMS5VZhyL1ieUY5TwpsLNFqtxyjVEoBKpbJ%2Bui1HaKBAyvx7%2BaMKiduYl8ffCVXweOBxxo1TP92w%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDq68WAQ4kMrkFqMp8tQP4J78lTPYDQzeZ4n65NQqGB38L3wwAtMOVxzBaxZiyi7WxxG6rIRm8WTGh0Qp5Bq8ajsTB83Uor2jR41V5kIK5cAg%2B0ikRbtdoDjVD%2FaO2yDFswIQRlHiHSkx6cy9wZoRBr37fYw6yFtNuaDU3mCUvdLVkAtsFc2zYYxVrO0cpN8FBfwuiQS3Q9ZhWGO2orjaZhjPcgLM9G55l81ah7geKsvLQxGaAjw22rZvPoBlqeCrIuiENjSlLkZ3qZ%2BY1HzgH4TcDwQ2ryTyjtUZ90K%2B8jT0r74eHKldtPIAC5nV0wKXkHE9Ta0sbK9Vcq5GBuR2EXwp7zqCVWlSzWTPsPS4GFyvKh2jyX2EtLve26xbxXp1Puxh63DyA39A8PBZ6CEIt4TdaNMUmUEEjkXIUnXUah1QHo06EZNGMtyD%2BNtKiIwPwScp1%2FfufD4GYBEKGje6mc8%2FcEZKncXmKkCPjjVtaVOerBr6%2BL3pQFXbq4NcVVaolQ%3D%3D";
         window.__genspark_locale = "ko-KR";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDruvQenC2RdKTPQM1X5tz+tVMST55BR1RGrju2O6s4k+j35gkCRd0zCqH94B3RhBM2M0ykwIHCUdzsAyJiyNR9T9C5gn3+dzZ6yU+xbzsyAVkvVSoCA4lV2TJMlXrjDd7kiMcRGl+NCLN/xbGArvZrpcw91mu5H3ssqaCZhqnriv8ivnOgCiF+0o+H/ucWtSzIlbrWEwPwT9Cf9kRlGyOcGOBoz1dfkiYUSjIyTFOIMGve4LRuG1DgTbEmSHHxptECBt9EGJp/rYDuWfGewugq2HXTACVu5bjSIPhUrdH1XzPZpYqe+U1wwS8hESwrOxy7BrJRBCdBin66z6KdlDc7eUGVC9Vh5w7fKaOjDy8iKVWWJpMSDW2xwaRlmW3epZ+8WTRyJOKMrbIKGwkz4CeNvUQzSE8h/yFMWTULTg0b4dd13OqDOSJBiMS5VZhyL1ieUY5TwpsLNFqtxyjVEoBKpbJ+ui1HaKBAyvx7+aMKiduYl8ffCVXweOBxxo1TP92w==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDq68WAQ4kMrkFqMp8tQP4J78lTPYDQzeZ4n65NQqGB38L3wwAtMOVxzBaxZiyi7WxxG6rIRm8WTGh0Qp5Bq8ajsTB83Uor2jR41V5kIK5cAg+0ikRbtdoDjVD/aO2yDFswIQRlHiHSkx6cy9wZoRBr37fYw6yFtNuaDU3mCUvdLVkAtsFc2zYYxVrO0cpN8FBfwuiQS3Q9ZhWGO2orjaZhjPcgLM9G55l81ah7geKsvLQxGaAjw22rZvPoBlqeCrIuiENjSlLkZ3qZ+Y1HzgH4TcDwQ2ryTyjtUZ90K+8jT0r74eHKldtPIAC5nV0wKXkHE9Ta0sbK9Vcq5GBuR2EXwp7zqCVWlSzWTPsPS4GFyvKh2jyX2EtLve26xbxXp1Puxh63DyA39A8PBZ6CEIt4TdaNMUmUEEjkXIUnXUah1QHo06EZNGMtyD+NtKiIwPwScp1/fufD4GYBEKGje6mc8/cEZKncXmKkCPjjVtaVOerBr6+L3pQFXbq4NcVVaolQ==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.다운로드"></script>
-    <div class="genspark-notice-dialog" style="display: none;">
-      <div class="genspark-notice-content">
-        <h2 class="genspark-notice-title">이 사이트는 사용자가 만들었습니다. 참고하세요:</h2>
-        <ul class="genspark-notice-list">
-          <li>콘텐츠에 부정확한 정보가 포함될 수 있으니, 사용하기 전에 정보를 확인하세요.</li>
-          <li>부적절한 콘텐츠를 발견하시면 <a href="mailto:support@genspark.ai">support@genspark.ai</a>로 연락해 주세요.</li>
-        </ul>
-        <div class="genspark-notice-checkbox">
-          <input type="checkbox" id="genspark-dont-show">
-          <label for="genspark-dont-show">이 메시지를 다시 표시하지 않음.</label>
-        </div>
-        <div class="genspark-notice-actions">
-          <button class="genspark-notice-ok">확인</button>
-        </div>
-      </div>
-    </div></body></html>
+    </body></html>
