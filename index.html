@@ -1,210 +1,16 @@
 <!DOCTYPE html>
-<!-- saved from url=(0036)https://gmcxdflv.gensparkspace.com/? -->
+<!-- saved from url=(0035)https://tbqjggjo.gensparkspace.com/ -->
 <html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOHAIR SNS 마케팅 관리 시스템</title>
     <link href="./index_files/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./index_files/all.min.css">
     <script src="./index_files/chart.js.다운로드"></script>
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .custom-shadow {
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .hover-scale {
-            transition: transform 0.2s;
-        }
-        .hover-scale:hover {
-            transform: scale(1.05);
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-        .designer-history-panel {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .sort-btn {
-            background: none;
-            border: none;
-            color: #6B7280;
-            cursor: pointer;
-            padding: 2px;
-        }
-        .sort-btn:hover {
-            color: #374151;
-        }
-        .sort-btn.active {
-            color: #4F46E5;
-        }
-        
-        /* 차트 컨테이너 고정 크기 설정 */
-        .chart-container {
-            position: relative;
-            height: 300px !important;
-            width: 100% !important;
-            max-height: 300px !important;
-            overflow: hidden;
-        }
-        
-        .large-chart-container {
-            position: relative;
-            height: 400px !important;
-            width: 100% !important;
-            max-height: 400px !important;
-            overflow: hidden;
-        }
-        
-        .dashboard-chart-container {
-            position: relative;
-            height: 250px !important;
-            width: 100% !important;
-            max-height: 250px !important;
-            overflow: hidden;
-        }
-
-        .category-chart-container {
-            position: relative;
-            height: 250px !important;
-            width: 100% !important;
-            max-height: 250px !important;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        /* 차트 캔버스 크기 제한 */
-        .chart-container canvas,
-        .large-chart-container canvas,
-        .dashboard-chart-container canvas,
-        .category-chart-container canvas {
-            max-width: 100% !important;
-            max-height: 100% !important;
-            width: 100% !important;
-            height: 100% !important;
-        }
-        
-        /* 로고 스타일 */
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        /* 아이콘 스타일 */
-        .nav-icon {
-            font-size: 16px;
-            margin-right: 8px;
-            display: inline-block;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .emoji-icon {
-            font-size: 16px;
-            margin-right: 8px;
-            display: inline-block;
-            color: #6B7280;
-        }
-
-        /* 네비게이션 정렬 */
-        .nav-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 0;
-        }
-
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* 모바일 최적화 */
-        @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .nav-menu {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 5px;
-            }
-            
-            .nav-btn {
-                font-size: 12px;
-                padding: 8px 12px !important;
-            }
-            
-            h1 {
-                font-size: 16px !important;
-                text-align: center;
-            }
-            
-            .grid {
-                grid-template-columns: 1fr !important;
-            }
-            
-            .lg\:col-span-2 {
-                grid-column: span 1 !important;
-            }
-            
-            .md\:grid-cols-5 {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-            
-            .md\:grid-cols-4 {
-                grid-template-columns: 1fr !important;
-            }
-            
-            .md\:grid-cols-3 {
-                grid-template-columns: 1fr !important;
-            }
-            
-            .overflow-x-auto {
-                font-size: 12px;
-            }
-            
-            .px-6 {
-                padding-left: 12px !important;
-                padding-right: 12px !important;
-            }
-            
-            .py-8 {
-                padding-top: 16px !important;
-                padding-bottom: 16px !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .nav-btn {
-                font-size: 11px;
-                padding: 6px 8px !important;
-            }
-            
-            .nav-icon {
-                font-size: 14px;
-                margin-right: 4px;
-            }
-        }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .chart-container { position: relative; height: 300px; width: 100%; }
     </style>
 <style>
     .genspark-notice-dialog {
@@ -308,679 +114,377 @@
     }
   </style></head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="gradient-bg text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="nav-container py-4">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-bold">GOHAIR SNS 마케팅 관리 시스템</h1>
-                </div>
-                <div class="nav-menu">
-                    <button onclick="showSection(&#39;dashboard&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <span class="nav-icon">◦</span>대시보드
-                    </button>
-                    <button onclick="showSection(&#39;designer-management&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <span class="nav-icon">◦</span>디자이너 관리
-                    </button>
-                    <button onclick="showSection(&#39;checklist&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <span class="nav-icon">◦</span>체크리스트 입력
-                    </button>
-                    <button onclick="showSection(&#39;statistics&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                        <span class="nav-icon">◦</span>통계 분석
-                    </button>
-                    <button onclick="showSection(&#39;branch-management&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors admin-only" style="display: none;">
-                        <span class="nav-icon">◦</span>지점 관리
-                    </button>
-                    <button onclick="showSection(&#39;compare&#39;)" class="nav-btn hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors admin-only" style="display: none;">
-                        <span class="nav-icon">◦</span>지점 비교
-                    </button>
-                    <div class="flex items-center space-x-2 ml-4">
-                        <span id="user-info" class="text-sm"></span>
-                        <button onclick="logout()" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition-colors">
-                            <span class="nav-icon">×</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Login Section -->
-    <div id="login-section" class="min-h-screen flex items-center justify-center">
-        <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full">
+    <!-- 로그인 페이지 -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
             <div class="text-center mb-8">
-                <div class="logo-icon mx-auto mb-4">
-                    G
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">SNS 리더 로그인</h2>
-                <p class="text-gray-600">GOHAIR SNS 마케팅 관리 시스템</p>
+                <h1 class="text-2xl font-bold text-purple-600">GOHAIR SNS 마케팅 관리 시스템</h1>
             </div>
-            
-            <form onsubmit="login(event)">
+            <form id="loginForm">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2">이메일</label>
-                    <input type="email" id="login-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                    <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-purple-500" required="">
                 </div>
                 <div class="mb-6">
                     <label class="block text-gray-700 text-sm font-bold mb-2">비밀번호</label>
-                    <input type="password" id="login-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
+                    <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-purple-500" required="">
                 </div>
-                <button type="submit" class="w-full gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
+                <button type="submit" class="w-full gradient-bg text-white font-bold py-2 px-4 rounded-md hover:opacity-90 transition duration-200">
                     로그인
                 </button>
             </form>
-            
-            <div class="mt-6 text-center">
-                <a href="https://gmcxdflv.gensparkspace.com/?#" onclick="showRegistration()" class="text-indigo-600 hover:text-indigo-800">SNS 리더로 가입하기</a>
-            </div>
         </div>
     </div>
 
-    <!-- Registration Section -->
-    <div id="registration-section" class="min-h-screen flex items-center justify-center" style="display: none;">
-        <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full">
-            <div class="text-center mb-8">
-                <span class="text-4xl text-indigo-600 mb-4 block">◉</span>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">SNS 리더 가입</h2>
-                <p class="text-gray-600">새로운 SNS 리더 계정을 생성합니다</p>
-            </div>
-            
-            <form onsubmit="register(event)">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">이름</label>
-                    <input type="text" id="reg-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">이메일</label>
-                    <input type="email" id="reg-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">비밀번호</label>
-                    <input type="password" id="reg-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">지점 선택</label>
-                    <select id="reg-branch" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                        <option value="">지점을 선택하세요</option>
-                        <option value="songdo1">송도1지점</option>
-                        <option value="geomdan">검단테라스점</option>
-                        <option value="bupyeong">부평점</option>
-                        <option value="incheon">인천점</option>
-                        <option value="gimpo">김포점</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
-                    가입하기
-                </button>
-            </form>
-            
-            <div class="mt-6 text-center">
-                <a href="https://gmcxdflv.gensparkspace.com/?#" onclick="showLogin()" class="text-indigo-600 hover:text-indigo-800">이미 계정이 있으신가요? 로그인하기</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main App Container -->
-    <div id="app-container" style="display: none;">
-        
-        <!-- Dashboard Section -->
-        <div id="dashboard-section" class="section">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">대시보드</h2>
+    <!-- 메인 시스템 -->
+    <div id="mainSystem" class="hidden">
+        <!-- 헤더 -->
+        <header class="gradient-bg text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-xl font-bold">GOHAIR SNS 마케팅 관리 시스템</h1>
                     <div class="flex space-x-4">
-                        <select id="dashboard-period" onchange="updateDashboard()" class="px-4 py-2 border border-gray-300 rounded-md">
-                            <option value="today">오늘</option>
-                            <option value="week">이번 주</option>
-                            <option value="month">이번 달</option>
-                            <option value="quarter">이번 분기</option>
-                            <option value="custom">기간 설정</option>
-                        </select>
-                        <div id="dashboard-custom-dates" style="display: none;" class="flex space-x-2">
-                            <input type="date" id="dashboard-start-date" onchange="updateDashboard()" class="px-3 py-2 border border-gray-300 rounded-md">
-                            <input type="date" id="dashboard-end-date" onchange="updateDashboard()" class="px-3 py-2 border border-gray-300 rounded-md">
-                        </div>
-                        <button onclick="exportData(&#39;dashboard&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                            <span class="emoji-icon">↓</span>Excel 다운로드
+                        <button onclick="exportData()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
+                            <i class="fas fa-download mr-1"></i>데이터 내보내기
+                        </button>
+                        <button onclick="importData()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                            <i class="fas fa-upload mr-1"></i>데이터 가져오기
+                        </button>
+                        <span id="currentUser" class="text-sm opacity-90"></span>
+                        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                            <i class="fas fa-sign-out-alt mr-1"></i>로그아웃
                         </button>
                     </div>
                 </div>
+                <nav class="mt-4">
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="showPage(&#39;dashboard&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
+                            <i class="fas fa-chart-line mr-2"></i>대시보드
+                        </button>
+                        <button onclick="showPage(&#39;designers&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
+                            <i class="fas fa-users mr-2"></i>디자이너 관리
+                        </button>
+                        <button onclick="showPage(&#39;branches&#39;)" class="nav-btn admin-only hidden bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
+                            <i class="fas fa-building mr-2"></i>지점 관리
+                        </button>
+                        <button onclick="showPage(&#39;checklist&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
+                            <i class="fas fa-clipboard-check mr-2"></i>체크리스트 입력
+                        </button>
+                        <button onclick="showPage(&#39;statistics&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
+                            <i class="fas fa-chart-bar mr-2"></i>통계 분석
+                        </button>
+                        <button onclick="showPage(&#39;comparison&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
+                            <i class="fas fa-balance-scale mr-2"></i>지점 비교
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </header>
 
-                <!-- Key Metrics Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg custom-shadow">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-blue-100">네이버 리뷰</p>
-                                <p class="text-2xl font-bold" id="total-reviews">41</p>
-                            </div>
-                            <span class="text-3xl text-blue-200">★</span>
-                        </div>
+        <main class="container mx-auto px-4 py-8">
+            <!-- 대시보드 -->
+            <div id="dashboardPage">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6 card-shadow">
+                        <div class="text-3xl font-bold" id="totalReviews">0</div>
+                        <div class="text-blue-100">네이버 리뷰</div>
                     </div>
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg custom-shadow">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-green-100">블로그 포스팅</p>
-                                <p class="text-2xl font-bold" id="total-posts">18</p>
-                            </div>
-                            <span class="text-3xl text-green-200">■</span>
-                        </div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6 card-shadow">
+                        <div class="text-3xl font-bold" id="totalPosts">0</div>
+                        <div class="text-green-100">블로그 포스팅</div>
                     </div>
-                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg custom-shadow">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-purple-100">체험단 운영</p>
-                                <p class="text-2xl font-bold" id="total-experiences">7</p>
-                            </div>
-                            <span class="text-3xl text-purple-200">●</span>
-                        </div>
+                    <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg p-6 card-shadow">
+                        <div class="text-3xl font-bold" id="totalExperience">0</div>
+                        <div class="text-yellow-100">체험단 운영</div>
                     </div>
-                    <div class="bg-gradient-to-r from-pink-500 to-pink-600 text-white p-6 rounded-lg custom-shadow">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-pink-100">인스타 릴스</p>
-                                <p class="text-2xl font-bold" id="total-reels">28</p>
-                            </div>
-                            <span class="text-3xl text-pink-200">○</span>
-                        </div>
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-6 card-shadow">
+                        <div class="text-3xl font-bold" id="totalReels">0</div>
+                        <div class="text-purple-100">인스타 릴스</div>
                     </div>
-                    <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-lg custom-shadow">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-orange-100">인스타 사진</p>
-                                <p class="text-2xl font-bold" id="total-photos">52</p>
-                            </div>
-                            <span class="text-3xl text-orange-200">□</span>
-                        </div>
+                    <div class="bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg p-6 card-shadow">
+                        <div class="text-3xl font-bold" id="totalPhotos">0</div>
+                        <div class="text-pink-100">인스타 사진</div>
                     </div>
                 </div>
 
-                <!-- Charts Container -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    <div class="bg-white p-6 rounded-lg custom-shadow">
-                        <h3 class="text-lg font-semibold mb-4">카테고리별 활동량</h3>
-                        <div class="dashboard-chart-container">
-                            <canvas id="categoryChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg custom-shadow">
-                        <h3 class="text-lg font-semibold mb-4">일별 활동 추이</h3>
-                        <div class="dashboard-chart-container">
-                            <canvas id="dailyChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Branch Ranking Table -->
-                <div class="bg-white rounded-lg custom-shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold">지점별 순위</h3>
-                    </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-4">지점별 성과 순위</h2>
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순위</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        리뷰
-                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;reviews&#39;)" data-sort="reviews">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        포스팅
-                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;posts&#39;)" data-sort="posts">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        체험단
-                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;experiences&#39;)" data-sort="experiences">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        릴스
-                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;reels&#39;)" data-sort="reels">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        사진
-                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;photos&#39;)" data-sort="photos">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        총합
-                                        <button class="sort-btn ml-1" onclick="sortBranchRanking(&#39;total&#39;)" data-sort="total">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-2 text-left">순위</th>
+                                    <th class="px-4 py-2 text-left">지점</th>
+                                    <th class="px-4 py-2 text-left">리뷰</th>
+                                    <th class="px-4 py-2 text-left">포스팅</th>
+                                    <th class="px-4 py-2 text-left">체험단</th>
+                                    <th class="px-4 py-2 text-left">릴스</th>
+                                    <th class="px-4 py-2 text-left">사진</th>
+                                    <th class="px-4 py-2 text-left">총합</th>
                                 </tr>
                             </thead>
-                            <tbody id="branch-ranking-table" class="bg-white divide-y divide-gray-200">
+                            <tbody id="branchRankings">
+                                <!-- 동적으로 생성됨 -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Designer Management Section -->
-        <div id="designer-management-section" class="section" style="display: none;">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">디자이너 관리</h2>
-                    <button onclick="showAddDesignerModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-                        <span class="emoji-icon">+</span>디자이너 추가
-                    </button>
+            <!-- 디자이너 관리 -->
+            <div id="designersPage" class="hidden">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">디자이너 관리</h2>
+                        <button onclick="showAddDesigner()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                            <i class="fas fa-plus mr-2"></i>새 디자이너 추가
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-2 text-left">이름</th>
+                                    <th class="px-4 py-2 text-left">지점</th>
+                                    <th class="px-4 py-2 text-left">직급</th>
+                                    <th class="px-4 py-2 text-left">전화번호</th>
+                                    <th class="px-4 py-2 text-left">등록일</th>
+                                    <th class="px-4 py-2 text-left">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="designersList">
+                                <!-- 동적으로 생성됨 -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <!-- Filters (Admin only) -->
-                <div id="designer-filters" class="bg-white p-4 rounded-lg custom-shadow mb-6 admin-only">
-                    <div class="flex space-x-4">
+                <!-- 디자이너 추가 모달 -->
+                <div id="addDesignerModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <h3 class="text-lg font-bold mb-4">새 디자이너 추가</h3>
+                        <form id="addDesignerForm">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">이름</label>
+                                <input type="text" id="designerName" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">지점</label>
+                                <select id="designerBranch" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                                    <option value="">지점을 선택하세요</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">직급</label>
+                                <select id="designerPosition" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                                    <option value="">직급을 선택하세요</option>
+                                    <option value="인턴">인턴</option>
+                                    <option value="디자이너">디자이너</option>
+                                    <option value="팀장">팀장</option>
+                                    <option value="실장">실장</option>
+                                    <option value="부원장">부원장</option>
+                                    <option value="원장">원장</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">전화번호</label>
+                                <input type="tel" id="designerPhone" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                            </div>
+                            <div class="flex justify-end space-x-2">
+                                <button type="button" onclick="hideAddDesigner()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">취소</button>
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">추가</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 지점 관리 -->
+            <div id="branchesPage" class="hidden">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">지점 관리</h2>
+                        <button onclick="showAddBranch()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                            <i class="fas fa-plus mr-2"></i>새 지점 추가
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-2 text-left">지점명</th>
+                                    <th class="px-4 py-2 text-left">지점코드</th>
+                                    <th class="px-4 py-2 text-left">주소</th>
+                                    <th class="px-4 py-2 text-left">디자이너 수</th>
+                                    <th class="px-4 py-2 text-left">등록일</th>
+                                    <th class="px-4 py-2 text-left">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branchesList">
+                                <!-- 동적으로 생성됨 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 지점 추가 모달 -->
+                <div id="addBranchModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <h3 class="text-lg font-bold mb-4">새 지점 추가</h3>
+                        <form id="addBranchForm">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">지점명</label>
+                                <input type="text" id="branchName" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">지점코드</label>
+                                <input type="text" id="branchCode" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">주소</label>
+                                <input type="text" id="branchAddress" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                            </div>
+                            <div class="flex justify-end space-x-2">
+                                <button type="button" onclick="hideAddBranch()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">취소</button>
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">추가</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 체크리스트 입력 -->
+            <div id="checklistPage" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-bold mb-4">일일 체크리스트 입력</h2>
+                        <form id="checklistForm">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">디자이너 선택</label>
+                                <select id="checklistDesigner" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                                    <option value="">디자이너를 선택하세요</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">날짜</label>
+                                <input type="date" id="checklistDate" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                            </div>
+                            
+                            <h3 class="font-bold text-lg mb-2 text-blue-600">네이버</h3>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">리뷰 수</label>
+                                <input type="number" id="naverReviews" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">블로그 포스팅 수</label>
+                                <input type="number" id="naverPosts" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">체험단 운영 건수</label>
+                                <input type="number" id="naverExperience" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                            </div>
+                            
+                            <h3 class="font-bold text-lg mb-2 text-pink-600">인스타그램</h3>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">릴스 게시 수</label>
+                                <input type="number" id="instaReels" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">사진 게시 수</label>
+                                <input type="number" id="instaPhotos" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                                체크리스트 제출
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-bold mb-4">디자이너 히스토리</h2>
+                        <div id="designerHistory" class="text-gray-500">
+                            디자이너를 선택하면 히스토리가 표시됩니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 통계 분석 -->
+            <div id="statisticsPage" class="hidden">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">통계 분석</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2">지점 필터</label>
-                            <select id="designer-branch-filter" onchange="filterDesigners()" class="px-3 py-2 border border-gray-300 rounded-md">
-                                <option value="all">전체 지점</option>
-                                <option value="songdo1">송도1지점</option>
-                                <option value="geomdan">검단테라스점</option>
-                                <option value="bupyeong">부평점</option>
-                                <option value="incheon">인천점</option>
-                                <option value="gimpo">김포점</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg custom-shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold">등록된 디자이너</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        이름
-                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;name&#39;)" data-sort="name">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        지점
-                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;branch&#39;)" data-sort="branch">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        직급
-                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;position&#39;)" data-sort="position">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        전화번호
-                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;phone&#39;)" data-sort="phone">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        등록일
-                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;createdAt&#39;)" data-sort="createdAt">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        총 활동량
-                                        <button class="sort-btn ml-1" onclick="sortDesigners(&#39;totalActivity&#39;)" data-sort="totalActivity">
-                                            <span>↕</span>
-                                        </button>
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
-                                </tr>
-                            </thead>
-                            <tbody id="designers-table" class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Branch Management Section (Admin Only) -->
-        <div id="branch-management-section" class="section" style="display: none;">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">지점 관리</h2>
-                    <button onclick="showAddBranchModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-                        <span class="emoji-icon">+</span>새 지점 추가
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-lg custom-shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold">등록된 지점</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점명</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점코드</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SNS 리더</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">디자이너 수</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">등록일</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
-                                </tr>
-                            </thead>
-                            <tbody id="branches-table" class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Checklist Section -->
-        <div id="checklist-section" class="section" style="display: none;">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-8">체크리스트 입력</h2>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Input Form -->
-                    <div class="lg:col-span-2">
-                        <div class="bg-white p-6 rounded-lg custom-shadow">
-                            <form onsubmit="submitChecklist(event)">
-                                <div class="mb-6">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2">디자이너 선택</label>
-                                    <select id="designer-select" onchange="loadDesignerHistory()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                                        <option value="">디자이너를 선택하세요</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-6">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2">날짜</label>
-                                    <input type="date" id="checklist-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <!-- 네이버 섹션 -->
-                                    <div class="space-y-4">
-                                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">네이버</h3>
-                                        
-                                        <div>
-                                            <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <span class="emoji-icon text-yellow-500">★</span>리뷰 수
-                                            </label>
-                                            <input type="number" id="naver-reviews" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <span class="emoji-icon text-green-500">■</span>블로그 포스팅 수
-                                            </label>
-                                            <input type="number" id="blog-posts" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <span class="emoji-icon text-purple-500">●</span>체험단 운영 건수
-                                            </label>
-                                            <input type="number" id="experience-groups" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                                        </div>
-                                    </div>
-
-                                    <!-- 인스타그램 섹션 -->
-                                    <div class="space-y-4">
-                                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">인스타그램</h3>
-                                        
-                                        <div>
-                                            <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <span class="emoji-icon text-pink-500">○</span>릴스 게시 수
-                                            </label>
-                                            <input type="number" id="instagram-reels" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-gray-700 text-sm font-bold mb-2">
-                                                <span class="emoji-icon text-orange-500">□</span>사진 게시 수
-                                            </label>
-                                            <input type="number" id="instagram-photos" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="mt-8">
-                                    <button type="submit" class="w-full gradient-bg text-white py-3 px-4 rounded-md hover:opacity-90 transition-opacity font-semibold">
-                                        <span class="emoji-icon">↑</span>체크리스트 제출
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Designer History Panel -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white p-6 rounded-lg custom-shadow">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">디자이너 히스토리</h3>
-                            <div id="designer-history" class="designer-history-panel">
-                                <div class="text-center text-gray-500 py-8">
-                                    <span class="text-4xl mb-2 block">◉</span>
-                                    <p>디자이너를 선택하면<br>히스토리가 표시됩니다</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Statistics Section -->
-        <div id="statistics-section" class="section" style="display: none;">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">통계 분석</h2>
-                    <button onclick="exportData(&#39;statistics&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                        <span class="emoji-icon">↓</span>Excel 다운로드
-                    </button>
-                </div>
-
-                <!-- Filters -->
-                <div class="bg-white p-6 rounded-lg custom-shadow mb-8">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2">기간</label>
-                            <select id="stats-period" onchange="toggleCustomDates(&#39;stats&#39;); updateStatisticsData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">기간 선택</label>
+                            <select id="statisticsPeriod" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="today">오늘</option>
                                 <option value="week">이번 주</option>
                                 <option value="month">이번 달</option>
                                 <option value="quarter">이번 분기</option>
-                                <option value="year">올해</option>
-                                <option value="custom">기간 설정</option>
+                                <option value="custom">사용자 정의</option>
                             </select>
-                        </div>
-                        <div id="stats-custom-dates" style="display: none;" class="md:col-span-2">
-                            <label class="block text-gray-700 text-sm font-bold mb-2">기간 설정</label>
-                            <div class="flex space-x-2">
-                                <input type="date" id="stats-start-date" onchange="updateStatisticsData()" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
-                                <input type="date" id="stats-end-date" onchange="updateStatisticsData()" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
-                            </div>
                         </div>
                         <div class="admin-only">
-                            <label class="block text-gray-700 text-sm font-bold mb-2">지점</label>
-                            <select id="stats-branch" onchange="updateStatisticsData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                                <option value="all">전체 지점</option>
-                                <option value="songdo1">송도1지점</option>
-                                <option value="geomdan">검단테라스점</option>
-                                <option value="bupyeong">부평점</option>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">지점 선택</label>
+                            <select id="statisticsBranch" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="">전체 지점</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">카테고리</label>
-                            <select id="stats-category" onchange="updateStatisticsData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <select id="statisticsCategory" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 <option value="all">전체</option>
                                 <option value="reviews">네이버 리뷰</option>
                                 <option value="posts">블로그 포스팅</option>
-                                <option value="experiences">체험단</option>
+                                <option value="experience">체험단</option>
                                 <option value="reels">인스타 릴스</option>
                                 <option value="photos">인스타 사진</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2">정렬</label>
-                            <select id="stats-sort" onchange="updateStatisticsData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                                <option value="desc">높은 순</option>
-                                <option value="asc">낮은 순</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
 
-                <!-- Tab Navigation -->
-                <div class="bg-white rounded-lg custom-shadow">
-                    <div class="border-b border-gray-200">
-                        <nav class="-mb-px flex">
-                            <button onclick="showStatsTab(&#39;branch&#39;)" id="branch-tab" class="stats-tab py-4 px-6 border-b-2 border-indigo-500 text-indigo-600 font-medium">
-                                지점별 통계
-                            </button>
-                            <button onclick="showStatsTab(&#39;designer&#39;)" id="designer-tab" class="stats-tab py-4 px-6 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
-                                디자이너별 통계
-                            </button>
-                            <button onclick="showStatsTab(&#39;integrated&#39;)" id="integrated-tab" class="stats-tab py-4 px-6 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
-                                전체 통합
-                            </button>
-                        </nav>
-                    </div>
-
-                    <!-- Branch Statistics -->
-                    <div id="branch-stats" class="tab-content p-6">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순위</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">합계</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">평균</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">최고</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">최저</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="branch-stats-table" class="bg-white divide-y divide-gray-200">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Designer Statistics -->
-                    <div id="designer-stats" class="tab-content p-6" style="display: none;">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순위</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">디자이너</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지점</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">합계</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">평균</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="designer-stats-table" class="bg-white divide-y divide-gray-200">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Integrated Statistics -->
-                    <div id="integrated-stats" class="tab-content p-6" style="display: none;">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div>
-                                <h3 class="text-lg font-semibold mb-4">전체 통합 통계</h3>
-                                <div class="chart-container">
-                                    <canvas id="integratedChart"></canvas>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold mb-4">카테고리별 비교</h3>
-                                <div class="chart-container">
-                                    <canvas id="categoryCompareChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="chart-container">
+                        <canvas id="statisticsChart"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Compare Section (Admin Only) -->
-        <div id="compare-section" class="section" style="display: none;">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">지점 비교 분석</h2>
-                    <button onclick="exportData(&#39;compare&#39;)" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                        <span class="emoji-icon">↓</span>Excel 다운로드
-                    </button>
-                </div>
-
-                <!-- Multi-Branch Selection -->
-                <div class="bg-white p-6 rounded-lg custom-shadow mb-8">
-                    <h3 class="text-lg font-semibold mb-4">비교할 지점 선택</h3>
+            <!-- 지점 비교 -->
+            <div id="comparisonPage" class="hidden">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">지점 비교 분석</h2>
+                    
                     <div class="mb-4">
                         <label class="flex items-center">
-                            <input type="checkbox" id="select-all-branches" onchange="toggleAllBranches()" class="mr-2">
-                            <span class="font-medium">전지점 선택</span>
-                        </label>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="branch-checkboxes">
-                        <label class="flex items-center">
-                            <input type="checkbox" value="songdo1" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
-                            <span>송도1지점</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" value="geomdan" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
-                            <span>검단테라스점</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" value="bupyeong" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
-                            <span>부평점</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" value="incheon" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
-                            <span>인천점</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" value="gimpo" onchange="updateComparisonData()" class="mr-2 branch-checkbox">
-                            <span>김포점</span>
+                            <input type="checkbox" id="selectAllBranches" class="mr-2"> 전지점 선택
                         </label>
                     </div>
                     
-                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mb-4" id="branchCheckboxes">
+                        <!-- 동적으로 생성됨 -->
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">비교 기간</label>
-                            <select id="compare-period" onchange="toggleCustomDates(&#39;compare&#39;); updateComparisonData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <select id="comparisonPeriod" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 <option value="week">이번 주</option>
                                 <option value="month">이번 달</option>
                                 <option value="quarter">이번 분기</option>
-                                <option value="year">올해</option>
-                                <option value="custom">기간 설정</option>
+                                <option value="custom">사용자 정의</option>
                             </select>
-                        </div>
-                        <div id="compare-custom-dates" style="display: none;">
-                            <label class="block text-gray-700 text-sm font-bold mb-2">기간 설정</label>
-                            <div class="flex space-x-2">
-                                <input type="date" id="compare-start-date" onchange="updateComparisonData()" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
-                                <input type="date" id="compare-end-date" onchange="updateComparisonData()" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
-                            </div>
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">카테고리</label>
-                            <select id="compare-category" onchange="updateComparisonData()" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <select id="comparisonCategory" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 <option value="all">전체</option>
                                 <option value="reviews">네이버 리뷰</option>
                                 <option value="posts">블로그 포스팅</option>
-                                <option value="experiences">체험단</option>
+                                <option value="experience">체험단</option>
                                 <option value="reels">인스타 릴스</option>
                                 <option value="photos">인스타 사진</option>
                             </select>
@@ -988,1060 +492,517 @@
                     </div>
                 </div>
 
-                <!-- Category Charts Container -->
-                <div class="bg-white p-6 rounded-lg custom-shadow mb-8">
-                    <h3 class="text-lg font-semibold mb-4">카테고리별 비교 차트</h3>
-                    
-                    <!-- 네이버 리뷰 차트 -->
-                    <div class="mb-6">
-                        <h4 class="text-md font-medium mb-2 text-blue-600">네이버 리뷰</h4>
-                        <div class="category-chart-container">
-                            <canvas id="reviewsComparisonChart"></canvas>
+                <!-- 카테고리별 차트 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="font-bold mb-4 text-blue-600">네이버 리뷰</h3>
+                        <div class="chart-container">
+                            <canvas id="reviewsChart"></canvas>
                         </div>
                     </div>
-
-                    <!-- 블로그 포스팅 차트 -->
-                    <div class="mb-6">
-                        <h4 class="text-md font-medium mb-2 text-green-600">블로그 포스팅</h4>
-                        <div class="category-chart-container">
-                            <canvas id="postsComparisonChart"></canvas>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="font-bold mb-4 text-green-600">블로그 포스팅</h3>
+                        <div class="chart-container">
+                            <canvas id="postsChart"></canvas>
                         </div>
                     </div>
-
-                    <!-- 체험단 운영 차트 -->
-                    <div class="mb-6">
-                        <h4 class="text-md font-medium mb-2 text-purple-600">체험단 운영</h4>
-                        <div class="category-chart-container">
-                            <canvas id="experiencesComparisonChart"></canvas>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="font-bold mb-4 text-yellow-600">체험단 운영</h3>
+                        <div class="chart-container">
+                            <canvas id="experienceChart"></canvas>
                         </div>
                     </div>
-
-                    <!-- 인스타 릴스 차트 -->
-                    <div class="mb-6">
-                        <h4 class="text-md font-medium mb-2 text-pink-600">인스타 릴스</h4>
-                        <div class="category-chart-container">
-                            <canvas id="reelsComparisonChart"></canvas>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="font-bold mb-4 text-purple-600">인스타 릴스</h3>
+                        <div class="chart-container">
+                            <canvas id="reelsChart"></canvas>
                         </div>
                     </div>
-
-                    <!-- 인스타 사진 차트 -->
-                    <div class="mb-6">
-                        <h4 class="text-md font-medium mb-2 text-orange-600">인스타 사진</h4>
-                        <div class="category-chart-container">
-                            <canvas id="photosComparisonChart"></canvas>
+                    <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
+                        <h3 class="font-bold mb-4 text-pink-600">인스타 사진</h3>
+                        <div class="chart-container">
+                            <canvas id="photosChart"></canvas>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Comparison Table -->
-                <div class="bg-white rounded-lg custom-shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold">상세 비교 표</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr id="comparison-table-header">
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">항목</th>
-                                </tr>
-                            </thead>
-                            <tbody id="comparison-table-body" class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
-    <!-- Add Designer Modal -->
-    <div id="add-designer-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full mx-4">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold">디자이너 추가</h3>
-                <button onclick="hideAddDesignerModal()" class="text-gray-400 hover:text-gray-600">
-                    <span class="text-xl">×</span>
-                </button>
-            </div>
-            
-            <form onsubmit="addDesigner(event)">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">이름</label>
-                    <input type="text" id="designer-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">직급</label>
-                    <select id="designer-position" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                        <option value="">직급을 선택하세요</option>
-                        <option value="인턴">인턴</option>
-                        <option value="디자이너">디자이너</option>
-                        <option value="팀장">팀장</option>
-                        <option value="실장">실장</option>
-                        <option value="부원장">부원장</option>
-                        <option value="원장">원장</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">전화번호</label>
-                    <input type="tel" id="designer-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">이메일</label>
-                    <input type="email" id="designer-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div class="flex space-x-4">
-                    <button type="button" onclick="hideAddDesignerModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors">
-                        취소
-                    </button>
-                    <button type="submit" class="flex-1 gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
-                        추가
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add Branch Modal -->
-    <div id="add-branch-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg custom-shadow max-w-md w-full mx-4">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold">새 지점 추가</h3>
-                <button onclick="hideAddBranchModal()" class="text-gray-400 hover:text-gray-600">
-                    <span class="text-xl">×</span>
-                </button>
-            </div>
-            
-            <form onsubmit="addBranch(event)">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">지점명</label>
-                    <input type="text" id="branch-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">지점코드</label>
-                    <input type="text" id="branch-code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required="">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">주소</label>
-                    <input type="text" id="branch-address" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div class="flex space-x-4">
-                    <button type="button" onclick="hideAddBranchModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors">
-                        취소
-                    </button>
-                    <button type="submit" class="flex-1 gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
-                        추가
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- 파일 입력 (숨김) -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
 
     <script>
-        // Global variables
-        let currentUser = null;
-        let designers = [];
-        let checklistData = [];
-        let charts = {};
-        let branches = [];
-        let designerSortConfig = { column: 'name', direction: 'asc' };
-        let branchRankingSortConfig = { column: 'total', direction: 'desc' };
-        let isUpdating = false;
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            const dateInputs = ['checklist-date', 'dashboard-start-date', 'dashboard-end-date', 'stats-start-date', 'stats-end-date', 'compare-start-date', 'compare-end-date'];
-            dateInputs.forEach(id => {
-                const input = document.getElementById(id);
-                if (input) input.value = today;
-            });
-            initializeSampleData();
-        });
-
-        function initializeSampleData() {
-            branches = [
-                { id: 1, name: '송도1지점', code: 'songdo1', address: '인천시 연수구 송도동', createdAt: '2024-01-01' },
-                { id: 2, name: '검단테라스점', code: 'geomdan', address: '인천시 서구 검단신도시', createdAt: '2024-01-01' },
-                { id: 3, name: '부평점', code: 'bupyeong', address: '인천시 부평구 부평동', createdAt: '2024-01-01' },
-                { id: 4, name: '인천점', code: 'incheon', address: '인천시 남동구 구월동', createdAt: '2024-01-01' },
-                { id: 5, name: '김포점', code: 'gimpo', address: '경기도 김포시 김포동', createdAt: '2024-01-01' }
-            ];
-
-            designers = [
-                { id: 1, name: '김민수', branch: 'songdo1', position: '디자이너', phone: '010-1234-5678', email: 'kim@gohair.com', createdAt: '2024-01-15' },
-                { id: 2, name: '이영희', branch: 'songdo1', position: '팀장', phone: '010-2345-6789', email: 'lee@gohair.com', createdAt: '2024-01-20' },
-                { id: 3, name: '박철수', branch: 'geomdan', position: '실장', phone: '010-3456-7890', email: 'park@gohair.com', createdAt: '2024-02-01' },
-                { id: 4, name: '최수진', branch: 'geomdan', position: '디자이너', phone: '010-4567-8901', email: 'choi@gohair.com', createdAt: '2024-02-10' },
-                { id: 5, name: '정현우', branch: 'bupyeong', position: '원장', phone: '010-5678-9012', email: 'jung@gohair.com', createdAt: '2024-02-15' }
-            ];
-
-            const today = new Date();
-            const dates = [];
-            for (let i = 0; i < 30; i++) {
-                const date = new Date(today);
-                date.setDate(date.getDate() - i);
-                dates.push(date.toISOString().split('T')[0]);
+        // 데이터 관리 클래스
+        class DataManager {
+            constructor() {
+                this.initializeData();
             }
 
-            checklistData = [];
-            designers.forEach(designer => {
-                dates.forEach((date, index) => {
-                    if (Math.random() > 0.3) {
-                        checklistData.push({
-                            id: checklistData.length + 1,
-                            designerId: designer.id,
-                            date: date,
-                            naverReviews: Math.floor(Math.random() * 10) + 1,
-                            blogPosts: Math.floor(Math.random() * 5) + 1,
-                            experienceGroups: Math.floor(Math.random() * 3),
-                            instagramReels: Math.floor(Math.random() * 8) + 1,
-                            instagramPhotos: Math.floor(Math.random() * 12) + 1,
-                            createdAt: date
-                        });
-                    }
-                });
-            });
-        }
-
-        function toggleCustomDates(section) {
-            const periodSelect = document.getElementById(section + '-period');
-            const customDates = document.getElementById(section + '-custom-dates');
-            
-            if (periodSelect && customDates) {
-                customDates.style.display = periodSelect.value === 'custom' ? 'block' : 'none';
-            }
-        }
-
-        function toggleAllBranches() {
-            const selectAll = document.getElementById('select-all-branches');
-            const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
-            
-            branchCheckboxes.forEach(checkbox => {
-                checkbox.checked = selectAll.checked;
-            });
-            
-            updateComparisonData();
-        }
-
-        // 차트 생성/업데이트 시 완전한 삭제 보장
-        function destroyChart(chartKey) {
-            if (charts[chartKey]) {
-                charts[chartKey].destroy();
-                charts[chartKey] = null;
-                delete charts[chartKey];
-            }
-        }
-
-        function createChart(canvasId, chartKey, config) {
-            destroyChart(chartKey);
-            
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return null;
-            
-            // 캔버스 크기 강제 설정
-            const container = canvas.parentElement;
-            if (container) {
-                canvas.style.width = '100%';
-                canvas.style.height = '100%';
-                canvas.width = container.offsetWidth;
-                canvas.height = container.offsetHeight;
-            }
-            
-            const ctx = canvas.getContext('2d');
-            charts[chartKey] = new Chart(ctx, {
-                ...config,
-                options: {
-                    ...config.options,
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        ...config.options?.plugins,
-                        legend: {
-                            ...config.options?.plugins?.legend,
-                            display: true
+            initializeData() {
+                // 기본 데이터 구조
+                const defaultData = {
+                    users: {
+                        'admin@gohair.com': { password: 'GoHair2024!', role: 'admin', name: '관리자' },
+                        'songdo@gohair.com': { password: 'Songdo123!', role: 'leader', branch: '송도1지점', name: '송도리더' },
+                        'geomdan@gohair.com': { password: 'Geomdan123!', role: 'leader', branch: '검단테라스점', name: '검단리더' },
+                        'bupyeong@gohair.com': { password: 'Bupyeong123!', role: 'leader', branch: '부평점', name: '부평리더' }
+                    },
+                    branches: [
+                        { id: 1, name: '송도1지점', code: 'SD01', address: '인천시 연수구 송도동', createdAt: '2024-01-01' },
+                        { id: 2, name: '검단테라스점', code: 'GD01', address: '인천시 서구 검단동', createdAt: '2024-01-01' },
+                        { id: 3, name: '부평점', code: 'BP01', address: '인천시 부평구 부평동', createdAt: '2024-01-01' }
+                    ],
+                    designers: [
+                        { id: 1, name: '김디자이너', branch: '송도1지점', position: '디자이너', phone: '010-1234-5678', createdAt: '2024-01-15' },
+                        { id: 2, name: '이실장', branch: '검단테라스점', position: '실장', phone: '010-2345-6789', createdAt: '2024-01-10' },
+                        { id: 3, name: '박팀장', branch: '부평점', position: '팀장', phone: '010-3456-7890', createdAt: '2024-01-20' }
+                    ],
+                    checklists: [
+                        {
+                            id: 1,
+                            designerId: 1,
+                            designer: '김디자이너',
+                            branch: '송도1지점',
+                            date: '2024-06-01',
+                            naverReviews: 5,
+                            naverPosts: 2,
+                            naverExperience: 1,
+                            instaReels: 3,
+                            instaPhotos: 8
+                        },
+                        {
+                            id: 2,
+                            designerId: 2,
+                            designer: '이실장',
+                            branch: '검단테라스점',
+                            date: '2024-06-01',
+                            naverReviews: 3,
+                            naverPosts: 1,
+                            naverExperience: 0,
+                            instaReels: 2,
+                            instaPhotos: 5
                         }
-                    }
-                }
-            });
-            
-            return charts[chartKey];
-        }
-
-        function login(event) {
-            event.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            const validAccounts = {
-                'admin@gohair.com': { password: 'GoHair2024!', role: 'admin', name: '관리자', branch: 'all' },
-                'songdo@gohair.com': { password: 'Songdo123!', role: 'leader', name: '송도리더', branch: 'songdo1' },
-                'geomdan@gohair.com': { password: 'Geomdan123!', role: 'leader', name: '검단리더', branch: 'geomdan' },
-                'bupyeong@gohair.com': { password: 'Bupyeong123!', role: 'leader', name: '부평리더', branch: 'bupyeong' }
-            };
-
-            if (validAccounts[email] && validAccounts[email].password === password) {
-                currentUser = {
-                    email: email,
-                    role: validAccounts[email].role,
-                    name: validAccounts[email].name,
-                    branch: validAccounts[email].branch
+                    ]
                 };
 
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
+                // localStorage에서 데이터 로드, 없으면 기본 데이터 사용
+                this.data = this.loadData() || defaultData;
+                this.saveData();
+            }
+
+            loadData() {
+                try {
+                    const saved = localStorage.getItem('gohairData');
+                    return saved ? JSON.parse(saved) : null;
+                } catch (error) {
+                    console.error('데이터 로드 오류:', error);
+                    return null;
+                }
+            }
+
+            saveData() {
+                try {
+                    localStorage.setItem('gohairData', JSON.stringify(this.data));
+                } catch (error) {
+                    console.error('데이터 저장 오류:', error);
+                }
+            }
+
+            // CRUD 메서드들
+            addBranch(branch) {
+                const id = Math.max(...this.data.branches.map(b => b.id), 0) + 1;
+                const newBranch = { ...branch, id, createdAt: new Date().toISOString().split('T')[0] };
+                this.data.branches.push(newBranch);
+                this.saveData();
+                return newBranch;
+            }
+
+            addDesigner(designer) {
+                const id = Math.max(...this.data.designers.map(d => d.id), 0) + 1;
+                const newDesigner = { ...designer, id, createdAt: new Date().toISOString().split('T')[0] };
+                this.data.designers.push(newDesigner);
+                this.saveData();
+                return newDesigner;
+            }
+
+            addChecklist(checklist) {
+                const id = Math.max(...this.data.checklists.map(c => c.id), 0) + 1;
+                const newChecklist = { ...checklist, id };
+                this.data.checklists.push(newChecklist);
+                this.saveData();
+                return newChecklist;
+            }
+
+            exportData() {
+                return JSON.stringify(this.data, null, 2);
+            }
+
+            importData(jsonData) {
+                try {
+                    const imported = JSON.parse(jsonData);
+                    this.data = imported;
+                    this.saveData();
+                    return true;
+                } catch (error) {
+                    console.error('데이터 가져오기 오류:', error);
+                    return false;
+                }
+            }
+        }
+
+        // 전역 변수
+        let dataManager = new DataManager();
+        let currentUser = null;
+        let charts = {};
+
+        // 로그인 처리
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const users = dataManager.data.users;
+            if (users[email] && users[email].password === password) {
+                currentUser = { email: email, ...users[email] };
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('mainSystem').classList.remove('hidden');
                 
-                updateUserInfo();
-                initializeApp();
-                showSection('dashboard');
+                document.getElementById('currentUser').textContent = currentUser.name;
+                
+                // 관리자 메뉴 표시/숨김
+                const adminMenus = document.querySelectorAll('.admin-only');
+                adminMenus.forEach(menu => {
+                    if (currentUser.role === 'admin') {
+                        menu.classList.remove('hidden');
+                    } else {
+                        menu.classList.add('hidden');
+                    }
+                });
+                
+                showPage('dashboard');
+                loadDashboard();
             } else {
                 alert('이메일 또는 비밀번호가 올바르지 않습니다.');
             }
-        }
+        });
 
-        function showRegistration() {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('registration-section').style.display = 'flex';
-        }
-
-        function showLogin() {
-            document.getElementById('registration-section').style.display = 'none';
-            document.getElementById('login-section').style.display = 'flex';
-        }
-
-        function register(event) {
-            event.preventDefault();
-            alert('가입 요청이 처리되었습니다. 이메일 인증 후 로그인해주세요.');
-            showLogin();
-        }
-
+        // 로그아웃
         function logout() {
             currentUser = null;
-            
-            // 모든 차트 삭제
-            Object.keys(charts).forEach(key => {
-                destroyChart(key);
-            });
-            
-            document.getElementById('app-container').style.display = 'none';
-            document.getElementById('login-section').style.display = 'flex';
-            
-            document.getElementById('login-email').value = '';
-            document.getElementById('login-password').value = '';
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('mainSystem').classList.add('hidden');
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
         }
 
-        function updateUserInfo() {
-            const userInfo = document.getElementById('user-info');
-            userInfo.textContent = `${currentUser.name} (${currentUser.role === 'admin' ? '관리자' : 'SNS리더'})`;
-            
-            const adminElements = document.querySelectorAll('.admin-only');
-            adminElements.forEach(element => {
-                element.style.display = currentUser.role === 'admin' ? 'block' : 'none';
-            });
-
-            // SNS 리더의 경우 통계분석에서 지점 선택 숨기기
-            if (currentUser.role !== 'admin') {
-                const statsBranchDiv = document.querySelector('#stats-branch').parentElement;
-                if (statsBranchDiv) {
-                    statsBranchDiv.style.display = 'none';
+        // 페이지 전환
+        function showPage(pageId) {
+            const pages = ['dashboard', 'designers', 'branches', 'checklist', 'statistics', 'comparison'];
+            pages.forEach(page => {
+                const element = document.getElementById(page + 'Page');
+                if (element) {
+                    element.classList.add('hidden');
                 }
-            }
-        }
-
-        function initializeApp() {
-            loadDesigners();
-            loadBranches();
-            updateDashboard();
-        }
-
-        function showSection(sectionName) {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => section.style.display = 'none');
+            });
             
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => btn.classList.remove('bg-white', 'bg-opacity-20'));
-            
-            const targetSection = document.getElementById(sectionName + '-section');
-            if (targetSection) {
-                targetSection.style.display = 'block';
+            const targetPage = document.getElementById(pageId + 'Page');
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
             }
             
-            switch(sectionName) {
+            // 네비게이션 버튼 활성화
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-white', 'bg-opacity-30'));
+            event.target.classList.add('bg-white', 'bg-opacity-30');
+
+            // 페이지별 데이터 로드
+            switch(pageId) {
                 case 'dashboard':
-                    setTimeout(() => {
-                        toggleCustomDates('dashboard');
-                        updateDashboard();
-                    }, 100);
+                    loadDashboard();
                     break;
-                case 'designer-management':
+                case 'designers':
                     loadDesigners();
                     break;
-                case 'branch-management':
+                case 'branches':
                     loadBranches();
                     break;
                 case 'checklist':
-                    loadDesignerSelect();
+                    loadChecklist();
                     break;
                 case 'statistics':
-                    setTimeout(() => {
-                        toggleCustomDates('stats');
-                        updateStatisticsData();
-                    }, 100);
+                    loadStatistics();
                     break;
-                case 'compare':
-                    setTimeout(() => {
-                        toggleCustomDates('compare');
-                        updateComparisonData();
-                    }, 100);
+                case 'comparison':
+                    loadComparison();
                     break;
             }
         }
 
-        function updateDashboard() {
-            if (isUpdating) return;
-            isUpdating = true;
+        // 대시보드 로드
+        function loadDashboard() {
+            const checklists = dataManager.data.checklists;
+            
+            // 전체 통계 계산
+            const totalReviews = checklists.reduce((sum, c) => sum + c.naverReviews, 0);
+            const totalPosts = checklists.reduce((sum, c) => sum + c.naverPosts, 0);
+            const totalExperience = checklists.reduce((sum, c) => sum + c.naverExperience, 0);
+            const totalReels = checklists.reduce((sum, c) => sum + c.instaReels, 0);
+            const totalPhotos = checklists.reduce((sum, c) => sum + c.instaPhotos, 0);
 
-            const period = document.getElementById('dashboard-period')?.value || 'today';
-            let filteredData = getFilteredData(period, 'dashboard');
-            
-            if (currentUser.role !== 'admin') {
-                const branchDesigners = designers.filter(d => d.branch === currentUser.branch).map(d => d.id);
-                filteredData = filteredData.filter(d => branchDesigners.includes(d.designerId));
-            }
-            
-            const totals = filteredData.reduce((acc, curr) => ({
-                reviews: acc.reviews + curr.naverReviews,
-                posts: acc.posts + curr.blogPosts,
-                experiences: acc.experiences + curr.experienceGroups,
-                reels: acc.reels + curr.instagramReels,
-                photos: acc.photos + curr.instagramPhotos
-            }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
-            
-            if (document.getElementById('total-reviews')) {
-                document.getElementById('total-reviews').textContent = totals.reviews;
-                document.getElementById('total-posts').textContent = totals.posts;
-                document.getElementById('total-experiences').textContent = totals.experiences;
-                document.getElementById('total-reels').textContent = totals.reels;
-                document.getElementById('total-photos').textContent = totals.photos;
-            }
-            
-            updateDashboardCharts(filteredData);
-            updateBranchRanking(period);
+            document.getElementById('totalReviews').textContent = totalReviews;
+            document.getElementById('totalPosts').textContent = totalPosts;
+            document.getElementById('totalExperience').textContent = totalExperience;
+            document.getElementById('totalReels').textContent = totalReels;
+            document.getElementById('totalPhotos').textContent = totalPhotos;
 
-            isUpdating = false;
+            // 지점별 순위
+            loadBranchRankings();
         }
 
-        function sortBranchRanking(column) {
-            if (branchRankingSortConfig.column === column) {
-                branchRankingSortConfig.direction = branchRankingSortConfig.direction === 'asc' ? 'desc' : 'asc';
-            } else {
-                branchRankingSortConfig.column = column;
-                branchRankingSortConfig.direction = 'desc';
-            }
-
-            document.querySelectorAll('[data-sort]').forEach(btn => {
-                btn.classList.remove('active');
-                btn.innerHTML = '<span>↕</span>';
-            });
-
-            const activeBtn = document.querySelector(`[data-sort="${column}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-                activeBtn.innerHTML = branchRankingSortConfig.direction === 'asc' ? 
-                    '<span>↑</span>' : '<span>↓</span>';
-            }
-
-            const period = document.getElementById('dashboard-period')?.value || 'today';
-            updateBranchRanking(period);
-        }
-
-        function updateDashboardCharts(data) {
-            const categoryData = data.reduce((acc, curr) => ({
-                reviews: acc.reviews + curr.naverReviews,
-                posts: acc.posts + curr.blogPosts,
-                experiences: acc.experiences + curr.experienceGroups,
-                reels: acc.reels + curr.instagramReels,
-                photos: acc.photos + curr.instagramPhotos
-            }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
+        // 지점별 순위 로드
+        function loadBranchRankings() {
+            const checklists = dataManager.data.checklists;
+            const branches = dataManager.data.branches;
             
-            createChart('categoryChart', 'categoryChart', {
-                type: 'doughnut',
-                data: {
-                    labels: ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진'],
-                    datasets: [{
-                        data: [categoryData.reviews, categoryData.posts, categoryData.experiences, categoryData.reels, categoryData.photos],
-                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B']
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-            
-            const dailyData = getDailyChartData(data);
-            
-            createChart('dailyChart', 'dailyChart', {
-                type: 'line',
-                data: {
-                    labels: dailyData.labels,
-                    datasets: [{
-                        label: '총 활동량',
-                        data: dailyData.values,
-                        borderColor: '#6366F1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function loadDesigners() {
-            filterDesigners();
-        }
-
-        function loadBranches() {
-            if (currentUser.role !== 'admin') return;
-            
-            const branchesTable = document.getElementById('branches-table');
-            if (!branchesTable) return;
-            
-            branchesTable.innerHTML = branches.map(branch => {
-                const branchDesigners = designers.filter(d => d.branch === branch.code);
-                const snsLeader = getSNSLeaderForBranch(branch.code);
+            const branchStats = branches.map(branch => {
+                const branchChecklists = checklists.filter(c => c.branch === branch.name);
+                const reviews = branchChecklists.reduce((sum, c) => sum + c.naverReviews, 0);
+                const posts = branchChecklists.reduce((sum, c) => sum + c.naverPosts, 0);
+                const experience = branchChecklists.reduce((sum, c) => sum + c.naverExperience, 0);
+                const reels = branchChecklists.reduce((sum, c) => sum + c.instaReels, 0);
+                const photos = branchChecklists.reduce((sum, c) => sum + c.instaPhotos, 0);
+                const total = reviews + posts + experience + reels + photos;
                 
+                return { branch: branch.name, reviews, posts, experience, reels, photos, total };
+            });
+
+            branchStats.sort((a, b) => b.total - a.total);
+
+            const tbody = document.getElementById('branchRankings');
+            tbody.innerHTML = branchStats.map((stat, index) => `
+                <tr class="${index % 2 === 0 ? 'bg-gray-50' : ''}">
+                    <td class="px-4 py-2">${index + 1}</td>
+                    <td class="px-4 py-2">${stat.branch}</td>
+                    <td class="px-4 py-2">${stat.reviews}</td>
+                    <td class="px-4 py-2">${stat.posts}</td>
+                    <td class="px-4 py-2">${stat.experience}</td>
+                    <td class="px-4 py-2">${stat.reels}</td>
+                    <td class="px-4 py-2">${stat.photos}</td>
+                    <td class="px-4 py-2 font-bold">${stat.total}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 디자이너 관리 로드
+        function loadDesigners() {
+            const designers = dataManager.data.designers;
+            const userBranch = currentUser.role === 'leader' ? currentUser.branch : null;
+            
+            const filteredDesigners = userBranch ? 
+                designers.filter(d => d.branch === userBranch) : designers;
+
+            const tbody = document.getElementById('designersList');
+            tbody.innerHTML = filteredDesigners.map(designer => `
+                <tr class="border-b">
+                    <td class="px-4 py-2">${designer.name}</td>
+                    <td class="px-4 py-2">${designer.branch}</td>
+                    <td class="px-4 py-2">${designer.position}</td>
+                    <td class="px-4 py-2">${designer.phone}</td>
+                    <td class="px-4 py-2">${designer.createdAt}</td>
+                    <td class="px-4 py-2">
+                        <button onclick="editDesigner(${designer.id})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">편집</button>
+                        <button onclick="deleteDesigner(${designer.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm ml-1">삭제</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // 지점 옵션 로드
+            loadBranchOptions();
+        }
+
+        // 지점 관리 로드
+        function loadBranches() {
+            const branches = dataManager.data.branches;
+            const designers = dataManager.data.designers;
+
+            const tbody = document.getElementById('branchesList');
+            tbody.innerHTML = branches.map(branch => {
+                const designerCount = designers.filter(d => d.branch === branch.name).length;
                 return `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${branch.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.code}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${snsLeader}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branchDesigners.length}명</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.createdAt}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button onclick="editBranch(${branch.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                <span>✎</span>
-                            </button>
-                            <button onclick="deleteBranch(${branch.id})" class="text-red-600 hover:text-red-900">
-                                <span>✗</span>
-                            </button>
+                    <tr class="border-b">
+                        <td class="px-4 py-2">${branch.name}</td>
+                        <td class="px-4 py-2">${branch.code}</td>
+                        <td class="px-4 py-2">${branch.address}</td>
+                        <td class="px-4 py-2">${designerCount}</td>
+                        <td class="px-4 py-2">${branch.createdAt}</td>
+                        <td class="px-4 py-2">
+                            <button onclick="editBranch(${branch.id})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">편집</button>
+                            <button onclick="deleteBranch(${branch.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm ml-1">삭제</button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function filterDesigners() {
-            if (isUpdating) return;
-            isUpdating = true;
+        // 체크리스트 로드
+        function loadChecklist() {
+            const designers = dataManager.data.designers;
+            const userBranch = currentUser.role === 'leader' ? currentUser.branch : null;
+            
+            const filteredDesigners = userBranch ? 
+                designers.filter(d => d.branch === userBranch) : designers;
 
-            const branchFilter = document.getElementById('designer-branch-filter')?.value || 'all';
-            const designersTable = document.getElementById('designers-table');
-            
-            let filteredDesigners = designers;
-            
-            if (currentUser.role !== 'admin') {
-                filteredDesigners = designers.filter(d => d.branch === currentUser.branch);
-                // SNS 리더의 경우 지점 필터 숨기기
-                const designerFilters = document.getElementById('designer-filters');
-                if (designerFilters) {
-                    designerFilters.style.display = 'none';
-                }
-            } else if (branchFilter !== 'all') {
-                filteredDesigners = designers.filter(d => d.branch === branchFilter);
-            }
-            
-            filteredDesigners = filteredDesigners.map(designer => {
-                const designerData = checklistData.filter(c => c.designerId === designer.id);
-                const totalActivity = designerData.reduce((sum, record) => {
-                    return sum + record.naverReviews + record.blogPosts + record.experienceGroups + 
-                           record.instagramReels + record.instagramPhotos;
-                }, 0);
-                
-                return { ...designer, totalActivity };
-            });
+            const select = document.getElementById('checklistDesigner');
+            select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
+                filteredDesigners.map(d => `<option value="${d.id}">${d.name} (${d.branch})</option>`).join('');
 
-            filteredDesigners.sort((a, b) => {
-                const aVal = a[designerSortConfig.column];
-                const bVal = b[designerSortConfig.column];
-                
-                if (typeof aVal === 'string') {
-                    const result = aVal.localeCompare(bVal);
-                    return designerSortConfig.direction === 'asc' ? result : -result;
+            // 오늘 날짜 설정
+            document.getElementById('checklistDate').value = new Date().toISOString().split('T')[0];
+
+            // 디자이너 선택 시 히스토리 표시
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    loadDesignerHistory(this.value);
                 } else {
-                    const result = aVal - bVal;
-                    return designerSortConfig.direction === 'asc' ? result : -result;
+                    document.getElementById('designerHistory').innerHTML = '디자이너를 선택하면 히스토리가 표시됩니다.';
                 }
             });
-            
-            designersTable.innerHTML = filteredDesigners.map(designer => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${designer.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getBranchName(designer.branch)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.position}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.phone}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.createdAt}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.totalActivity}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="editDesigner(${designer.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                            <span>✎</span>
-                        </button>
-                        <button onclick="deleteDesigner(${designer.id})" class="text-red-600 hover:text-red-900">
-                            <span>✗</span>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-
-            isUpdating = false;
         }
 
-        function sortDesigners(column) {
-            if (designerSortConfig.column === column) {
-                designerSortConfig.direction = designerSortConfig.direction === 'asc' ? 'desc' : 'asc';
-            } else {
-                designerSortConfig.column = column;
-                designerSortConfig.direction = 'asc';
-            }
-
-            document.querySelectorAll('.sort-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.innerHTML = '<span>↕</span>';
-            });
-
-            const activeBtn = document.querySelector(`[data-sort="${column}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-                activeBtn.innerHTML = designerSortConfig.direction === 'asc' ? 
-                    '<span>↑</span>' : '<span>↓</span>';
-            }
-
-            filterDesigners();
-        }
-
-        function loadDesignerSelect() {
-            const designerSelect = document.getElementById('designer-select');
-            let filteredDesigners = designers;
+        // 디자이너 히스토리 로드
+        function loadDesignerHistory(designerId) {
+            const checklists = dataManager.data.checklists.filter(c => c.designerId == designerId);
+            const designer = dataManager.data.designers.find(d => d.id == designerId);
             
-            if (currentUser.role !== 'admin') {
-                filteredDesigners = designers.filter(d => d.branch === currentUser.branch);
-            }
-            
-            designerSelect.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
-                filteredDesigners.map(designer => `
-                    <option value="${designer.id}">${designer.name} (${getBranchName(designer.branch)})</option>
-                `).join('');
-        }
-
-        function showAddDesignerModal() {
-            document.getElementById('add-designer-modal').classList.remove('hidden');
-            document.getElementById('add-designer-modal').classList.add('flex');
-        }
-
-        function hideAddDesignerModal() {
-            document.getElementById('add-designer-modal').classList.add('hidden');
-            document.getElementById('add-designer-modal').classList.remove('flex');
-            
-            document.getElementById('designer-name').value = '';
-            document.getElementById('designer-position').value = '';
-            document.getElementById('designer-phone').value = '';
-            document.getElementById('designer-email').value = '';
-        }
-
-        function showAddBranchModal() {
-            document.getElementById('add-branch-modal').classList.remove('hidden');
-            document.getElementById('add-branch-modal').classList.add('flex');
-        }
-
-        function hideAddBranchModal() {
-            document.getElementById('add-branch-modal').classList.add('hidden');
-            document.getElementById('add-branch-modal').classList.remove('flex');
-            
-            document.getElementById('branch-name').value = '';
-            document.getElementById('branch-code').value = '';
-            document.getElementById('branch-address').value = '';
-        }
-
-        function addDesigner(event) {
-            event.preventDefault();
-            const name = document.getElementById('designer-name').value;
-            const position = document.getElementById('designer-position').value;
-            const phone = document.getElementById('designer-phone').value;
-            const email = document.getElementById('designer-email').value;
-            
-            const newDesigner = {
-                id: designers.length + 1,
-                name: name,
-                branch: currentUser.branch,
-                position: position,
-                phone: phone,
-                email: email,
-                createdAt: new Date().toISOString().split('T')[0]
-            };
-            
-            designers.push(newDesigner);
-            loadDesigners();
-            loadDesignerSelect();
-            hideAddDesignerModal();
-            
-            alert('디자이너가 성공적으로 추가되었습니다.');
-        }
-
-        function addBranch(event) {
-            event.preventDefault();
-            const name = document.getElementById('branch-name').value;
-            const code = document.getElementById('branch-code').value;
-            const address = document.getElementById('branch-address').value;
-            
-            // 중복 체크
-            if (branches.find(b => b.code === code)) {
-                alert('이미 존재하는 지점코드입니다.');
-                return;
-            }
-            
-            const newBranch = {
-                id: branches.length + 1,
-                name: name,
-                code: code,
-                address: address,
-                createdAt: new Date().toISOString().split('T')[0]
-            };
-            
-            branches.push(newBranch);
-            loadBranches();
-            hideAddBranchModal();
-            
-            alert('지점이 성공적으로 추가되었습니다.');
-        }
-
-        function editDesigner(id) {
-            const designer = designers.find(d => d.id === id);
-            if (designer) {
-                const newName = prompt('디자이너 이름:', designer.name);
-                const newPosition = prompt('직급:', designer.position);
-                const newPhone = prompt('전화번호:', designer.phone);
-                
-                if (newName && newPosition && newPhone) {
-                    designer.name = newName;
-                    designer.position = newPosition;
-                    designer.phone = newPhone;
-                    loadDesigners();
-                    loadDesignerSelect();
-                }
-            }
-        }
-
-        function editBranch(id) {
-            const branch = branches.find(b => b.id === id);
-            if (branch) {
-                const newName = prompt('지점명:', branch.name);
-                const newAddress = prompt('주소:', branch.address);
-                
-                if (newName) {
-                    branch.name = newName;
-                    if (newAddress) branch.address = newAddress;
-                    loadBranches();
-                }
-            }
-        }
-
-        function deleteDesigner(id) {
-            if (confirm('정말로 이 디자이너를 삭제하시겠습니까?')) {
-                designers = designers.filter(d => d.id !== id);
-                checklistData = checklistData.filter(c => c.designerId !== id);
-                loadDesigners();
-                loadDesignerSelect();
-                updateDashboard();
-            }
-        }
-
-        function deleteBranch(id) {
-            if (confirm('정말로 이 지점을 삭제하시겠습니까? 해당 지점의 모든 데이터가 삭제됩니다.')) {
-                const branch = branches.find(b => b.id === id);
-                if (branch) {
-                    // 해당 지점의 디자이너들도 삭제
-                    designers = designers.filter(d => d.branch !== branch.code);
-                    branches = branches.filter(b => b.id !== id);
-                    loadBranches();
-                    loadDesigners();
-                }
-            }
-        }
-
-        function loadDesignerHistory() {
-            const designerId = document.getElementById('designer-select').value;
-            const historyContainer = document.getElementById('designer-history');
-            
-            if (!designerId) {
-                historyContainer.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <span class="text-4xl mb-2 block">◉</span>
-                        <p>디자이너를 선택하면<br>히스토리가 표시됩니다</p>
+            if (checklists.length === 0) {
+                document.getElementById('designerHistory').innerHTML = `
+                    <div class="text-gray-500">
+                        ${designer.name}님의 체크리스트 기록이 없습니다.
                     </div>
                 `;
                 return;
             }
-            
-            const designer = designers.find(d => d.id == designerId);
-            const designerHistory = checklistData
-                .filter(c => c.designerId == designerId)
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 10);
-            
-            if (designerHistory.length === 0) {
-                historyContainer.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <span class="text-4xl mb-2 block">□</span>
-                        <p>${designer.name}의<br>기록이 없습니다</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const total = designerHistory.reduce((acc, curr) => ({
-                reviews: acc.reviews + curr.naverReviews,
-                posts: acc.posts + curr.blogPosts,
-                experiences: acc.experiences + curr.experienceGroups,
-                reels: acc.reels + curr.instagramReels,
-                photos: acc.photos + curr.instagramPhotos
-            }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
-            
-            const weeklyData = designerHistory.slice(0, 7);
-            const weekly = weeklyData.reduce((acc, curr) => ({
-                reviews: acc.reviews + curr.naverReviews,
-                posts: acc.posts + curr.blogPosts,
-                experiences: acc.experiences + curr.experienceGroups,
-                reels: acc.reels + curr.instagramReels,
-                photos: acc.photos + curr.instagramPhotos
-            }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
-            
-            historyContainer.innerHTML = `
-                <div class="space-y-4">
-                    <div class="text-center">
-                        <h4 class="font-semibold text-gray-800">${designer.name}</h4>
-                        <p class="text-sm text-gray-600">${getBranchName(designer.branch)} - ${designer.position}</p>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-3 rounded">
-                        <h5 class="font-medium text-sm mb-2">요약 통계</h5>
-                        <table class="w-full text-xs">
-                            <thead>
+
+            const historyHtml = `
+                <div class="mb-4">
+                    <h3 class="font-bold text-lg">${designer.name}님의 활동 히스토리</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto text-sm">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-2 py-1 text-left">날짜</th>
+                                <th class="px-2 py-1 text-left">리뷰</th>
+                                <th class="px-2 py-1 text-left">포스팅</th>
+                                <th class="px-2 py-1 text-left">체험단</th>
+                                <th class="px-2 py-1 text-left">릴스</th>
+                                <th class="px-2 py-1 text-left">사진</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${checklists.map(c => `
                                 <tr class="border-b">
-                                    <th class="text-left py-1">기간</th>
-                                    <th class="text-center py-1">리뷰</th>
-                                    <th class="text-center py-1">포스팅</th>
-                                    <th class="text-center py-1">체험단</th>
-                                    <th class="text-center py-1">릴스</th>
-                                    <th class="text-center py-1">사진</th>
+                                    <td class="px-2 py-1">${c.date}</td>
+                                    <td class="px-2 py-1">${c.naverReviews}</td>
+                                    <td class="px-2 py-1">${c.naverPosts}</td>
+                                    <td class="px-2 py-1">${c.naverExperience}</td>
+                                    <td class="px-2 py-1">${c.instaReels}</td>
+                                    <td class="px-2 py-1">${c.instaPhotos}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b">
-                                    <td class="py-1">주간</td>
-                                    <td class="text-center">${weekly.reviews}</td>
-                                    <td class="text-center">${weekly.posts}</td>
-                                    <td class="text-center">${weekly.experiences}</td>
-                                    <td class="text-center">${weekly.reels}</td>
-                                    <td class="text-center">${weekly.photos}</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1">전체</td>
-                                    <td class="text-center">${total.reviews}</td>
-                                    <td class="text-center">${total.posts}</td>
-                                    <td class="text-center">${total.experiences}</td>
-                                    <td class="text-center">${total.reels}</td>
-                                    <td class="text-center">${total.photos}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div>
-                        <h5 class="font-medium text-sm mb-2">최근 기록</h5>
-                        <div class="space-y-2 max-h-48 overflow-y-auto">
-                            ${designerHistory.map(record => `
-                                <div class="bg-gray-50 p-2 rounded text-xs">
-                                    <div class="font-medium">${record.date}</div>
-                                    <div class="grid grid-cols-5 gap-1 mt-1 text-center">
-                                        <div><span class="text-blue-600">${record.naverReviews}</span></div>
-                                        <div><span class="text-green-600">${record.blogPosts}</span></div>
-                                        <div><span class="text-purple-600">${record.experienceGroups}</span></div>
-                                        <div><span class="text-pink-600">${record.instagramReels}</span></div>
-                                        <div><span class="text-orange-600">${record.instagramPhotos}</span></div>
-                                    </div>
-                                </div>
                             `).join('')}
-                        </div>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                    <div class="bg-blue-50 p-3 rounded">
+                        <div class="font-bold text-blue-600">총 활동량</div>
+                        <div>리뷰: ${checklists.reduce((sum, c) => sum + c.naverReviews, 0)}</div>
+                        <div>포스팅: ${checklists.reduce((sum, c) => sum + c.naverPosts, 0)}</div>
+                        <div>체험단: ${checklists.reduce((sum, c) => sum + c.naverExperience, 0)}</div>
+                        <div>릴스: ${checklists.reduce((sum, c) => sum + c.instaReels, 0)}</div>
+                        <div>사진: ${checklists.reduce((sum, c) => sum + c.instaPhotos, 0)}</div>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded">
+                        <div class="font-bold text-green-600">평균 (일일)</div>
+                        <div>리뷰: ${(checklists.reduce((sum, c) => sum + c.naverReviews, 0) / checklists.length).toFixed(1)}</div>
+                        <div>포스팅: ${(checklists.reduce((sum, c) => sum + c.naverPosts, 0) / checklists.length).toFixed(1)}</div>
+                        <div>체험단: ${(checklists.reduce((sum, c) => sum + c.naverExperience, 0) / checklists.length).toFixed(1)}</div>
+                        <div>릴스: ${(checklists.reduce((sum, c) => sum + c.instaReels, 0) / checklists.length).toFixed(1)}</div>
+                        <div>사진: ${(checklists.reduce((sum, c) => sum + c.instaPhotos, 0) / checklists.length).toFixed(1)}</div>
                     </div>
                 </div>
             `;
+
+            document.getElementById('designerHistory').innerHTML = historyHtml;
         }
 
-        function submitChecklist(event) {
-            event.preventDefault();
-            
-            const designerId = document.getElementById('designer-select').value;
-            const date = document.getElementById('checklist-date').value;
-            const naverReviews = parseInt(document.getElementById('naver-reviews').value);
-            const blogPosts = parseInt(document.getElementById('blog-posts').value);
-            const experienceGroups = parseInt(document.getElementById('experience-groups').value);
-            const instagramReels = parseInt(document.getElementById('instagram-reels').value);
-            const instagramPhotos = parseInt(document.getElementById('instagram-photos').value);
-            
-            const existingEntry = checklistData.find(c => c.designerId == designerId && c.date === date);
-            
-            if (existingEntry) {
-                if (!confirm('이 날짜에 이미 기록이 있습니다. 덮어쓰시겠습니까?')) {
-                    return;
-                }
-                existingEntry.naverReviews = naverReviews;
-                existingEntry.blogPosts = blogPosts;
-                existingEntry.experienceGroups = experienceGroups;
-                existingEntry.instagramReels = instagramReels;
-                existingEntry.instagramPhotos = instagramPhotos;
-            } else {
-                const newEntry = {
-                    id: checklistData.length + 1,
-                    designerId: parseInt(designerId),
-                    date: date,
-                    naverReviews: naverReviews,
-                    blogPosts: blogPosts,
-                    experienceGroups: experienceGroups,
-                    instagramReels: instagramReels,
-                    instagramPhotos: instagramPhotos,
-                    createdAt: new Date().toISOString()
-                };
-                
-                checklistData.push(newEntry);
+        // 통계 분석 로드
+        function loadStatistics() {
+            // 지점 옵션 로드 (관리자만)
+            if (currentUser.role === 'admin') {
+                const branches = dataManager.data.branches;
+                const select = document.getElementById('statisticsBranch');
+                select.innerHTML = '<option value="">전체 지점</option>' +
+                    branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
             }
-            
-            document.getElementById('naver-reviews').value = '';
-            document.getElementById('blog-posts').value = '';
-            document.getElementById('experience-groups').value = '';
-            document.getElementById('instagram-reels').value = '';
-            document.getElementById('instagram-photos').value = '';
-            
-            loadDesignerHistory();
-            updateDashboard();
-            
-            alert('체크리스트가 성공적으로 제출되었습니다.');
+
+            updateStatisticsChart();
         }
 
-        function showStatsTab(tabName) {
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(content => content.style.display = 'none');
-            
-            const tabs = document.querySelectorAll('.stats-tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('border-indigo-500', 'text-indigo-600');
-                tab.classList.add('border-transparent', 'text-gray-500');
-            });
-            
-            const targetContent = document.getElementById(tabName + '-stats');
-            if (targetContent) {
-                targetContent.style.display = 'block';
-            }
-            
-            const activeTab = document.getElementById(tabName + '-tab');
-            if (activeTab) {
-                activeTab.classList.remove('border-transparent', 'text-gray-500');
-                activeTab.classList.add('border-indigo-500', 'text-indigo-600');
-            }
-            
-            switch(tabName) {
-                case 'branch':
-                    updateBranchStats();
-                    break;
-                case 'designer':
-                    updateDesignerStats();
-                    break;
-                case 'integrated':
-                    setTimeout(() => updateIntegratedStats(), 100);
-                    break;
-            }
-        }
+        // 통계 차트 업데이트
+        function updateStatisticsChart() {
+            const period = document.getElementById('statisticsPeriod').value;
+            const branch = document.getElementById('statisticsBranch')?.value || '';
+            const category = document.getElementById('statisticsCategory').value;
 
-        function updateStatisticsData() {
-            if (isUpdating) return;
+            let checklists = dataManager.data.checklists;
             
-            const activeTab = document.querySelector('.stats-tab.border-indigo-500');
-            if (activeTab) {
-                const tabType = activeTab.id.replace('-tab', '');
-                showStatsTab(tabType);
-            } else {
-                showStatsTab('branch');
+            // 지점 필터링
+            if (branch) {
+                checklists = checklists.filter(c => c.branch === branch);
+            } else if (currentUser.role === 'leader') {
+                checklists = checklists.filter(c => c.branch === currentUser.branch);
             }
-        }
 
-        function updateBranchStats() {
-            const period = document.getElementById('stats-period')?.value || 'week';
-            const category = document.getElementById('stats-category')?.value || 'all';
-            const sort = document.getElementById('stats-sort')?.value || 'desc';
-            
-            const branchStats = calculateDetailedBranchStats(period, category, sort);
-            const tableBody = document.getElementById('branch-stats-table');
-            
-            if (tableBody) {
-                tableBody.innerHTML = branchStats.map((branch, index) => `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${index + 1}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${getBranchName(branch.branch)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.total}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.average}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.max}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.min}</td>
-                    </tr>
-                `).join('');
+            // 카테고리별 데이터 준비
+            const labels = [...new Set(checklists.map(c => c.date))].sort();
+            const datasets = [];
+
+            if (category === 'all' || category === 'reviews') {
+                datasets.push({
+                    label: '네이버 리뷰',
+                    data: labels.map(date => {
+                        return checklists.filter(c => c.date === date).reduce((sum, c) => sum + c.naverReviews, 0);
+                    }),
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)'
+                });
             }
-        }
 
-        function updateDesignerStats() {
-            const period = document.getElementById('stats-period')?.value || 'week';
-            const branch = currentUser.role === 'admin' ? (document.getElementById('stats-branch')?.value || 'all') : currentUser.branch;
-            const category = document.getElementById('stats-category')?.value || 'all';
-            const sort = document.getElementById('stats-sort')?.value || 'desc';
-            
-            const designerStats = calculateDesignerStats(period, branch, category, sort);
-            const tableBody = document.getElementById('designer-stats-table');
-            
-            if (tableBody) {
-                tableBody.innerHTML = designerStats.map((designer, index) => `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${index + 1}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${designer.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getBranchName(designer.branch)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.total}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${designer.average}</td>
-                    </tr>
-                `).join('');
+            if (category === 'all' || category === 'posts') {
+                datasets.push({
+                    label: '블로그 포스팅',
+                    data: labels.map(date => {
+                        return checklists.filter(c => c.date === date).reduce((sum, c) => sum + c.naverPosts, 0);
+                    }),
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)'
+                });
             }
-        }
 
-        function updateIntegratedStats() {
-            const period = document.getElementById('stats-period')?.value || 'week';
-            const data = getFilteredData(period, 'stats');
+            // 차트 생성/업데이트
+            const ctx = document.getElementById('statisticsChart').getContext('2d');
             
-            const branchData = getBranchComparisonData(data);
-            
-            createChart('integratedChart', 'integratedChart', {
-                type: 'bar',
-                data: {
-                    labels: branchData.labels,
-                    datasets: [{
-                        label: '총 활동량',
-                        data: branchData.totals,
-                        backgroundColor: 'rgba(99, 102, 241, 0.8)'
-                    }]
-                },
+            if (charts.statistics) {
+                charts.statistics.destroy();
+            }
+
+            charts.statistics = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true
@@ -2049,108 +1010,72 @@
                     }
                 }
             });
+        }
+
+        // 지점 비교 로드
+        function loadComparison() {
+            const branches = dataManager.data.branches;
             
-            const categoryData = getCategoryComparisonData(data);
-            
-            createChart('categoryCompareChart', 'categoryCompareChart', {
-                type: 'radar',
-                data: {
-                    labels: ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진'],
-                    datasets: categoryData.datasets
-                },
-                options: {
-                    scales: {
-                        r: {
-                            beginAtZero: true
-                        }
-                    }
-                }
+            // 지점 체크박스 생성
+            const container = document.getElementById('branchCheckboxes');
+            container.innerHTML = branches.map(branch => `
+                <label class="flex items-center">
+                    <input type="checkbox" class="branch-checkbox mr-2" value="${branch.name}"> ${branch.name}
+                </label>
+            `).join('');
+
+            // 전지점 선택 기능
+            document.getElementById('selectAllBranches').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.branch-checkbox');
+                checkboxes.forEach(cb => cb.checked = this.checked);
             });
+
+            updateComparisonCharts();
         }
 
-        function updateComparisonData() {
-            if (currentUser.role !== 'admin' || isUpdating) return;
-            isUpdating = true;
-            
+        // 비교 차트 업데이트
+        function updateComparisonCharts() {
             const selectedBranches = Array.from(document.querySelectorAll('.branch-checkbox:checked')).map(cb => cb.value);
-            const period = document.getElementById('compare-period')?.value || 'week';
-            const category = document.getElementById('compare-category')?.value || 'all';
-            
-            if (selectedBranches.length === 0) {
-                const tableBody = document.getElementById('comparison-table-body');
-                if (tableBody) {
-                    tableBody.innerHTML = '<tr><td colspan="100%" class="text-center py-8 text-gray-500">비교할 지점을 선택해주세요</td></tr>';
-                }
-                
-                // 모든 카테고리 차트 숨기기
-                ['reviews', 'posts', 'experiences', 'reels', 'photos'].forEach(cat => {
-                    destroyChart(cat + 'ComparisonChart');
-                });
-                
-                isUpdating = false;
-                return;
-            }
-            
-            updateCategoryCharts(selectedBranches, period);
-            updateComparisonTable(selectedBranches, period, category);
-            
-            isUpdating = false;
-        }
+            const checklists = dataManager.data.checklists.filter(c => selectedBranches.includes(c.branch));
 
-        function updateCategoryCharts(branches, period) {
-            const data = getFilteredData(period, 'compare');
-            const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B'];
-            
+            // 각 카테고리별 차트 생성
             const categories = [
-                { key: 'reviews', name: '네이버 리뷰', color: '#3B82F6' },
-                { key: 'posts', name: '블로그 포스팅', color: '#10B981' },
-                { key: 'experiences', name: '체험단 운영', color: '#8B5CF6' },
-                { key: 'reels', name: '인스타 릴스', color: '#EC4899' },
-                { key: 'photos', name: '인스타 사진', color: '#F59E0B' }
+                { id: 'reviewsChart', field: 'naverReviews', label: '네이버 리뷰', color: 'rgb(59, 130, 246)' },
+                { id: 'postsChart', field: 'naverPosts', label: '블로그 포스팅', color: 'rgb(34, 197, 94)' },
+                { id: 'experienceChart', field: 'naverExperience', label: '체험단 운영', color: 'rgb(245, 158, 11)' },
+                { id: 'reelsChart', field: 'instaReels', label: '인스타 릴스', color: 'rgb(147, 51, 234)' },
+                { id: 'photosChart', field: 'instaPhotos', label: '인스타 사진', color: 'rgb(236, 72, 153)' }
             ];
-            
+
             categories.forEach(category => {
-                const chartData = branches.map(branch => {
-                    const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
-                    const branchData = data.filter(item => branchDesigners.includes(item.designerId));
-                    
-                    switch(category.key) {
-                        case 'reviews':
-                            return branchData.reduce((sum, item) => sum + item.naverReviews, 0);
-                        case 'posts':
-                            return branchData.reduce((sum, item) => sum + item.blogPosts, 0);
-                        case 'experiences':
-                            return branchData.reduce((sum, item) => sum + item.experienceGroups, 0);
-                        case 'reels':
-                            return branchData.reduce((sum, item) => sum + item.instagramReels, 0);
-                        case 'photos':
-                            return branchData.reduce((sum, item) => sum + item.instagramPhotos, 0);
-                        default:
-                            return 0;
-                    }
-                });
+                const ctx = document.getElementById(category.id).getContext('2d');
                 
-                createChart(category.key + 'ComparisonChart', category.key + 'ComparisonChart', {
+                if (charts[category.id]) {
+                    charts[category.id].destroy();
+                }
+
+                const data = selectedBranches.map(branch => {
+                    return checklists.filter(c => c.branch === branch).reduce((sum, c) => sum + c[category.field], 0);
+                });
+
+                charts[category.id] = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: branches.map(branch => getBranchName(branch)),
+                        labels: selectedBranches,
                         datasets: [{
-                            label: category.name,
-                            data: chartData,
+                            label: category.label,
+                            data: data,
                             backgroundColor: category.color,
                             borderColor: category.color,
                             borderWidth: 1
                         }]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
                         scales: {
                             y: {
                                 beginAtZero: true
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
                             }
                         }
                     }
@@ -2158,312 +1083,200 @@
             });
         }
 
-        function updateComparisonTable(branches, period, category) {
-            const tableHeader = document.getElementById('comparison-table-header');
-            const tableBody = document.getElementById('comparison-table-body');
+        // 지점 옵션 로드
+        function loadBranchOptions() {
+            const branches = dataManager.data.branches;
+            const userBranch = currentUser.role === 'leader' ? currentUser.branch : null;
             
-            if (!tableHeader || !tableBody) return;
-            
-            tableHeader.innerHTML = '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">항목</th>' +
-                branches.map(branch => `<th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">${getBranchName(branch)}</th>`).join('');
-            
-            const comparisonData = getComparisonTableData(branches, period, category);
-            
-            tableBody.innerHTML = comparisonData.map(row => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${row.label}</td>
-                    ${row.values.map(value => `<td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">${value}</td>`).join('')}
-                </tr>
-            `).join('');
+            const filteredBranches = userBranch ? 
+                branches.filter(b => b.name === userBranch) : branches;
+
+            const select = document.getElementById('designerBranch');
+            select.innerHTML = '<option value="">지점을 선택하세요</option>' +
+                filteredBranches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
         }
 
-        function updateBranchRanking(period) {
-            const branchStats = calculateBranchStats(period);
-            
-            // Apply sorting
-            branchStats.sort((a, b) => {
-                const aVal = a[branchRankingSortConfig.column];
-                const bVal = b[branchRankingSortConfig.column];
-                const result = aVal - bVal;
-                return branchRankingSortConfig.direction === 'asc' ? result : -result;
-            });
-            
-            const tableBody = document.getElementById('branch-ranking-table');
-            
-            if (tableBody) {
-                tableBody.innerHTML = branchStats.map((branch, index) => `
-                    <tr class="${index === 0 ? 'bg-yellow-50' : ''}">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            ${index + 1}
-                            ${index === 0 ? '<span class="text-yellow-500 ml-2">★</span>' : ''}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${getBranchName(branch.branch)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.reviews}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.posts}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.experiences}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.reels}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${branch.photos}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${branch.total}</td>
-                    </tr>
-                `).join('');
-            }
+        // 모달 관리
+        function showAddDesigner() {
+            loadBranchOptions();
+            document.getElementById('addDesignerModal').classList.remove('hidden');
         }
 
-        // Utility functions
-        function getBranchName(branchCode) {
-            const branch = branches.find(b => b.code === branchCode);
-            return branch ? branch.name : branchCode;
+        function hideAddDesigner() {
+            document.getElementById('addDesignerModal').classList.add('hidden');
+            document.getElementById('addDesignerForm').reset();
         }
 
-        function getSNSLeaderForBranch(branchCode) {
-            const leaderMap = {
-                'songdo1': '송도리더',
-                'geomdan': '검단리더',
-                'bupyeong': '부평리더',
-                'incheon': '인천리더',
-                'gimpo': '김포리더'
+        function showAddBranch() {
+            document.getElementById('addBranchModal').classList.remove('hidden');
+        }
+
+        function hideAddBranch() {
+            document.getElementById('addBranchModal').classList.add('hidden');
+            document.getElementById('addBranchForm').reset();
+        }
+
+        // 폼 제출 처리
+        document.getElementById('addDesignerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const designer = {
+                name: document.getElementById('designerName').value,
+                branch: document.getElementById('designerBranch').value,
+                position: document.getElementById('designerPosition').value,
+                phone: document.getElementById('designerPhone').value
             };
-            return leaderMap[branchCode] || '-';
+
+            dataManager.addDesigner(designer);
+            hideAddDesigner();
+            loadDesigners();
+            alert('디자이너가 추가되었습니다.');
+        });
+
+        document.getElementById('addBranchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const branch = {
+                name: document.getElementById('branchName').value,
+                code: document.getElementById('branchCode').value,
+                address: document.getElementById('branchAddress').value
+            };
+
+            dataManager.addBranch(branch);
+            hideAddBranch();
+            loadBranches();
+            alert('지점이 추가되었습니다.');
+        });
+
+        document.getElementById('checklistForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const designerId = document.getElementById('checklistDesigner').value;
+            const designer = dataManager.data.designers.find(d => d.id == designerId);
+            
+            const checklist = {
+                designerId: parseInt(designerId),
+                designer: designer.name,
+                branch: designer.branch,
+                date: document.getElementById('checklistDate').value,
+                naverReviews: parseInt(document.getElementById('naverReviews').value) || 0,
+                naverPosts: parseInt(document.getElementById('naverPosts').value) || 0,
+                naverExperience: parseInt(document.getElementById('naverExperience').value) || 0,
+                instaReels: parseInt(document.getElementById('instaReels').value) || 0,
+                instaPhotos: parseInt(document.getElementById('instaPhotos').value) || 0
+            };
+
+            dataManager.addChecklist(checklist);
+            this.reset();
+            document.getElementById('checklistDate').value = new Date().toISOString().split('T')[0];
+            loadDesignerHistory(designerId);
+            alert('체크리스트가 제출되었습니다.');
+        });
+
+        // 데이터 내보내기/가져오기
+        function exportData() {
+            const data = dataManager.exportData();
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gohair_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('데이터가 내보내기 되었습니다.');
         }
 
-        function getFilteredData(period, section = '') {
-            const now = new Date();
-            let startDate, endDate = now;
-            
-            if (period === 'custom') {
-                const startInput = document.getElementById(section + '-start-date');
-                const endInput = document.getElementById(section + '-end-date');
-                if (startInput && endInput && startInput.value && endInput.value) {
-                    startDate = new Date(startInput.value);
-                    endDate = new Date(endInput.value);
-                    endDate.setHours(23, 59, 59, 999); // Include the entire end date
-                } else {
-                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                }
-            } else {
-                switch(period) {
-                    case 'today':
-                        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                        break;
-                    case 'week':
-                        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                        break;
-                    case 'month':
-                        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-                        break;
-                    case 'quarter':
-                        const quarter = Math.floor(now.getMonth() / 3);
-                        startDate = new Date(now.getFullYear(), quarter * 3, 1);
-                        break;
-                    case 'year':
-                        startDate = new Date(now.getFullYear(), 0, 1);
-                        break;
-                    default:
-                        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                }
-            }
-            
-            return checklistData.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= startDate && itemDate <= endDate;
-            });
+        function importData() {
+            document.getElementById('fileInput').click();
         }
 
-        function calculateBranchStats(period) {
-            const data = getFilteredData(period, 'dashboard');
-            const branchMap = {};
-            
-            const branches = currentUser.role === 'admin' ? 
-                ['songdo1', 'geomdan', 'bupyeong', 'incheon', 'gimpo'] : 
-                [currentUser.branch];
-            
-            branches.forEach(branch => {
-                branchMap[branch] = { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 };
-            });
-            
-            data.forEach(item => {
-                const designer = designers.find(d => d.id === item.designerId);
-                if (designer && branchMap[designer.branch] !== undefined) {
-                    branchMap[designer.branch].reviews += item.naverReviews;
-                    branchMap[designer.branch].posts += item.blogPosts;
-                    branchMap[designer.branch].experiences += item.experienceGroups;
-                    branchMap[designer.branch].reels += item.instagramReels;
-                    branchMap[designer.branch].photos += item.instagramPhotos;
-                }
-            });
-            
-            return Object.entries(branchMap).map(([branch, stats]) => ({
-                branch,
-                ...stats,
-                total: stats.reviews + stats.posts + stats.experiences + stats.reels + stats.photos
-            }));
-        }
-
-        function calculateDetailedBranchStats(period, category, sort) {
-            const data = getFilteredData(period, 'stats');
-            const branchStats = calculateBranchStats(period);
-            
-            return branchStats.map(branch => {
-                const branchData = data.filter(item => {
-                    const designer = designers.find(d => d.id === item.designerId);
-                    return designer && designer.branch === branch.branch;
-                });
-                
-                let values = [];
-                switch(category) {
-                    case 'reviews':
-                        values = branchData.map(item => item.naverReviews);
-                        break;
-                    case 'posts':
-                        values = branchData.map(item => item.blogPosts);
-                        break;
-                    case 'experiences':
-                        values = branchData.map(item => item.experienceGroups);
-                        break;
-                    case 'reels':
-                        values = branchData.map(item => item.instagramReels);
-                        break;
-                    case 'photos':
-                        values = branchData.map(item => item.instagramPhotos);
-                        break;
-                    default:
-                        values = branchData.map(item => 
-                            item.naverReviews + item.blogPosts + item.experienceGroups + 
-                            item.instagramReels + item.instagramPhotos
-                        );
-                }
-                
-                const total = values.reduce((sum, val) => sum + val, 0);
-                const average = values.length > 0 ? Math.round(total / values.length * 10) / 10 : 0;
-                const max = values.length > 0 ? Math.max(...values) : 0;
-                const min = values.length > 0 ? Math.min(...values) : 0;
-                
-                return {
-                    ...branch,
-                    total,
-                    average,
-                    max,
-                    min
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const success = dataManager.importData(e.target.result);
+                    if (success) {
+                        alert('데이터가 성공적으로 가져와졌습니다.');
+                        location.reload();
+                    } else {
+                        alert('데이터 가져오기에 실패했습니다.');
+                    }
                 };
-            }).sort((a, b) => sort === 'desc' ? b.total - a.total : a.total - b.total);
+                reader.readAsText(file);
+            }
+        });
+
+        // 편집/삭제 함수들 (실제 구현은 더 복잡할 수 있음)
+        function editDesigner(id) {
+            alert(`디자이너 ID ${id} 편집 기능은 추후 구현됩니다.`);
         }
 
-        function calculateDesignerStats(period, branch, category, sort) {
-            const data = getFilteredData(period, 'stats');
-            let filteredDesigners = designers;
-            
-            if (branch !== 'all') {
-                filteredDesigners = designers.filter(d => d.branch === branch);
+        function deleteDesigner(id) {
+            if (confirm('정말로 이 디자이너를 삭제하시겠습니까?')) {
+                dataManager.data.designers = dataManager.data.designers.filter(d => d.id !== id);
+                dataManager.saveData();
+                loadDesigners();
+                alert('디자이너가 삭제되었습니다.');
             }
-            
-            if (currentUser.role !== 'admin') {
-                filteredDesigners = filteredDesigners.filter(d => d.branch === currentUser.branch);
-            }
-            
-            return filteredDesigners.map(designer => {
-                const designerData = data.filter(item => item.designerId === designer.id);
-                
-                let values = [];
-                switch(category) {
-                    case 'reviews':
-                        values = designerData.map(item => item.naverReviews);
-                        break;
-                    case 'posts':
-                        values = designerData.map(item => item.blogPosts);
-                        break;
-                    case 'experiences':
-                        values = designerData.map(item => item.experienceGroups);
-                        break;
-                    case 'reels':
-                        values = designerData.map(item => item.instagramReels);
-                        break;
-                    case 'photos':
-                        values = designerData.map(item => item.instagramPhotos);
-                        break;
-                    default:
-                        values = designerData.map(item => 
-                            item.naverReviews + item.blogPosts + item.experienceGroups + 
-                            item.instagramReels + item.instagramPhotos
-                        );
-                }
-                
-                const total = values.reduce((sum, val) => sum + val, 0);
-                const average = values.length > 0 ? Math.round(total / values.length * 10) / 10 : 0;
-                
-                return {
-                    ...designer,
-                    total,
-                    average
-                };
-            }).sort((a, b) => sort === 'desc' ? b.total - a.total : a.total - b.total);
         }
 
-        function getDailyChartData(data) {
-            const dailyMap = {};
+        function editBranch(id) {
+            alert(`지점 ID ${id} 편집 기능은 추후 구현됩니다.`);
+        }
+
+        function deleteBranch(id) {
+            if (confirm('정말로 이 지점을 삭제하시겠습니까?')) {
+                dataManager.data.branches = dataManager.data.branches.filter(b => b.id !== id);
+                dataManager.saveData();
+                loadBranches();
+                alert('지점이 삭제되었습니다.');
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 이벤트 리스너 추가
+            document.getElementById('statisticsPeriod').addEventListener('change', updateStatisticsChart);
+            document.getElementById('statisticsBranch')?.addEventListener('change', updateStatisticsChart);
+            document.getElementById('statisticsCategory').addEventListener('change', updateStatisticsChart);
             
-            data.forEach(item => {
-                const date = item.date;
-                if (!dailyMap[date]) {
-                    dailyMap[date] = 0;
+            document.getElementById('comparisonPeriod').addEventListener('change', updateComparisonCharts);
+            document.getElementById('comparisonCategory').addEventListener('change', updateComparisonCharts);
+            
+            // 지점 체크박스 변경 시 차트 업데이트
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('branch-checkbox')) {
+                    updateComparisonCharts();
                 }
-                dailyMap[date] += item.naverReviews + item.blogPosts + item.experienceGroups + 
-                                 item.instagramReels + item.instagramPhotos;
             });
-            
-            const sortedDates = Object.keys(dailyMap).sort();
-            const last7Days = sortedDates.slice(-7);
-            
-            return {
-                labels: last7Days.map(date => new Date(date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })),
-                values: last7Days.map(date => dailyMap[date] || 0)
-            };
-        }
+        });
+    </script>
 
-        function getBranchComparisonData(data) {
-            const branchStats = calculateBranchStats('week');
-            return {
-                labels: branchStats.map(branch => getBranchName(branch.branch)),
-                totals: branchStats.map(branch => branch.total)
-            };
-        }
 
-        function getCategoryComparisonData(data) {
-            const branches = [...new Set(designers.map(d => d.branch))];
-            const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B'];
-            
-            return {
-                datasets: branches.slice(0, 5).map((branch, index) => {
-                    const branchDesigners = designers.filter(d => d.branch === branch).map(d => d.id);
-                    const branchData = data.filter(item => branchDesigners.includes(item.designerId));
-                    
-                    const totals = branchData.reduce((acc, curr) => ({
-                        reviews: acc.reviews + curr.naverReviews,
-                        posts: acc.posts + curr.blogPosts,
-                        experiences: acc.experiences + curr.experienceGroups,
-                        reels: acc.reels + curr.instagramReels,
-                        photos: acc.photos + curr.instagramPhotos
-                    }), { reviews: 0, posts: 0, experiences: 0, reels: 0, photos: 0 });
-                    
-                    return {
-                        label: getBranchName(branch),
-                        data: [totals.reviews, totals.posts, totals.experiences, totals.reels, totals.photos],
-                        borderColor: colors[index],
-                        backgroundColor: colors[index] + '33'
-                    };
-                })
-            };
-        }
-
-        function getComparisonTableData(branches, period, category) {
-            const data = getFilteredData(period, 'compare');
-            const items = category === 'all' ? 
-                ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진', '총합', '평
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDq68WAQ4kMrkFqMp8tQP4J78lTPYDQzeZ4n65NQqGB38L3wwAtMOVxzBaxZiyi7WxxG6rIRm8WTGh0Qp5Bq8ajsTB83Uor2jR41V5kIK5cAg%2B0ikRbtdoDjVD%2FaO2yDFswIQRlHiHSkx6cy9wZoRBr37fYw6yFtNuaDU3mCUvdLVkAtsFc2zYYxVrO0cpN8FBfwuiQS3Q9ZhWGO2orjaZhjPcgLM9G55l81ah7geKsvLQxGaAjw22rZvPoBlqeCrIuiENjSlLkZ3qZ%2BY1HzgH4TcDwQ2ryTyjtUZ90K%2B8jT0r74eHKldtPIAC5nV0wKXkHE9Ta0sbK9Vcq5GBuR2EXwp7zqCVWlSzWTPsPS4GFyvKh2jyX2EtLve26xbxXp1Puxh63DyA39A8PBZ6CEIt4TdaNMUmUEEjkXIUnXUah1QHo06EZNGMtyD%2BNtKiIwPwScp1%2FfufD4GYBEKGje6mc8%2FcEZKncXmKkCPjjVtaVOerBr6%2BL3pQFXbq4NcVVaolQ%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDsRUqsaEn9Lg9E8%2By%2BrcTL9aZI%2FKVsDxG6iPuTDGWVWpyn%2BhFuOtnwa88o8XWBaFUtssXIKYgKGSx34Z71NXFhOWzT8tPKXPprGhzYhzPhvW23oyMo7X4qc50O4bxTIRff5TPXcId2D47yAvQk4fWIKb%2FMOgkYQCrt%2BZmLpin%2BruzBG6Pr1F%2FaJ6oMEOUPd3bcv7eoTfLQe9XFp1AW3g%2BtVK6TlkZNKDyUIgu2o4RbxZmhXKSSiF7aLTiZPjiI4bF4gwPLhiCHi0fapv%2BnMhcK1Afr4BX57LY8cOcpRzFJ2bQeLoO%2Bwuh76093KVWBdcEztQ33CMY30qLb6zFBALlY%2BXNdGnqz0r4W77a9WQ1%2BR7xDChx97eImLaCk1Jyi%2F1IyQpGvVpZOd82H8E7%2F1iTeqQk7PXXucDEcIWZdfDXOL7MEbqbR7oTGXYZ7rRRv1JCAjWkzbN4nzLygpOqLef%2BOCVhPwRJcDfvphKgxV6kvkQvafnZzxgIKqyRlb0aBR6nA%3D%3D";
         window.__genspark_locale = "ko-KR";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDq68WAQ4kMrkFqMp8tQP4J78lTPYDQzeZ4n65NQqGB38L3wwAtMOVxzBaxZiyi7WxxG6rIRm8WTGh0Qp5Bq8ajsTB83Uor2jR41V5kIK5cAg+0ikRbtdoDjVD/aO2yDFswIQRlHiHSkx6cy9wZoRBr37fYw6yFtNuaDU3mCUvdLVkAtsFc2zYYxVrO0cpN8FBfwuiQS3Q9ZhWGO2orjaZhjPcgLM9G55l81ah7geKsvLQxGaAjw22rZvPoBlqeCrIuiENjSlLkZ3qZ+Y1HzgH4TcDwQ2ryTyjtUZ90K+8jT0r74eHKldtPIAC5nV0wKXkHE9Ta0sbK9Vcq5GBuR2EXwp7zqCVWlSzWTPsPS4GFyvKh2jyX2EtLve26xbxXp1Puxh63DyA39A8PBZ6CEIt4TdaNMUmUEEjkXIUnXUah1QHo06EZNGMtyD+NtKiIwPwScp1/fufD4GYBEKGje6mc8/cEZKncXmKkCPjjVtaVOerBr6+L3pQFXbq4NcVVaolQ==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDsRUqsaEn9Lg9E8+y+rcTL9aZI/KVsDxG6iPuTDGWVWpyn+hFuOtnwa88o8XWBaFUtssXIKYgKGSx34Z71NXFhOWzT8tPKXPprGhzYhzPhvW23oyMo7X4qc50O4bxTIRff5TPXcId2D47yAvQk4fWIKb/MOgkYQCrt+ZmLpin+ruzBG6Pr1F/aJ6oMEOUPd3bcv7eoTfLQe9XFp1AW3g+tVK6TlkZNKDyUIgu2o4RbxZmhXKSSiF7aLTiZPjiI4bF4gwPLhiCHi0fapv+nMhcK1Afr4BX57LY8cOcpRzFJ2bQeLoO+wuh76093KVWBdcEztQ33CMY30qLb6zFBALlY+XNdGnqz0r4W77a9WQ1+R7xDChx97eImLaCk1Jyi/1IyQpGvVpZOd82H8E7/1iTeqQk7PXXucDEcIWZdfDXOL7MEbqbR7oTGXYZ7rRRv1JCAjWkzbN4nzLygpOqLef+OCVhPwRJcDfvphKgxV6kvkQvafnZzxgIKqyRlb0aBR6nA==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.다운로드"></script>
-    </body></html>
+    <div class="genspark-notice-dialog" style="display: none;">
+      <div class="genspark-notice-content">
+        <h2 class="genspark-notice-title">이 사이트는 사용자가 만들었습니다. 참고하세요:</h2>
+        <ul class="genspark-notice-list">
+          <li>콘텐츠에 부정확한 정보가 포함될 수 있으니, 사용하기 전에 정보를 확인하세요.</li>
+          <li>부적절한 콘텐츠를 발견하시면 <a href="mailto:support@genspark.ai">support@genspark.ai</a>로 연락해 주세요.</li>
+        </ul>
+        <div class="genspark-notice-checkbox">
+          <input type="checkbox" id="genspark-dont-show">
+          <label for="genspark-dont-show">이 메시지를 다시 표시하지 않음.</label>
+        </div>
+        <div class="genspark-notice-actions">
+          <button class="genspark-notice-ok">확인</button>
+        </div>
+      </div>
+    </div></body></html>
