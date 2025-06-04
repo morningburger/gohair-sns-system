@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0035)https://dlbszvuj.gensparkspace.com/ -->
+<!-- saved from url=(0035)https://yihvjljf.gensparkspace.com/ -->
 <html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +13,53 @@
         .emoji-icon { font-size: 16px; margin-right: 8px; display: inline-block; }
         .large-emoji { font-size: 32px; }
         .medium-emoji { font-size: 20px; }
+        
+        /* 모바일 테이블 최적화 */
+        .table-mobile-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        
+        .table-mobile-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .table-mobile-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .table-mobile-scroll::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .table-mobile-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        @media (max-width: 768px) {
+            .table-mobile-scroll table {
+                min-width: 700px;
+            }
+            
+            .table-mobile-scroll th,
+            .table-mobile-scroll td {
+                white-space: nowrap;
+                padding: 8px 12px;
+            }
+            
+            .nav-mobile {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .nav-mobile button {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
     </style>
 <style>
     .genspark-notice-dialog {
@@ -126,7 +173,7 @@
                 <h1 class="text-2xl font-bold text-purple-600">GOHAIR SNS 마케팅 관리 시스템</h1>
                 <p class="text-gray-600 mt-2">SNS 리더 로그인</p>
             </div>
-            <form id="loginForm" class="bg-white bg-opacity-30">
+            <form id="loginForm">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2">
                         <span class="emoji-icon">📧</span>이메일
@@ -144,7 +191,7 @@
                 </button>
             </form>
             <div class="text-center mt-4">
-                <a href="https://dlbszvuj.gensparkspace.com/#" class="text-purple-600 hover:text-purple-800 text-sm">SNS 리더로 가입하기</a>
+                <a href="https://yihvjljf.gensparkspace.com/#" class="text-purple-600 hover:text-purple-800 text-sm">SNS 리더로 가입하기</a>
             </div>
         </div>
     </div>
@@ -165,30 +212,33 @@
                         <button onclick="importData()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
                             <span class="emoji-icon">📤</span>데이터 가져오기
                         </button>
-                        <span id="currentUser" class="text-sm opacity-90 px-2 py-1">관리자</span>
+                        <span id="currentUser" class="text-sm opacity-90 px-2 py-1"></span>
                         <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
                             <span class="emoji-icon">🚪</span>로그아웃
                         </button>
                     </div>
                 </div>
                 <nav class="mt-4">
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="showPage(&#39;dashboard&#39;)" class="nav-btn bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition bg-white">
+                    <div class="flex flex-wrap gap-2 nav-mobile">
+                        <button onclick="showPage(&#39;dashboard&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
                             <span class="emoji-icon">🏠</span>대시보드
                         </button>
-                        <button onclick="showPage(&#39;designers&#39;)" class="nav-btn bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition bg-white">
+                        <button onclick="showPage(&#39;designers&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
                             <span class="emoji-icon">👥</span>디자이너 관리
                         </button>
-                        <button onclick="showPage(&#39;branches&#39;)" class="nav-btn admin-only bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition bg-white">
+                        <button onclick="showPage(&#39;branches&#39;)" class="nav-btn admin-only hidden bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
                             <span class="emoji-icon">🏢</span>지점 관리
                         </button>
-                        <button onclick="showPage(&#39;checklist&#39;)" class="nav-btn bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition bg-white">
+                        <button onclick="showPage(&#39;designerHistory&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
+                            <span class="emoji-icon">📊</span>디자이너 히스토리
+                        </button>
+                        <button onclick="showPage(&#39;checklist&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
                             <span class="emoji-icon">📋</span>체크리스트 입력
                         </button>
-                        <button onclick="showPage(&#39;statistics&#39;)" class="nav-btn bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition bg-white">
+                        <button onclick="showPage(&#39;statistics&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
                             <span class="emoji-icon">📈</span>통계 분석
                         </button>
-                        <button onclick="showPage(&#39;comparison&#39;)" class="nav-btn bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition bg-white">
+                        <button onclick="showPage(&#39;comparison&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
                             <span class="emoji-icon">⚖️</span>지점 비교
                         </button>
                     </div>
@@ -198,7 +248,7 @@
 
         <main class="container mx-auto px-4 py-8">
             <!-- 대시보드 -->
-            <div id="dashboardPage" class="">
+            <div id="dashboardPage">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">
                         <span class="emoji-icon">🏠</span>대시보드
@@ -209,7 +259,7 @@
                     <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6 card-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <div class="text-3xl font-bold" id="totalReviews">12</div>
+                                <div class="text-3xl font-bold" id="totalReviews">0</div>
                                 <div class="text-green-100">네이버 리뷰</div>
                             </div>
                             <div class="text-4xl opacity-80">⭐</div>
@@ -218,7 +268,7 @@
                     <div class="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg p-6 card-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <div class="text-3xl font-bold" id="totalPosts">6</div>
+                                <div class="text-3xl font-bold" id="totalPosts">0</div>
                                 <div class="text-green-100">블로그 포스팅</div>
                             </div>
                             <div class="text-4xl opacity-80">📝</div>
@@ -227,7 +277,7 @@
                     <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg p-6 card-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <div class="text-3xl font-bold" id="totalExperience">3</div>
+                                <div class="text-3xl font-bold" id="totalExperience">0</div>
                                 <div class="text-yellow-100">체험단 운영</div>
                             </div>
                             <div class="text-4xl opacity-80">🎯</div>
@@ -236,7 +286,7 @@
                     <div class="bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg p-6 card-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <div class="text-3xl font-bold" id="totalReels">6</div>
+                                <div class="text-3xl font-bold" id="totalReels">0</div>
                                 <div class="text-pink-100">인스타 릴스</div>
                             </div>
                             <div class="text-4xl opacity-80">🎬</div>
@@ -245,7 +295,7 @@
                     <div class="bg-gradient-to-r from-pink-600 to-pink-700 text-white rounded-lg p-6 card-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <div class="text-3xl font-bold" id="totalPhotos">19</div>
+                                <div class="text-3xl font-bold" id="totalPhotos">0</div>
                                 <div class="text-pink-100">인스타 사진</div>
                             </div>
                             <div class="text-4xl opacity-80">📷</div>
@@ -260,7 +310,7 @@
                             <span class="emoji-icon">🔄</span>새로고침
                         </button>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="table-mobile-scroll">
                         <table class="min-w-full table-auto">
                             <thead>
                                 <tr class="bg-gray-50">
@@ -287,39 +337,8 @@
                                 </tr>
                             </thead>
                             <tbody id="branchRankings">
-                <tr class="bg-gray-50 hover:bg-gray-100">
-                    <td class="px-4 py-2 font-bold">1</td>
-                    <td class="px-4 py-2 font-medium">송도1지점</td>
-                    <td class="px-4 py-2">5</td>
-                    <td class="px-4 py-2">2</td>
-                    <td class="px-4 py-2">1</td>
-                    <td class="px-4 py-2">3</td>
-                    <td class="px-4 py-2">8</td>
-                    <td class="px-4 py-2 font-bold text-blue-600">19</td>
-                </tr>
-            
-                <tr class=" hover:bg-gray-100">
-                    <td class="px-4 py-2 font-bold">2</td>
-                    <td class="px-4 py-2 font-medium">부평점</td>
-                    <td class="px-4 py-2">4</td>
-                    <td class="px-4 py-2">3</td>
-                    <td class="px-4 py-2">2</td>
-                    <td class="px-4 py-2">1</td>
-                    <td class="px-4 py-2">6</td>
-                    <td class="px-4 py-2 font-bold text-blue-600">16</td>
-                </tr>
-            
-                <tr class="bg-gray-50 hover:bg-gray-100">
-                    <td class="px-4 py-2 font-bold">3</td>
-                    <td class="px-4 py-2 font-medium">검단테라스점</td>
-                    <td class="px-4 py-2">3</td>
-                    <td class="px-4 py-2">1</td>
-                    <td class="px-4 py-2">0</td>
-                    <td class="px-4 py-2">2</td>
-                    <td class="px-4 py-2">5</td>
-                    <td class="px-4 py-2 font-bold text-blue-600">11</td>
-                </tr>
-            </tbody>
+                                <!-- 동적으로 생성됨 -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -341,14 +360,14 @@
                         </button>
                     </div>
                     
-                    <div class="admin-only mb-4">
+                    <div class="admin-only hidden mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">지점 필터</label>
                         <select id="designerBranchFilter" class="px-3 py-2 border border-gray-300 rounded-md">
                             <option value="">전체 지점</option>
                         </select>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <div class="table-mobile-scroll">
                         <table class="min-w-full table-auto">
                             <thead>
                                 <tr class="bg-gray-50">
@@ -453,7 +472,7 @@
                         </button>
                     </div>
                     
-                    <div class="overflow-x-auto">
+                    <div class="table-mobile-scroll">
                         <table class="min-w-full table-auto">
                             <thead>
                                 <tr class="bg-gray-50">
@@ -515,6 +534,36 @@
                 </div>
             </div>
 
+            <!-- 디자이너 히스토리 -->
+            <div id="designerHistoryPage" class="hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <span class="emoji-icon">📊</span>디자이너 히스토리
+                    </h2>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            <span class="emoji-icon">👤</span>디자이너 선택
+                        </label>
+                        <select id="historyDesignerSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <option value="">디자이너를 선택하세요</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div id="selectedDesignerHistory">
+                        <div class="text-center py-12">
+                            <span class="large-emoji text-gray-300">📊</span>
+                            <h3 class="text-lg font-medium text-gray-600 mb-2 mt-4">디자이너 히스토리</h3>
+                            <p class="text-gray-500">위에서 디자이너를 선택하면 상세한 활동 히스토리를 확인할 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 체크리스트 입력 -->
             <div id="checklistPage" class="hidden">
                 <div class="mb-6">
@@ -523,88 +572,90 @@
                     </h2>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h3 class="text-xl font-bold mb-4">일일 체크리스트 입력</h3>
-                        <form id="checklistForm">
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">
-                                    <span class="emoji-icon">👤</span>디자이너 선택
-                                </label>
-                                <select id="checklistDesigner" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
-                                    <option value="">디자이너를 선택하세요</option>
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">
-                                    <span class="emoji-icon">📅</span>날짜
-                                </label>
-                                <input type="date" id="checklistDate" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
-                            </div>
-                            
-                            <div class="mb-6">
-                                <h4 class="font-bold text-lg mb-3 text-green-600 border-b border-green-200 pb-2">
-                                    <span class="emoji-icon">🟢</span>네이버
-                                </h4>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-gray-700 text-sm font-bold mb-2">
-                                            <span class="emoji-icon">⭐</span>리뷰 수
-                                        </label>
-                                        <input type="number" id="naverReviews" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-700 text-sm font-bold mb-2">
-                                            <span class="emoji-icon">📝</span>블로그 포스팅 수
-                                        </label>
-                                        <input type="number" id="naverPosts" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-700 text-sm font-bold mb-2">
-                                            <span class="emoji-icon">🎯</span>체험단 운영 건수
-                                        </label>
-                                        <input type="number" id="naverExperience" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">일일 체크리스트 입력</h3>
+                    <form id="checklistForm">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                                        <span class="emoji-icon">👤</span>디자이너 선택
+                                    </label>
+                                    <select id="checklistDesigner" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                                        <option value="">디자이너를 선택하세요</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                                        <span class="emoji-icon">📅</span>날짜
+                                    </label>
+                                    <input type="date" id="checklistDate" class="w-full px-3 py-2 border border-gray-300 rounded-md" required="">
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h4 class="font-bold text-lg mb-3 text-green-600 border-b border-green-200 pb-2">
+                                        <span class="emoji-icon">🟢</span>네이버
+                                    </h4>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <span class="emoji-icon">⭐</span>리뷰 수
+                                            </label>
+                                            <input type="number" id="naverReviews" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <span class="emoji-icon">📝</span>블로그 포스팅 수
+                                            </label>
+                                            <input type="number" id="naverPosts" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <span class="emoji-icon">🎯</span>체험단 운영 건수
+                                            </label>
+                                            <input type="number" id="naverExperience" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <h4 class="font-bold text-lg mb-3 text-pink-600 border-b border-pink-200 pb-2">
-                                    <span class="emoji-icon">📱</span>인스타그램
-                                </h4>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-gray-700 text-sm font-bold mb-2">
-                                            <span class="emoji-icon">🎬</span>릴스 게시 수
-                                        </label>
-                                        <input type="number" id="instaReels" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-700 text-sm font-bold mb-2">
-                                            <span class="emoji-icon">📷</span>사진 게시 수
-                                        </label>
-                                        <input type="number" id="instaPhotos" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                                
+                                <div class="mb-6">
+                                    <h4 class="font-bold text-lg mb-3 text-pink-600 border-b border-pink-200 pb-2">
+                                        <span class="emoji-icon">📱</span>인스타그램
+                                    </h4>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <span class="emoji-icon">🎬</span>릴스 게시 수
+                                            </label>
+                                            <input type="number" id="instaReels" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                                <span class="emoji-icon">📷</span>사진 게시 수
+                                            </label>
+                                            <input type="number" id="instaPhotos" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" value="0">
+                                        </div>
                                     </div>
                                 </div>
+                                
+                                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded">
+                                    <span class="emoji-icon">🚀</span>체크리스트 제출
+                                </button>
                             </div>
                             
-                            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded">
-                                <span class="emoji-icon">🚀</span>체크리스트 제출
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h3 class="text-xl font-bold mb-4">
-                            <span class="emoji-icon">📊</span>디자이너 히스토리
-                        </h3>
-                        <div id="designerHistory" class="text-gray-500">
-                            <div class="text-center py-8">
-                                <span class="large-emoji text-gray-300">ℹ️</span>
-                                <p class="mt-4">디자이너를 선택하면 히스토리가 표시됩니다.</p>
+                            <div>
+                                <h4 class="text-lg font-bold mb-4">
+                                    <span class="emoji-icon">📈</span>빠른 현황 보기
+                                </h4>
+                                <div id="checklistQuickView" class="text-gray-500">
+                                    <div class="text-center py-8">
+                                        <span class="large-emoji text-gray-300">ℹ️</span>
+                                        <p class="mt-4">디자이너를 선택하면 최근 활동 요약을 볼 수 있습니다.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
@@ -690,7 +741,7 @@
 
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <h3 class="text-lg font-bold mb-4">순위 테이블</h3>
-                        <div class="overflow-x-auto" id="statisticsTable">
+                        <div class="table-mobile-scroll" id="statisticsTable">
                             <!-- 동적으로 생성됨 -->
                         </div>
                     </div>
@@ -816,7 +867,7 @@
                     <h3 class="text-lg font-bold mb-4">
                         <span class="emoji-icon">📊</span>상세 비교 표
                     </h3>
-                    <div class="overflow-x-auto" id="comparisonTable">
+                    <div class="table-mobile-scroll" id="comparisonTable">
                         <!-- 동적으로 생성됨 -->
                     </div>
                 </div>
@@ -1006,7 +1057,7 @@
 
         // 페이지 전환
         function showPage(pageId) {
-            const pages = ['dashboard', 'designers', 'branches', 'checklist', 'statistics', 'comparison'];
+            const pages = ['dashboard', 'designers', 'branches', 'designerHistory', 'checklist', 'statistics', 'comparison'];
             pages.forEach(page => {
                 const element = document.getElementById(page + 'Page');
                 if (element) {
@@ -1039,6 +1090,9 @@
                     break;
                 case 'branches':
                     loadBranches();
+                    break;
+                case 'designerHistory':
+                    loadDesignerHistoryPage();
                     break;
                 case 'checklist':
                     loadChecklist();
@@ -1213,15 +1267,15 @@
             }).join('');
         }
 
-        // 체크리스트 로드
-        function loadChecklist() {
+        // 디자이너 히스토리 페이지 로드
+        function loadDesignerHistoryPage() {
             const designers = dataManager.data.designers;
             const userBranch = currentUser.role === 'leader' ? currentUser.branch : null;
             
             const filteredDesigners = userBranch ? 
                 designers.filter(d => d.branch === userBranch) : designers;
 
-            const select = document.getElementById('checklistDesigner');
+            const select = document.getElementById('historyDesignerSelect');
             select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
                 filteredDesigners.map(d => `
                     <option value="${d.id}">
@@ -1229,32 +1283,30 @@
                     </option>
                 `).join('');
 
-            // 오늘 날짜 설정
-            document.getElementById('checklistDate').value = new Date().toISOString().split('T')[0];
-
             // 디자이너 선택 시 히스토리 표시
             select.addEventListener('change', function() {
                 if (this.value) {
-                    loadDesignerHistory(this.value);
+                    loadSelectedDesignerHistory(this.value);
                 } else {
-                    document.getElementById('designerHistory').innerHTML = `
-                        <div class="text-center py-8">
-                            <span class="large-emoji text-gray-300">ℹ️</span>
-                            <p class="text-gray-500 mt-4">디자이너를 선택하면 히스토리가 표시됩니다.</p>
+                    document.getElementById('selectedDesignerHistory').innerHTML = `
+                        <div class="text-center py-12">
+                            <span class="large-emoji text-gray-300">📊</span>
+                            <h3 class="text-lg font-medium text-gray-600 mb-2 mt-4">디자이너 히스토리</h3>
+                            <p class="text-gray-500">위에서 디자이너를 선택하면 상세한 활동 히스토리를 확인할 수 있습니다.</p>
                         </div>
                     `;
                 }
             });
         }
 
-        // 디자이너 히스토리 로드
-        function loadDesignerHistory(designerId) {
+        // 선택된 디자이너 히스토리 로드
+        function loadSelectedDesignerHistory(designerId) {
             const checklists = dataManager.data.checklists.filter(c => c.designerId == designerId);
             const designer = dataManager.data.designers.find(d => d.id == designerId);
             
             if (checklists.length === 0) {
-                document.getElementById('designerHistory').innerHTML = `
-                    <div class="text-center py-8">
+                document.getElementById('selectedDesignerHistory').innerHTML = `
+                    <div class="text-center py-12">
                         <span class="large-emoji text-gray-300">📭</span>
                         <h4 class="text-lg font-medium text-gray-600 mb-2 mt-4">${designer.name}님의 기록</h4>
                         <p class="text-gray-500">아직 체크리스트 기록이 없습니다.</p>
@@ -1281,101 +1333,101 @@
                     <div class="flex items-center mb-4">
                         <span class="text-2xl mr-3">👤</span>
                         <div>
-                            <h3 class="text-lg font-bold">${designer.name}님의 활동 히스토리</h3>
+                            <h3 class="text-xl font-bold">${designer.name}님의 활동 히스토리</h3>
                             <p class="text-sm text-gray-600">${designer.branch} • ${designer.position}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="font-bold text-blue-700 mb-3">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                        <h4 class="font-bold text-blue-700 mb-4 text-lg">
                             <span class="emoji-icon">📊</span>총 활동량
                         </h4>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">⭐</span>리뷰</span>
-                                <span class="font-medium">${totalReviews}</span>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">⭐</span>리뷰</span>
+                                <span class="font-bold text-lg text-blue-600">${totalReviews}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">📝</span>포스팅</span>
-                                <span class="font-medium">${totalPosts}</span>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">📝</span>포스팅</span>
+                                <span class="font-bold text-lg text-blue-600">${totalPosts}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">🎯</span>체험단</span>
-                                <span class="font-medium">${totalExperience}</span>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">🎯</span>체험단</span>
+                                <span class="font-bold text-lg text-blue-600">${totalExperience}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">🎬</span>릴스</span>
-                                <span class="font-medium">${totalReels}</span>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">🎬</span>릴스</span>
+                                <span class="font-bold text-lg text-blue-600">${totalReels}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">📷</span>사진</span>
-                                <span class="font-medium">${totalPhotos}</span>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">📷</span>사진</span>
+                                <span class="font-bold text-lg text-blue-600">${totalPhotos}</span>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <h4 class="font-bold text-green-700 mb-3">
+                    <div class="bg-green-50 p-6 rounded-lg">
+                        <h4 class="font-bold text-green-700 mb-4 text-lg">
                             <span class="emoji-icon">🧮</span>일일 평균
                         </h4>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">⭐</span>리뷰</span>
-                                <span class="font-medium">${avgReviews}</span>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">⭐</span>리뷰</span>
+                                <span class="font-bold text-lg text-green-600">${avgReviews}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">📝</span>포스팅</span>
-                                <span class="font-medium">${avgPosts}</span>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">📝</span>포스팅</span>
+                                <span class="font-bold text-lg text-green-600">${avgPosts}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">🎯</span>체험단</span>
-                                <span class="font-medium">${avgExperience}</span>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">🎯</span>체험단</span>
+                                <span class="font-bold text-lg text-green-600">${avgExperience}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">🎬</span>릴스</span>
-                                <span class="font-medium">${avgReels}</span>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">🎬</span>릴스</span>
+                                <span class="font-bold text-lg text-green-600">${avgReels}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span><span class="emoji-icon">📷</span>사진</span>
-                                <span class="font-medium">${avgPhotos}</span>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center"><span class="emoji-icon">📷</span>사진</span>
+                                <span class="font-bold text-lg text-green-600">${avgPhotos}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-white border rounded-lg overflow-hidden">
-                    <div class="bg-gray-50 px-4 py-3 border-b">
-                        <h4 class="font-bold">
+                    <div class="bg-gray-50 px-6 py-4 border-b">
+                        <h4 class="font-bold text-lg">
                             <span class="emoji-icon">📋</span>최근 활동 기록
                         </h4>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="table-mobile-scroll">
                         <table class="min-w-full">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">날짜</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">리뷰</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">포스팅</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">체험단</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">릴스</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">사진</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">합계</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">날짜</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">리뷰</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">포스팅</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">체험단</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">릴스</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">사진</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">합계</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
-                                ${checklists.slice(-10).reverse().map(c => {
+                                ${checklists.slice(-15).reverse().map(c => {
                                     const daily = c.naverReviews + c.naverPosts + c.naverExperience + c.instaReels + c.instaPhotos;
                                     return `
                                         <tr class="hover:bg-gray-50">
-                                            <td class="px-3 py-2 text-sm font-medium">${c.date}</td>
-                                            <td class="px-3 py-2 text-sm">${c.naverReviews}</td>
-                                            <td class="px-3 py-2 text-sm">${c.naverPosts}</td>
-                                            <td class="px-3 py-2 text-sm">${c.naverExperience}</td>
-                                            <td class="px-3 py-2 text-sm">${c.instaReels}</td>
-                                            <td class="px-3 py-2 text-sm">${c.instaPhotos}</td>
-                                            <td class="px-3 py-2 text-sm font-bold text-blue-600">${daily}</td>
+                                            <td class="px-4 py-3 text-sm font-medium">${c.date}</td>
+                                            <td class="px-4 py-3 text-sm">${c.naverReviews}</td>
+                                            <td class="px-4 py-3 text-sm">${c.naverPosts}</td>
+                                            <td class="px-4 py-3 text-sm">${c.naverExperience}</td>
+                                            <td class="px-4 py-3 text-sm">${c.instaReels}</td>
+                                            <td class="px-4 py-3 text-sm">${c.instaPhotos}</td>
+                                            <td class="px-4 py-3 text-sm font-bold text-blue-600">${daily}</td>
                                         </tr>
                                     `;
                                 }).join('')}
@@ -1385,7 +1437,100 @@
                 </div>
             `;
 
-            document.getElementById('designerHistory').innerHTML = historyHtml;
+            document.getElementById('selectedDesignerHistory').innerHTML = historyHtml;
+        }
+
+        // 체크리스트 로드
+        function loadChecklist() {
+            const designers = dataManager.data.designers;
+            const userBranch = currentUser.role === 'leader' ? currentUser.branch : null;
+            
+            const filteredDesigners = userBranch ? 
+                designers.filter(d => d.branch === userBranch) : designers;
+
+            const select = document.getElementById('checklistDesigner');
+            select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
+                filteredDesigners.map(d => `
+                    <option value="${d.id}">
+                        ${d.name} (${d.branch} - ${d.position})
+                    </option>
+                `).join('');
+
+            // 오늘 날짜 설정
+            document.getElementById('checklistDate').value = new Date().toISOString().split('T')[0];
+
+            // 디자이너 선택 시 빠른 현황 보기
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    loadChecklistQuickView(this.value);
+                } else {
+                    document.getElementById('checklistQuickView').innerHTML = `
+                        <div class="text-center py-8">
+                            <span class="large-emoji text-gray-300">ℹ️</span>
+                            <p class="text-gray-500 mt-4">디자이너를 선택하면 최근 활동 요약을 볼 수 있습니다.</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // 체크리스트 빠른 현황 보기
+        function loadChecklistQuickView(designerId) {
+            const checklists = dataManager.data.checklists.filter(c => c.designerId == designerId);
+            const designer = dataManager.data.designers.find(d => d.id == designerId);
+            
+            if (checklists.length === 0) {
+                document.getElementById('checklistQuickView').innerHTML = `
+                    <div class="text-center py-8">
+                        <span class="large-emoji text-gray-300">📭</span>
+                        <h4 class="text-lg font-medium text-gray-600 mb-2 mt-4">${designer.name}님</h4>
+                        <p class="text-gray-500">아직 기록이 없습니다.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 최근 5일 데이터
+            const recentChecklists = checklists.slice(-5).reverse();
+            
+            const quickViewHtml = `
+                <div class="mb-4">
+                    <h4 class="font-bold text-lg mb-3">${designer.name}님 최근 활동</h4>
+                </div>
+                <div class="table-mobile-scroll">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-2 text-left">날짜</th>
+                                <th class="px-3 py-2 text-center">리뷰</th>
+                                <th class="px-3 py-2 text-center">포스팅</th>
+                                <th class="px-3 py-2 text-center">체험단</th>
+                                <th class="px-3 py-2 text-center">릴스</th>
+                                <th class="px-3 py-2 text-center">사진</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${recentChecklists.map(c => `
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-3 py-2 font-medium">${c.date}</td>
+                                    <td class="px-3 py-2 text-center">${c.naverReviews}</td>
+                                    <td class="px-3 py-2 text-center">${c.naverPosts}</td>
+                                    <td class="px-3 py-2 text-center">${c.naverExperience}</td>
+                                    <td class="px-3 py-2 text-center">${c.instaReels}</td>
+                                    <td class="px-3 py-2 text-center">${c.instaPhotos}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 text-center">
+                    <button onclick="showPage('designerHistory')" class="text-blue-600 hover:text-blue-800 text-sm">
+                        <span class="emoji-icon">📊</span>전체 히스토리 보기
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('checklistQuickView').innerHTML = quickViewHtml;
         }
 
         // 통계 분석 로드
@@ -1881,7 +2026,7 @@
                 document.getElementById(id).value = '0';
             });
             
-            loadDesignerHistory(designerId);
+            loadChecklistQuickView(designerId);
             loadDashboard(); // 대시보드 업데이트
             
             // 성공 알림
@@ -2026,25 +2171,10 @@
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDjFOderQ2u6L9GxBC7aY%2FJXrAb8p62hWatLu2zar3N4mZolpNGhsMXt%2BsrAEFDrLumSnefJy%2B35vBRC5p0fEDijJZjNcSK4PMvmB5a0GKrFbWNUeg6LTbCFPvxkkSAbFdt94UqT%2B8ntZQskBm%2BKQjE%2Bi74wvpi3XnWEF6NazcklspNcH9eSqjdfvap8QvS0wjPPsUJrcxiTLKldZ0EfFkR9q0slfmiWjQvR3DeB%2B5mLgD12W9gr2aS0mL1FWXvMjTCuqg20Ul70%2BZM1XNrS9%2FUD1ej8wdtJLeSFdOmYLGIqgzJsYSWR%2FXaGq%2BiLBlCrOLAyWINWVmbIINcEuvMxaHqQDKe4dCr1r6AbiscpDrjM2Kxehmij%2BjN0ut5U3M59DX8NhYKc1kGXsFkPbiYNpJVfPv3XGwv6jG2CLsYOZmpv5kPyJmlijqaovbcKNUnin2TH3ib19hz3P6oLegf4m7tyu0t1WBb%2B5NQwwHLoJKnYqtVIj00hg5tHfXgrOjwnPDQ%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgY%2FxWjQ%2FYKQjGkPI8J40pvVE4pVrhgjgkOb1%2BOF81kfgOe7YAz1CfHWhDtTEtZF7z1MTt6SHI4wjzoGr0QQUosbwPiaKLfL%2BCG1oM1rpqNtWRQppdJlCD6uHfdBTI1QyTUj95Ety4hTmx%2B50IHivYCFooSDW5cie0i26Mn4sfF7xtE1grlPJXsqfaPxiA%2FKhezD8Py2swWi1yRLKbAYHZxavoj7hisoWsm5yBvb83OTm1ZQBEMc6zoilmC1Dc%2FSUBy3MLF7itqMdgo8h4lmYlH9Aw9us4OL0BhGwKph%2BG2u7mC4rlgrhFc3vWTI7YzsHQFnbMsTFBbZN3CEviymz7luLCjbPk8i34YfR6vKYesY%2BeJogM1TMysdwVsD%2F%2F44rCd0Mi%2BlQQ1WWMW0Y923IyzTi6Cbqil1oHke1aWr48x3mEC3oEolVEojRPW%2BgjMYbhSQDl4vtWRz13MTnyKiE0tulznDfBZ4iSlBEMXDCzeo3219nR6S3lX5kjO3QaoqN%2Bo5yEeB5qSHxquGlW8ZYbk%3D";
         window.__genspark_locale = "ko-KR";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDjFOderQ2u6L9GxBC7aY/JXrAb8p62hWatLu2zar3N4mZolpNGhsMXt+srAEFDrLumSnefJy+35vBRC5p0fEDijJZjNcSK4PMvmB5a0GKrFbWNUeg6LTbCFPvxkkSAbFdt94UqT+8ntZQskBm+KQjE+i74wvpi3XnWEF6NazcklspNcH9eSqjdfvap8QvS0wjPPsUJrcxiTLKldZ0EfFkR9q0slfmiWjQvR3DeB+5mLgD12W9gr2aS0mL1FWXvMjTCuqg20Ul70+ZM1XNrS9/UD1ej8wdtJLeSFdOmYLGIqgzJsYSWR/XaGq+iLBlCrOLAyWINWVmbIINcEuvMxaHqQDKe4dCr1r6AbiscpDrjM2Kxehmij+jN0ut5U3M59DX8NhYKc1kGXsFkPbiYNpJVfPv3XGwv6jG2CLsYOZmpv5kPyJmlijqaovbcKNUnin2TH3ib19hz3P6oLegf4m7tyu0t1WBb+5NQwwHLoJKnYqtVIj00hg5tHfXgrOjwnPDQ==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgY/xWjQ/YKQjGkPI8J40pvVE4pVrhgjgkOb1+OF81kfgOe7YAz1CfHWhDtTEtZF7z1MTt6SHI4wjzoGr0QQUosbwPiaKLfL+CG1oM1rpqNtWRQppdJlCD6uHfdBTI1QyTUj95Ety4hTmx+50IHivYCFooSDW5cie0i26Mn4sfF7xtE1grlPJXsqfaPxiA/KhezD8Py2swWi1yRLKbAYHZxavoj7hisoWsm5yBvb83OTm1ZQBEMc6zoilmC1Dc/SUBy3MLF7itqMdgo8h4lmYlH9Aw9us4OL0BhGwKph+G2u7mC4rlgrhFc3vWTI7YzsHQFnbMsTFBbZN3CEviymz7luLCjbPk8i34YfR6vKYesY+eJogM1TMysdwVsD//44rCd0Mi+lQQ1WWMW0Y923IyzTi6Cbqil1oHke1aWr48x3mEC3oEolVEojRPW+gjMYbhSQDl4vtWRz13MTnyKiE0tulznDfBZ4iSlBEMXDCzeo3219nR6S3lX5kjO3QaoqN+o5yEeB5qSHxquGlW8ZYbk=";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.다운로드"></script>
-    <div class="genspark-notice-dialog" style="display: none;">
-      <div class="genspark-notice-content">
-        <h2 class="genspark-notice-title">이 사이트는 사용자가 만들었습니다. 참고하세요:</h2>
-        <ul class="genspark-notice-list">
-          <li>콘텐츠에 부정확한 정보가 포함될 수 있으니, 사용하기 전에 정보를 확인하세요.</li>
-          <li>부적절한 콘텐츠를 발견하시면 <a href="mailto:support@genspark.ai">support@genspark.ai</a>로 연락해 주세요.</li>
-        </ul>
-        <div class="genspark-notice-checkbox">
-          <input type="checkbox" id="genspark-dont-show">
-          <label for="genspark-dont-show">이 메시지를 다시 표시하지 않음.</label>
-        </div>
-        <div class="genspark-notice-actions">
-          <button class="genspark-notice-ok">확인</button>
-        </div>
-      </div>
-    </div></body></html>
+    </body></html>
