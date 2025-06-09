@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0035)https://yihvjljf.gensparkspace.com/ -->
+<!-- saved from url=(0035)https://cohfcobp.gensparkspace.com/ -->
 <html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -191,7 +191,59 @@
                 </button>
             </form>
             <div class="text-center mt-4">
-                <a href="https://yihvjljf.gensparkspace.com/#" class="text-purple-600 hover:text-purple-800 text-sm">SNS 리더로 가입하기</a>
+                <a href="https://cohfcobp.gensparkspace.com/#" onclick="showSignupPage(); return false;" class="text-purple-600 hover:text-purple-800 text-sm">SNS 리더로 가입하기</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 회원가입 페이지 -->
+    <div id="signupPage" class="min-h-screen flex items-center justify-center hidden">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+            <div class="text-center mb-8">
+                <div class="text-4xl mb-4">
+                    <span class="large-emoji">👤</span>
+                </div>
+                <h1 class="text-2xl font-bold text-purple-600">SNS 리더 가입</h1>
+                <p class="text-gray-600 mt-2">새로운 SNS 리더 계정을 생성합니다</p>
+            </div>
+            <form id="signupForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        <span class="emoji-icon">👤</span>이름
+                    </label>
+                    <input type="text" id="signupName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-purple-500" required="">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        <span class="emoji-icon">📧</span>이메일
+                    </label>
+                    <input type="email" id="signupEmail" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-purple-500" required="">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        <span class="emoji-icon">🔒</span>비밀번호
+                    </label>
+                    <input type="password" id="signupPassword" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-purple-500" required="">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        <span class="emoji-icon">🏢</span>지점 선택
+                    </label>
+                    <select id="signupBranch" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-purple-500" required="">
+                        <option value="">지점을 선택하세요</option>
+                        <option value="송도1지점">송도1지점</option>
+                        <option value="검단테라스점">검단테라스점</option>
+                        <option value="부평점">부평점</option>
+                        <option value="인천점">인천점</option>
+                        <option value="김포점">김포점</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full gradient-bg text-white font-bold py-2 px-4 rounded-md hover:opacity-90 transition duration-200">
+                    <span class="emoji-icon">✅</span>가입하기
+                </button>
+            </form>
+            <div class="text-center mt-4">
+                <a href="https://cohfcobp.gensparkspace.com/#" onclick="showLoginPage(); return false;" class="text-purple-600 hover:text-purple-800 text-sm">이미 계정이 있으신가요? 로그인하기</a>
             </div>
         </div>
     </div>
@@ -230,13 +282,13 @@
                             <span class="emoji-icon">🏢</span>지점 관리
                         </button>
                         <button onclick="showPage(&#39;designerHistory&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
-                            <span class="emoji-icon">📊</span>디자이너 히스토리
+                            <span class="emoji-icon">📈</span>디자이너 히스토리
                         </button>
                         <button onclick="showPage(&#39;checklist&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
                             <span class="emoji-icon">📋</span>체크리스트 입력
                         </button>
                         <button onclick="showPage(&#39;statistics&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
-                            <span class="emoji-icon">📈</span>통계 분석
+                            <span class="emoji-icon">📊</span>통계 분석
                         </button>
                         <button onclick="showPage(&#39;comparison&#39;)" class="nav-btn bg-white bg-opacity-20 text-white px-4 py-2 rounded hover:bg-opacity-30 transition">
                             <span class="emoji-icon">⚖️</span>지점 비교
@@ -538,7 +590,7 @@
             <div id="designerHistoryPage" class="hidden">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">
-                        <span class="emoji-icon">📊</span>디자이너 히스토리
+                        <span class="emoji-icon">📈</span>디자이너 히스토리
                     </h2>
                 </div>
 
@@ -556,7 +608,7 @@
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div id="selectedDesignerHistory">
                         <div class="text-center py-12">
-                            <span class="large-emoji text-gray-300">📊</span>
+                            <span class="large-emoji text-gray-300">📈</span>
                             <h3 class="text-lg font-medium text-gray-600 mb-2 mt-4">디자이너 히스토리</h3>
                             <p class="text-gray-500">위에서 디자이너를 선택하면 상세한 활동 히스토리를 확인할 수 있습니다.</p>
                         </div>
@@ -645,7 +697,7 @@
                             
                             <div>
                                 <h4 class="text-lg font-bold mb-4">
-                                    <span class="emoji-icon">📈</span>빠른 현황 보기
+                                    <span class="emoji-icon">📊</span>빠른 현황 보기
                                 </h4>
                                 <div id="checklistQuickView" class="text-gray-500">
                                     <div class="text-center py-8">
@@ -663,7 +715,7 @@
             <div id="statisticsPage" class="hidden">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">
-                        <span class="emoji-icon">📈</span>통계 분석
+                        <span class="emoji-icon">📊</span>통계 분석
                     </h2>
                 </div>
 
@@ -967,6 +1019,13 @@
                 }
             }
 
+            // 사용자 추가 메서드
+            addUser(email, userData) {
+                this.data.users[email] = userData;
+                this.saveData();
+                return true;
+            }
+
             // CRUD 메서드들
             addBranch(branch) {
                 const id = Math.max(...this.data.branches.map(b => b.id), 0) + 1;
@@ -1015,6 +1074,49 @@
         let charts = {};
         let sortOrder = {};
 
+        // 페이지 전환 함수들
+        function showLoginPage() {
+            document.getElementById('signupPage').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+        }
+
+        function showSignupPage() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('signupPage').classList.remove('hidden');
+        }
+
+        // 회원가입 처리
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const branch = document.getElementById('signupBranch').value;
+            
+            // 이메일 중복 체크
+            if (dataManager.data.users[email]) {
+                showNotification('이미 등록된 이메일 주소입니다.', 'error');
+                return;
+            }
+            
+            // 새 사용자 추가
+            const newUser = {
+                password: password,
+                role: 'leader',
+                branch: branch,
+                name: name
+            };
+            
+            dataManager.addUser(email, newUser);
+            
+            showNotification('가입이 완료되었습니다! 로그인해 주세요.', 'success');
+            
+            // 폼 리셋 및 로그인 페이지로 이동
+            document.getElementById('signupForm').reset();
+            showLoginPage();
+        });
+
         // 로그인 처리
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1042,7 +1144,7 @@
                 showPage('dashboard');
                 loadDashboard();
             } else {
-                alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+                showNotification('이메일 또는 비밀번호가 올바르지 않습니다.', 'error');
             }
         });
 
@@ -1051,6 +1153,7 @@
             currentUser = null;
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('mainSystem').classList.add('hidden');
+            document.getElementById('signupPage').classList.add('hidden');
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
         }
@@ -1290,7 +1393,7 @@
                 } else {
                     document.getElementById('selectedDesignerHistory').innerHTML = `
                         <div class="text-center py-12">
-                            <span class="large-emoji text-gray-300">📊</span>
+                            <span class="large-emoji text-gray-300">📈</span>
                             <h3 class="text-lg font-medium text-gray-600 mb-2 mt-4">디자이너 히스토리</h3>
                             <p class="text-gray-500">위에서 디자이너를 선택하면 상세한 활동 히스토리를 확인할 수 있습니다.</p>
                         </div>
@@ -2171,10 +2274,25 @@
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgY%2FxWjQ%2FYKQjGkPI8J40pvVE4pVrhgjgkOb1%2BOF81kfgOe7YAz1CfHWhDtTEtZF7z1MTt6SHI4wjzoGr0QQUosbwPiaKLfL%2BCG1oM1rpqNtWRQppdJlCD6uHfdBTI1QyTUj95Ety4hTmx%2B50IHivYCFooSDW5cie0i26Mn4sfF7xtE1grlPJXsqfaPxiA%2FKhezD8Py2swWi1yRLKbAYHZxavoj7hisoWsm5yBvb83OTm1ZQBEMc6zoilmC1Dc%2FSUBy3MLF7itqMdgo8h4lmYlH9Aw9us4OL0BhGwKph%2BG2u7mC4rlgrhFc3vWTI7YzsHQFnbMsTFBbZN3CEviymz7luLCjbPk8i34YfR6vKYesY%2BeJogM1TMysdwVsD%2F%2F44rCd0Mi%2BlQQ1WWMW0Y923IyzTi6Cbqil1oHke1aWr48x3mEC3oEolVEojRPW%2BgjMYbhSQDl4vtWRz13MTnyKiE0tulznDfBZ4iSlBEMXDCzeo3219nR6S3lX5kjO3QaoqN%2Bo5yEeB5qSHxquGlW8ZYbk%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDifBlFCiD3HBlyhaEZm2bcbKrhknt3w2AOTH%2BfK9YhJEdbSNnAMZh%2F4r%2BlqxT9ePM0mUFe20%2FY7PcGP6iWgmAuhpdTgk%2Fz5vkFIFZsKGmNGHVGr1D41A8ZMRrBWEkUDDyySH3ogrnm5SCdxJMY264Eez0nRWkKEHXmcKkb1mABG3h2q1LEty8deL1qSMnuJTjNdWcBYU4%2F8RWjGWZAU8K3gZPHMjsSdabpxum2PNJfkbIBHNbCklIN08jRgzwt4QBd7wzgGOaDlxahTY1moS1kwHmRRBDq0LrjemkIg9otRrM%2BSChkj64AwXShGjPLNy3okSdKG17DTXvyN5QuZUWB5yBvELM5dl1fbwxL2Jto%2F0JNFKSr25VKOLSoo%2F5FtMjU8b05C%2BHQnwX1btel2UZsJQQuO1bKKz97p2Svfa5mmNpEn%2BRgFh5WrI0Heoa6R%2BTbiLmAx0Rh14ePycF%2BRt5kFmXszBT3epJRiOH8FD0eTfC5WjRrA%2BhAc87pGZw3vCXw%3D%3D";
         window.__genspark_locale = "ko-KR";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgY/xWjQ/YKQjGkPI8J40pvVE4pVrhgjgkOb1+OF81kfgOe7YAz1CfHWhDtTEtZF7z1MTt6SHI4wjzoGr0QQUosbwPiaKLfL+CG1oM1rpqNtWRQppdJlCD6uHfdBTI1QyTUj95Ety4hTmx+50IHivYCFooSDW5cie0i26Mn4sfF7xtE1grlPJXsqfaPxiA/KhezD8Py2swWi1yRLKbAYHZxavoj7hisoWsm5yBvb83OTm1ZQBEMc6zoilmC1Dc/SUBy3MLF7itqMdgo8h4lmYlH9Aw9us4OL0BhGwKph+G2u7mC4rlgrhFc3vWTI7YzsHQFnbMsTFBbZN3CEviymz7luLCjbPk8i34YfR6vKYesY+eJogM1TMysdwVsD//44rCd0Mi+lQQ1WWMW0Y923IyzTi6Cbqil1oHke1aWr48x3mEC3oEolVEojRPW+gjMYbhSQDl4vtWRz13MTnyKiE0tulznDfBZ4iSlBEMXDCzeo3219nR6S3lX5kjO3QaoqN+o5yEeB5qSHxquGlW8ZYbk=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDifBlFCiD3HBlyhaEZm2bcbKrhknt3w2AOTH+fK9YhJEdbSNnAMZh/4r+lqxT9ePM0mUFe20/Y7PcGP6iWgmAuhpdTgk/z5vkFIFZsKGmNGHVGr1D41A8ZMRrBWEkUDDyySH3ogrnm5SCdxJMY264Eez0nRWkKEHXmcKkb1mABG3h2q1LEty8deL1qSMnuJTjNdWcBYU4/8RWjGWZAU8K3gZPHMjsSdabpxum2PNJfkbIBHNbCklIN08jRgzwt4QBd7wzgGOaDlxahTY1moS1kwHmRRBDq0LrjemkIg9otRrM+SChkj64AwXShGjPLNy3okSdKG17DTXvyN5QuZUWB5yBvELM5dl1fbwxL2Jto/0JNFKSr25VKOLSoo/5FtMjU8b05C+HQnwX1btel2UZsJQQuO1bKKz97p2Svfa5mmNpEn+RgFh5WrI0Heoa6R+TbiLmAx0Rh14ePycF+Rt5kFmXszBT3epJRiOH8FD0eTfC5WjRrA+hAc87pGZw3vCXw==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.다운로드"></script>
-    </body></html>
+    <div class="genspark-notice-dialog" style="display: none;">
+      <div class="genspark-notice-content">
+        <h2 class="genspark-notice-title">이 사이트는 사용자가 만들었습니다. 참고하세요:</h2>
+        <ul class="genspark-notice-list">
+          <li>콘텐츠에 부정확한 정보가 포함될 수 있으니, 사용하기 전에 정보를 확인하세요.</li>
+          <li>부적절한 콘텐츠를 발견하시면 <a href="mailto:support@genspark.ai">support@genspark.ai</a>로 연락해 주세요.</li>
+        </ul>
+        <div class="genspark-notice-checkbox">
+          <input type="checkbox" id="genspark-dont-show">
+          <label for="genspark-dont-show">이 메시지를 다시 표시하지 않음.</label>
+        </div>
+        <div class="genspark-notice-actions">
+          <button class="genspark-notice-ok">확인</button>
+        </div>
+      </div>
+    </div></body></html>
