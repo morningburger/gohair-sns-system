@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)https://aspltloc.gensparkspace.com/ -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOHAIR SNS 마케팅 관리 시스템</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        
+        /* 헤더 */
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; }
+        .header-top { display: flex; justify-content: between; align-items: center; margin-bottom: 1rem; }
+        .header-title { font-size: 1.5rem; font-weight: bold; }
+        .header-buttons { display: flex; gap: 0.5rem; margin-left: auto; }
+        .header-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+        .header-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        /* 네비게이션 */
+        .nav { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.6rem 1.2rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-btn:hover { background: rgba(255,255,255,0.2); }
+        .nav-btn.active { background: rgba(255,255,255,0.3); font-weight: 600; }
+        
+        /* 컨테이너 */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .hidden { display: none; }
+        
+        /* 카드 */
+        .card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .card h2 { margin-bottom: 1rem; color: #333; font-size: 1.3rem; }
+        .card h3 { margin-bottom: 1rem; color: #555; font-size: 1.1rem; }
+        
+        /* 통계 카드 그리드 */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 8px; text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: bold; margin: 0.5rem 0; }
+        .stat-label { opacity: 0.9; font-size: 0.9rem; }
+        
+        /* 컨트롤 패널 */
+        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .control-group { }
+        .control-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; }
+        .control-group input, .control-group select { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
+        
+        /* 기간 버튼들 */
+        .period-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .period-btn { background: #f0f0f0; border: 1px solid #ddd; padding: 0.5rem; border-radius: 4px; cursor: pointer; text-align: center; font-size: 0.8rem; }
+        .period-btn:hover { background: #e0e0e0; }
+        .period-btn.active { background: #667eea; color: white; }
+        
+        /* 액션 버튼들 */
+        .action-buttons { display: flex; gap: 1rem; margin-top: 1rem; align-items: center; }
+        .btn { background: #667eea; color: white; padding: 0.7rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+        .btn:hover { background: #5a67d8; }
+        .btn-success { background: #48bb78; }
+        .btn-success:hover { background: #38a169; }
+        
+        /* 차트 컨테이너 */
+        .chart-container { height: 300px; margin: 1rem 0; position: relative; }
+        .chart-container canvas { max-height: 300px !important; height: 300px !important; }
+        
+        /* 차트 그리드 */
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        
+        /* 테이블 */
+        .table-container { overflow-x: auto; margin-top: 1rem; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #ddd; }
+        .table th { background: #f8f9fa; font-weight: 600; color: #555; }
+        .table tbody tr:hover { background: #f8f9fa; }
+        
+        /* 테이블 그리드 */
+        .tables-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; }
+        
+        /* 로딩 */
+        .loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .loading-content { text-align: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .nav { gap: 0.25rem; }
+            .nav-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+            .header { padding: 1rem; }
+            .header-title { font-size: 1.2rem; }
+            .header-buttons { flex-direction: column; gap: 0.25rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .controls { grid-template-columns: 1fr; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .tables-grid { grid-template-columns: 1fr; }
+            .period-buttons { grid-template-columns: 1fr 1fr; }
+            .action-buttons { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+<style>
+    .genspark-notice-dialog {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .genspark-notice-content {
+      background-color: white;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      box-sizing: border-box;
+      padding: 10px 30px 30px 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+    }
+
+    .genspark-notice-title {
+      color: #000;
+      font-family: Arial;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 150%; 
+    }
+
+    .genspark-notice-list {
+      margin: 24px 0;
+      
+      color: #606366;
+      font-family: Arial;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 150%;
+      padding-left: 12px;
+    }
+
+    .genspark-notice-list li {
+      margin-bottom: 12px;
+      list-style-type: disc;
+    }
+
+    .genspark-notice-list li a {
+      color: #606366;
+      text-decoration: underline;
+    }
+
+    .genspark-notice-checkbox {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+      gap: 10px;
+
+      color: #232425;
+
+      font-family: Arial;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .genspark-notice-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+      
+    .genspark-notice-ok {
+      color: #232425;
+
+      text-align: center;
+      font-family: Arial;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 150%; 
+
+      cursor: pointer;
+      display: flex;
+      height: 40px;
+      padding: 6px 14px;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      align-self: stretch;
+      border-radius: 8px;
+      border: 1px solid #000;
+      box-sizing: border-box;
+      width: 100%;
+    }
+  </style></head>
+<body>
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoQ5UtXw7lu1blqEx7CFQV61dXBDnPGpI",
+            authDomain: "gohair-sns-system.firebaseapp.com",
+            projectId: "gohair-sns-system",
+            storageBucket: "gohair-sns-system.firebasestorage.app",
+            messagingSenderId: "241670983626",
+            appId: "1:241670983626:web:4d1160f09145f8fdc94933",
+            measurementId: "G-RJRRZVZK6L"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.db = db;
+        window.collection = collection;
+        window.getDocs = getDocs;
+        window.query = query;
+        window.where = where;
+        window.orderBy = orderBy;
+
+        console.log('Firebase 통계분석 페이지 초기화 완료');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            stats_initializePage();
+        });
+    </script>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>통계 데이터 로딩 중...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="header-title">GOHAIR SNS 마케팅 관리 시스템</div>
+            <div class="header-buttons">
+                <button class="header-btn" onclick="stats_exportToExcel()">📤 내보내기</button>
+                <button class="header-btn" onclick="stats_importData()">📥 가져오기</button>
+                <button class="header-btn" onclick="goToMainSystem()">🚪 로그아웃</button>
+            </div>
+        </div>
+        
+        <div class="nav">
+            <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
+            <button class="nav-btn" onclick="goToMainSystem()">👥 디자이너 관리</button>
+            <button class="nav-btn" onclick="goToMainSystem()">🏢 지점 관리</button>
+            <button class="nav-btn" onclick="goToMainSystem()">📈 디자이너 히스토리</button>
+            <button class="nav-btn" onclick="goToMainSystem()">📋 체크리스트 입력</button>
+            <button class="nav-btn active">📊 통계 분석</button>
+            <button class="nav-btn" onclick="goToMainSystem()">⚖️ 지점 비교</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 통계분석 페이지 -->
+        <div id="statisticsPage">
+            <!-- 컨트롤 패널 -->
+            <div class="card">
+                <h2>📊 통계분석 설정</h2>
+                <div class="controls">
+                    <div class="control-group">
+                        <label>기간 선택</label>
+                        <div class="period-buttons">
+                            <button class="period-btn" onclick="stats_setToday()">오늘</button>
+                            <button class="period-btn" onclick="stats_setThisWeek()">이번주</button>
+                            <button class="period-btn" onclick="stats_setThisMonth()">이번달</button>
+                            <button class="period-btn" onclick="stats_setThisQuarter()">분기</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>사용자 정의 기간</label>
+                        <input type="date" id="startDate" style="margin-bottom: 0.5rem;">
+                        <input type="date" id="endDate">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>지점 필터</label>
+                        <select id="branchFilter" onchange="stats_applyFilters()">
+                            <option value="">전체 지점</option>
+                            <option value="송도1지점">송도1지점</option>
+                            <option value="검단테라스점">검단테라스점</option>
+                            <option value="부평점">부평점</option>
+                            <option value="인천점">인천점</option>
+                            <option value="김포점">김포점</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>카테고리</label>
+                        <select id="categoryFilter" onchange="stats_applyFilters()">
+                            <option value="">전체</option>
+                            <option value="naverReviews">네이버 리뷰</option>
+                            <option value="naverPosts">블로그 포스팅</option>
+                            <option value="naverExperience">체험단</option>
+                            <option value="instaReels">인스타 릴스</option>
+                            <option value="instaPhotos">인스타 사진</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn" onclick="stats_refreshData()">🔄 데이터 새로고침</button>
+                    <button class="btn btn-success" onclick="stats_exportToExcel()">📥 Excel 다운로드</button>
+                    <span id="lastUpdated" style="color: #666; font-size: 0.9rem;">마지막 업데이트: 2025. 6. 10. 오전 11:55:36</span>
+                </div>
+            </div>
+
+            <!-- 요약 통계 카드 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">⭐</div>
+                    <div class="stat-number" id="totalReviews">0</div>
+                    <div class="stat-label">네이버 리뷰</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">📝</div>
+                    <div class="stat-number" id="totalPosts">0</div>
+                    <div class="stat-label">블로그 포스팅</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">🎯</div>
+                    <div class="stat-number" id="totalExperience">0</div>
+                    <div class="stat-label">체험단 운영</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">🎬</div>
+                    <div class="stat-number" id="totalReels">0</div>
+                    <div class="stat-label">인스타 릴스</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">📷</div>
+                    <div class="stat-number" id="totalPhotos">0</div>
+                    <div class="stat-label">인스타 사진</div>
+                </div>
+            </div>
+
+            <!-- 차트 섹션 -->
+            <div class="charts-grid">
+                <div class="card">
+                    <h3>지점별 성과</h3>
+                    <div class="chart-container">
+                        <canvas id="branchChart" style="box-sizing: border-box; display: block; height: 300px; width: 504px;" width="504" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>카테고리별 분석</h3>
+                    <div class="chart-container">
+                        <canvas id="categoryChart" style="box-sizing: border-box; display: block; height: 300px; width: 504px;" width="504" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 테이블 섹션 -->
+            <div class="tables-grid">
+                <div class="card">
+                    <h3>지점별 순위</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>순위</th>
+                                    <th>지점</th>
+                                    <th>총합</th>
+                                    <th>평균</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branchRankingTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>디자이너별 순위</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>순위</th>
+                                    <th>디자이너</th>
+                                    <th>지점</th>
+                                    <th>총합</th>
+                                </tr>
+                            </thead>
+                            <tbody id="designerRankingTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="./statistics_files/chart.js.다운로드"></script>
+
+    <script>
+        // 메인 시스템으로 돌아가기
+        function goToMainSystem() {
+            window.location.href = './index.html';
+        }
+
+        // 통계분석 전용 변수들
+        let statsData = {
+            checklists: [],
+            designers: [],
+            branches: []
+        };
+
+        let statsCurrentPeriod = {
+            startDate: null,
+            endDate: null
+        };
+
+        let statsCharts = {
+            branchChart: null,
+            categoryChart: null
+        };
+
+        // 페이지 초기화
+        function stats_initializePage() {
+            stats_setToday();
+            stats_loadAllData();
+            stats_updateLastUpdated();
+        }
+
+        // 기간 설정 함수들
+        function stats_setToday() {
+            const today = new Date();
+            stats_setDateRange(today, today);
+            stats_updatePeriodButtons('today');
+        }
+
+        function stats_setThisWeek() {
+            const today = new Date();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - today.getDay() + 1);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            stats_setDateRange(monday, sunday);
+            stats_updatePeriodButtons('week');
+        }
+
+        function stats_setThisMonth() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            stats_setDateRange(firstDay, lastDay);
+            stats_updatePeriodButtons('month');
+        }
+
+        function stats_setThisQuarter() {
+            const today = new Date();
+            const quarter = Math.floor(today.getMonth() / 3);
+            const firstMonth = quarter * 3;
+            const firstDay = new Date(today.getFullYear(), firstMonth, 1);
+            const lastDay = new Date(today.getFullYear(), firstMonth + 3, 0);
+            stats_setDateRange(firstDay, lastDay);
+            stats_updatePeriodButtons('quarter');
+        }
+
+        function stats_setDateRange(startDate, endDate) {
+            statsCurrentPeriod.startDate = startDate;
+            statsCurrentPeriod.endDate = endDate;
+            
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+            
+            stats_refreshData();
+        }
+
+        function stats_updatePeriodButtons(active) {
+            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            // 활성 버튼 표시는 생략 (간단화)
+        }
+
+        // 데이터 로딩
+        async function stats_loadAllData() {
+            try {
+                // 샘플 데이터 생성 (실제로는 Firebase에서 로드)
+                statsData.checklists = stats_generateSampleData();
+                statsData.designers = stats_generateSampleDesigners();
+                statsData.branches = ['송도1지점', '검단테라스점', '부평점', '인천점', '김포점'];
+                
+                stats_processData();
+                stats_hideLoading();
+            } catch (error) {
+                console.error('데이터 로딩 오류:', error);
+                stats_hideLoading();
+            }
+        }
+
+        function stats_generateSampleData() {
+            const branches = ['송도1지점', '검단테라스점', '부평점', '인천점', '김포점'];
+            const designers = ['김디자이너', '이디자이너', '박디자이너', '최디자이너', '정디자이너'];
+            const data = [];
+            
+            for (let i = 0; i < 100; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+                
+                data.push({
+                    id: i,
+                    designer: designers[Math.floor(Math.random() * designers.length)],
+                    branch: branches[Math.floor(Math.random() * branches.length)],
+                    date: date,
+                    naverReviews: Math.floor(Math.random() * 10),
+                    naverPosts: Math.floor(Math.random() * 5),
+                    naverExperience: Math.floor(Math.random() * 3),
+                    instaReels: Math.floor(Math.random() * 8),
+                    instaPhotos: Math.floor(Math.random() * 12)
+                });
+            }
+            
+            return data;
+        }
+
+        function stats_generateSampleDesigners() {
+            return [
+                { name: '김디자이너', branch: '송도1지점' },
+                { name: '이디자이너', branch: '검단테라스점' },
+                { name: '박디자이너', branch: '부평점' },
+                { name: '최디자이너', branch: '인천점' },
+                { name: '정디자이너', branch: '김포점' }
+            ];
+        }
+
+        function stats_processData() {
+            const filteredData = stats_getFilteredData();
+            
+            stats_updateSummaryCards(filteredData);
+            stats_updateBranchRankings(filteredData);
+            stats_updateDesignerRankings(filteredData);
+            stats_updateCharts(filteredData);
+        }
+
+        function stats_getFilteredData() {
+            let filtered = statsData.checklists;
+            
+            // 날짜 필터
+            if (statsCurrentPeriod.startDate && statsCurrentPeriod.endDate) {
+                filtered = filtered.filter(item => {
+                    const itemDate = new Date(item.date);
+                    return itemDate >= statsCurrentPeriod.startDate && itemDate <= statsCurrentPeriod.endDate;
+                });
+            }
+            
+            // 지점 필터
+            const branchFilter = document.getElementById('branchFilter').value;
+            if (branchFilter) {
+                filtered = filtered.filter(item => item.branch === branchFilter);
+            }
+            
+            return filtered;
+        }
+
+        function stats_updateSummaryCards(data) {
+            const totals = data.reduce((acc, item) => {
+                acc.naverReviews += item.naverReviews || 0;
+                acc.naverPosts += item.naverPosts || 0;
+                acc.naverExperience += item.naverExperience || 0;
+                acc.instaReels += item.instaReels || 0;
+                acc.instaPhotos += item.instaPhotos || 0;
+                return acc;
+            }, {
+                naverReviews: 0,
+                naverPosts: 0,
+                naverExperience: 0,
+                instaReels: 0,
+                instaPhotos: 0
+            });
+            
+            document.getElementById('totalReviews').textContent = totals.naverReviews;
+            document.getElementById('totalPosts').textContent = totals.naverPosts;
+            document.getElementById('totalExperience').textContent = totals.naverExperience;
+            document.getElementById('totalReels').textContent = totals.instaReels;
+            document.getElementById('totalPhotos').textContent = totals.instaPhotos;
+        }
+
+        function stats_updateBranchRankings(data) {
+            const branchStats = {};
+            
+            data.forEach(item => {
+                if (!branchStats[item.branch]) {
+                    branchStats[item.branch] = { total: 0, count: 0 };
+                }
+                
+                const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                                (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+                
+                branchStats[item.branch].total += itemTotal;
+                branchStats[item.branch].count += 1;
+            });
+            
+            const rankings = Object.entries(branchStats)
+                .map(([branch, stats]) => ({
+                    branch,
+                    total: stats.total,
+                    average: Math.round(stats.total / stats.count * 10) / 10 || 0
+                }))
+                .sort((a, b) => b.total - a.total);
+            
+            const tbody = document.getElementById('branchRankingTable');
+            tbody.innerHTML = rankings.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.branch}</td>
+                    <td>${item.total}</td>
+                    <td>${item.average}</td>
+                </tr>
+            `).join('');
+        }
+
+        function stats_updateDesignerRankings(data) {
+            const designerStats = {};
+            
+            data.forEach(item => {
+                if (!designerStats[item.designer]) {
+                    designerStats[item.designer] = {
+                        branch: item.branch,
+                        total: 0
+                    };
+                }
+                
+                const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                                (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+                
+                designerStats[item.designer].total += itemTotal;
+            });
+            
+            const rankings = Object.entries(designerStats)
+                .map(([designer, stats]) => ({
+                    designer,
+                    branch: stats.branch,
+                    total: stats.total
+                }))
+                .sort((a, b) => b.total - a.total);
+            
+            const tbody = document.getElementById('designerRankingTable');
+            tbody.innerHTML = rankings.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.designer}</td>
+                    <td>${item.branch}</td>
+                    <td>${item.total}</td>
+                </tr>
+            `).join('');
+        }
+
+        function stats_updateCharts(data) {
+            stats_updateBranchChart(data);
+            stats_updateCategoryChart(data);
+        }
+
+        function stats_updateBranchChart(data) {
+            const branchStats = {};
+            
+            data.forEach(item => {
+                if (!branchStats[item.branch]) {
+                    branchStats[item.branch] = 0;
+                }
+                branchStats[item.branch] += (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                                          (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+            });
+            
+            const ctx = document.getElementById('branchChart').getContext('2d');
+            
+            if (statsCharts.branchChart) {
+                statsCharts.branchChart.destroy();
+            }
+            
+            statsCharts.branchChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(branchStats),
+                    datasets: [{
+                        label: '총 활동량',
+                        data: Object.values(branchStats),
+                        backgroundColor: 'rgba(102, 126, 234, 0.5)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function stats_updateCategoryChart(data) {
+            const categoryTotals = data.reduce((acc, item) => {
+                acc.naverReviews += item.naverReviews || 0;
+                acc.naverPosts += item.naverPosts || 0;
+                acc.naverExperience += item.naverExperience || 0;
+                acc.instaReels += item.instaReels || 0;
+                acc.instaPhotos += item.instaPhotos || 0;
+                return acc;
+            }, {
+                naverReviews: 0,
+                naverPosts: 0,
+                naverExperience: 0,
+                instaReels: 0,
+                instaPhotos: 0
+            });
+            
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            if (statsCharts.categoryChart) {
+                statsCharts.categoryChart.destroy();
+            }
+            
+            statsCharts.categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진'],
+                    datasets: [{
+                        data: [
+                            categoryTotals.naverReviews,
+                            categoryTotals.naverPosts,
+                            categoryTotals.naverExperience,
+                            categoryTotals.instaReels,
+                            categoryTotals.instaPhotos
+                        ],
+                        backgroundColor: [
+                            'rgba(255, 206, 84, 0.5)',
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(153, 102, 255, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 206, 84, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function stats_applyFilters() {
+            stats_processData();
+        }
+
+        function stats_refreshData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (startDate && endDate) {
+                statsCurrentPeriod.startDate = new Date(startDate);
+                statsCurrentPeriod.endDate = new Date(endDate);
+            }
+            
+            stats_processData();
+            stats_updateLastUpdated();
+        }
+
+        function stats_updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = `마지막 업데이트: ${now.toLocaleString('ko-KR')}`;
+        }
+
+        function stats_hideLoading() {
+            document.getElementById('loadingScreen').style.display = 'none';
+        }
+
+        function stats_exportToExcel() {
+            let csvContent = "순위,지점,총합,평균\n";
+            
+            const branchData = stats_getFilteredData();
+            const branchStats = {};
+            
+            branchData.forEach(item => {
+                if (!branchStats[item.branch]) {
+                    branchStats[item.branch] = { total: 0, count: 0 };
+                }
+                
+                const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                                (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+                
+                branchStats[item.branch].total += itemTotal;
+                branchStats[item.branch].count += 1;
+            });
+            
+            const rankings = Object.entries(branchStats)
+                .map(([branch, stats]) => ({
+                    branch,
+                    total: stats.total,
+                    average: Math.round(stats.total / stats.count * 10) / 10 || 0
+                }))
+                .sort((a, b) => b.total - a.total);
+            
+            rankings.forEach((item, index) => {
+                csvContent += `${index + 1},${item.branch},${item.total},${item.average}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `GOHAIR_통계_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function stats_importData() {
+            alert('데이터 가져오기 기능은 개발 중입니다.');
+        }
+    </script>
+
+
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgjGLrOYKzoV%2Byhc289kOmgjf059nPlvof6K7oqasGOWgxJv1ZnBy8hdRZhvQ3P2TL3ZBwg4QMVh1sg8aNQQeGTmFhPlXf2Ou6gd0sfklXdTSxNQenzakPtjxWbJ28NUrG4farEZ92Db6uz%2Fz4awdBHDIJd3j8gk3e2n47jv%2F5NxWPVryzU9ijuAcek6LB7gzScuDPCP7mLFRoE37K5FQjl0ECZSep51AY78LlMSjkSQm5S0XeTrncQq3Z2jmWcqnpUK3XCKVe1hl57ZBZJiv1r1Lh2t50wFiwKBbaUl8I7RTFacGjdmXOyTan0Qgsx3pyqIKFTYIIcVbmqT85aX8v%2FEVloVfCX0fqBT6LG8NR3aHN%2BY3nod7m02q8xk75LkdTev5FGZ6Zdh8zHozl3ipu1BGm18EKN65qNZS0u%2F8wNqZ09BhlPv4KKRY6sDF926hSRB%2FJGPp26C%2FhyPRObeKjHwLvu%2FORcTJUXNhWUn5Iiv381o8%2FLn9EG8VgXu%2FCsB%2BYESqKObKgp70sI2fwwlUPI%3D";
+        window.__genspark_locale = "ko-KR";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgjGLrOYKzoV+yhc289kOmgjf059nPlvof6K7oqasGOWgxJv1ZnBy8hdRZhvQ3P2TL3ZBwg4QMVh1sg8aNQQeGTmFhPlXf2Ou6gd0sfklXdTSxNQenzakPtjxWbJ28NUrG4farEZ92Db6uz/z4awdBHDIJd3j8gk3e2n47jv/5NxWPVryzU9ijuAcek6LB7gzScuDPCP7mLFRoE37K5FQjl0ECZSep51AY78LlMSjkSQm5S0XeTrncQq3Z2jmWcqnpUK3XCKVe1hl57ZBZJiv1r1Lh2t50wFiwKBbaUl8I7RTFacGjdmXOyTan0Qgsx3pyqIKFTYIIcVbmqT85aX8v/EVloVfCX0fqBT6LG8NR3aHN+Y3nod7m02q8xk75LkdTev5FGZ6Zdh8zHozl3ipu1BGm18EKN65qNZS0u/8wNqZ09BhlPv4KKRY6sDF926hSRB/JGPp26C/hyPRObeKjHwLvu/ORcTJUXNhWUn5Iiv381o8/Ln9EG8VgXu/CsB+YESqKObKgp70sI2fwwlUPI=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="./statistics_files/notice_dialog.js.다운로드"></script>
+    </body></html>
