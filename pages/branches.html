@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지점 관리 - GOHAIR SNS 마케팅 관리 시스템</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/branches.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
+                <div class="header-actions">
+                    <span id="currentUser"></span>
+                    <button class="btn btn-green" onclick="exportBranches()">📥 지점 내보내기</button>
+                    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
+                <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
+                <button class="nav-btn active">🏢 지점 관리</button>
+                <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
+                <button class="nav-btn" onclick="goToPage('checklist')">📋 체크리스트 입력</button>
+                <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
+                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 지점 관리 페이지 -->
+        <div id="branchesPage">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-4">🏢 지점 관리</h2>
+                
+                <!-- 지점 통계 요약 -->
+                <div class="branch-stats-summary">
+                    <div class="stats-item">
+                        <div class="stats-icon">🏢</div>
+                        <div class="stats-content">
+                            <div class="stats-value" id="totalBranches">0</div>
+                            <div class="stats-label">전체 지점</div>
+                        </div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-icon">👥</div>
+                        <div class="stats-content">
+                            <div class="stats-value" id="totalDesigners">0</div>
+                            <div class="stats-label">전체 디자이너</div>
+                        </div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-icon">📊</div>
+                        <div class="stats-content">
+                            <div class="stats-value" id="avgDesignersPerBranch">0</div>
+                            <div class="stats-label">평균 디자이너/지점</div>
+                        </div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-icon">🎯</div>
+                        <div class="stats-content">
+                            <div class="stats-value" id="topPerformingBranch">-</div>
+                            <div class="stats-label">최고 성과 지점</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 필터 및 검색 -->
+                <div class="filter-controls">
+                    <div class="search-filters">
+                        <div class="search-group">
+                            <label>🔍 지점 검색</label>
+                            <input type="text" id="branchSearch" class="search-input" 
+                                   placeholder="지점명, 주소, 지점코드로 검색..." 
+                                   onchange="loadBranches()">
+                        </div>
+                        <div class="filter-group">
+                            <label>📊 정렬 기준</label>
+                            <select id="branchSortBy" onchange="loadBranches()">
+                                <option value="name">지점명</option>
+                                <option value="code">지점코드</option>
+                                <option value="designerCount">디자이너 수</option>
+                                <option value="performance">성과</option>
+                                <option value="createdAt">등록일</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>🔀 정렬 순서</label>
+                            <select id="branchSortOrder" onchange="loadBranches()">
+                                <option value="asc">오름차순</option>
+                                <option value="desc">내림차순</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 지점 목록 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold">등록된 지점</h3>
+                    <div class="header-actions">
+                        <div class="view-toggle">
+                            <button class="view-toggle-btn active" onclick="switchView('table')">
+                                📋 테이블
+                            </button>
+                            <button class="view-toggle-btn" onclick="switchView('grid')">
+                                📱 카드
+                            </button>
+                        </div>
+                        <button onclick="showAddBranch()" class="btn">
+                            ➕ 새 지점 추가
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 테이블 뷰 -->
+                <div id="tableView" class="view-content">
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>지점명</th>
+                                    <th>지점코드</th>
+                                    <th>주소</th>
+                                    <th>디자이너 수</th>
+                                    <th>월간 성과</th>
+                                    <th>등록일</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branchesList">
+                                <!-- 동적으로 생성됨 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 그리드 뷰 -->
+                <div id="gridView" class="view-content hidden">
+                    <div class="branches-grid" id="branchesGrid">
+                        <!-- 동적으로 생성됨 -->
+                    </div>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination" id="branchesPagination">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달들 -->
+    <!-- 지점 추가 모달 -->
+    <div id="addBranchModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">🏢 새 지점 추가</h3>
+                <button onclick="hideAddBranch()" class="modal-close">❌</button>
+            </div>
+            <form id="addBranchForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🏪 지점명 <span class="required">*</span></label>
+                        <input type="text" id="branchName" required placeholder="예: 송도센트럴점">
+                    </div>
+                    <div class="form-group">
+                        <label>🏷️ 지점코드 <span class="required">*</span></label>
+                        <input type="text" id="branchCode" required placeholder="예: SD01" 
+                               pattern="[A-Z]{2}[0-9]{2}" title="대문자 2자 + 숫자 2자 (예: SD01)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📍 주소 <span class="required">*</span></label>
+                    <input type="text" id="branchAddress" required placeholder="상세 주소를 입력하세요">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📞 전화번호</label>
+                        <input type="tel" id="branchPhone" placeholder="032-123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label>🏃‍♂️ 점장명</label>
+                        <input type="text" id="branchManager" placeholder="점장 이름">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>🕐 운영시간</label>
+                    <input type="text" id="branchHours" placeholder="예: 09:00 - 21:00">
+                </div>
+                <div class="form-group">
+                    <label>📝 메모</label>
+                    <textarea id="branchNotes" rows="3" placeholder="지점 관련 메모나 특이사항"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideAddBranch()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">➕ 추가</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 지점 편집 모달 -->
+    <div id="editBranchModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">✏️ 지점 정보 수정</h3>
+                <button onclick="hideEditBranch()" class="modal-close">❌</button>
+            </div>
+            <form id="editBranchForm">
+                <input type="hidden" id="editBranchId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🏪 지점명 <span class="required">*</span></label>
+                        <input type="text" id="editBranchName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🏷️ 지점코드 <span class="required">*</span></label>
+                        <input type="text" id="editBranchCode" required pattern="[A-Z]{2}[0-9]{2}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📍 주소 <span class="required">*</span></label>
+                    <input type="text" id="editBranchAddress" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📞 전화번호</label>
+                        <input type="tel" id="editBranchPhone">
+                    </div>
+                    <div class="form-group">
+                        <label>🏃‍♂️ 점장명</label>
+                        <input type="text" id="editBranchManager">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>🕐 운영시간</label>
+                    <input type="text" id="editBranchHours">
+                </div>
+                <div class="form-group">
+                    <label>📝 메모</label>
+                    <textarea id="editBranchNotes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideEditBranch()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">💾 저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 지점 상세 보기 모달 -->
+    <div id="viewBranchModal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">🏢 지점 상세 정보</h3>
+                <button onclick="hideViewBranch()" class="modal-close">❌</button>
+            </div>
+            <div id="branchDetailContent">
+                <!-- 동적으로 생성됨 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/utils/data-manager.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/utils/ui-utils.js"></script>
+    <script src="../js/pages/branches.js"></script>
+</body>
+</html>

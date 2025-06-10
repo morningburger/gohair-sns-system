@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>체크리스트 입력 - GOHAIR SNS 마케팅 관리 시스템</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/checklist.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
+                <div class="header-actions">
+                    <span id="currentUser"></span>
+                    <button class="btn btn-green" onclick="exportChecklistHistory()">📥 기록 내보내기</button>
+                    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
+                <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
+                <button class="nav-btn" onclick="goToPage('branches')">🏢 지점 관리</button>
+                <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
+                <button class="nav-btn active">📋 체크리스트 입력</button>
+                <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
+                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 체크리스트 입력 페이지 -->
+        <div id="checklistPage">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-4">📋 체크리스트 입력</h2>
+                
+                <!-- 오늘의 목표 및 진행률 -->
+                <div class="today-summary">
+                    <div class="summary-header">
+                        <h3>📅 오늘의 활동 현황 (<span id="todayDate"></span>)</h3>
+                        <div class="summary-actions">
+                            <button onclick="refreshTodaySummary()" class="btn btn-sm">🔄 새로고침</button>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-grid">
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span class="progress-icon">⭐</span>
+                                <span class="progress-label">네이버 리뷰</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="reviewsProgress" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="reviewsCount">0</span> / <span id="reviewsTarget">10</span>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span class="progress-icon">📝</span>
+                                <span class="progress-label">블로그 포스팅</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="postsProgress" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="postsCount">0</span> / <span id="postsTarget">5</span>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span class="progress-icon">🎯</span>
+                                <span class="progress-label">체험단 운영</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="experienceProgress" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="experienceCount">0</span> / <span id="experienceTarget">2</span>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span class="progress-icon">🎬</span>
+                                <span class="progress-label">인스타 릴스</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="reelsProgress" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="reelsCount">0</span> / <span id="reelsTarget">8</span>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span class="progress-icon">📷</span>
+                                <span class="progress-label">인스타 사진</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="photosProgress" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="photosCount">0</span> / <span id="photosTarget">12</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <!-- 체크리스트 입력 폼 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold">일일 체크리스트 입력</h3>
+                        <div class="quick-actions">
+                            <button onclick="fillSampleData()" class="btn btn-sm btn-secondary" title="샘플 데이터로 채우기">
+                                🎲 샘플
+                            </button>
+                            <button onclick="clearForm()" class="btn btn-sm btn-secondary" title="폼 초기화">
+                                🧹 초기화
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <form id="checklistForm">
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label>👤 디자이너 선택 <span class="required">*</span></label>
+                                <select id="checklistDesigner" required>
+                                    <option value="">디자이너를 선택하세요</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>📅 날짜 <span class="required">*</span></label>
+                                <input type="date" id="checklistDate" required>
+                                <div class="form-hint">
+                                    💡 과거 날짜의 기록도 입력할 수 있습니다
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-sections">
+                            <!-- 네이버 섹션 -->
+                            <div class="activity-section naver-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">
+                                        🟢 네이버 마케팅
+                                    </h4>
+                                    <div class="section-total">
+                                        총 <span id="naverTotal">0</span>건
+                                    </div>
+                                </div>
+                                
+                                <div class="activity-inputs">
+                                    <div class="input-group">
+                                        <label>⭐ 리뷰 수</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="naverReviews" min="0" value="0" 
+                                                   onchange="updateSectionTotal('naver')" 
+                                                   onkeyup="updateSectionTotal('naver')">
+                                            <div class="input-buttons">
+                                                <button type="button" onclick="incrementValue('naverReviews', 'naver')">+</button>
+                                                <button type="button" onclick="decrementValue('naverReviews', 'naver')">-</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <label>📝 블로그 포스팅 수</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="naverPosts" min="0" value="0" 
+                                                   onchange="updateSectionTotal('naver')" 
+                                                   onkeyup="updateSectionTotal('naver')">
+                                            <div class="input-buttons">
+                                                <button type="button" onclick="incrementValue('naverPosts', 'naver')">+</button>
+                                                <button type="button" onclick="decrementValue('naverPosts', 'naver')">-</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <label>🎯 체험단 운영 건수</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="naverExperience" min="0" value="0" 
+                                                   onchange="updateSectionTotal('naver')" 
+                                                   onkeyup="updateSectionTotal('naver')">
+                                            <div class="input-buttons">
+                                                <button type="button" onclick="incrementValue('naverExperience', 'naver')">+</button>
+                                                <button type="button" onclick="decrementValue('naverExperience', 'naver')">-</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 인스타그램 섹션 -->
+                            <div class="activity-section instagram-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">
+                                        📱 인스타그램 마케팅
+                                    </h4>
+                                    <div class="section-total">
+                                        총 <span id="instagramTotal">0</span>건
+                                    </div>
+                                </div>
+                                
+                                <div class="activity-inputs">
+                                    <div class="input-group">
+                                        <label>🎬 릴스 게시 수</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="instaReels" min="0" value="0" 
+                                                   onchange="updateSectionTotal('instagram')" 
+                                                   onkeyup="updateSectionTotal('instagram')">
+                                            <div class="input-buttons">
+                                                <button type="button" onclick="incrementValue('instaReels', 'instagram')">+</button>
+                                                <button type="button" onclick="decrementValue('instaReels', 'instagram')">-</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <label>📷 사진 게시 수</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="instaPhotos" min="0" value="0" 
+                                                   onchange="updateSectionTotal('instagram')" 
+                                                   onkeyup="updateSectionTotal('instagram')">
+                                            <div class="input-buttons">
+                                                <button type="button" onclick="incrementValue('instaPhotos', 'instagram')">+</button>
+                                                <button type="button" onclick="decrementValue('instaPhotos', 'instagram')">-</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 메모 섹션 -->
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label>📝 오늘의 메모</label>
+                                <textarea id="checklistNotes" rows="3" 
+                                          placeholder="특별한 활동이나 이슈사항을 기록해주세요..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- 총합 및 제출 -->
+                        <div class="form-footer">
+                            <div class="total-summary">
+                                <div class="total-label">오늘 총 활동량</div>
+                                <div class="total-value" id="totalActivity">0</div>
+                                <div class="total-unit">건</div>
+                            </div>
+                            <button type="submit" class="btn btn-submit">
+                                🚀 체크리스트 제출
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 선택된 디자이너 정보 -->
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">📊 선택된 디자이너 정보</h3>
+                    <div id="selectedDesignerInfo">
+                        <div class="empty-state">
+                            <div class="empty-icon">ℹ️</div>
+                            <p>디자이너를 선택하면 정보가 표시됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 제출 기록 -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold">📈 최근 제출 기록</h3>
+                    <div class="header-actions">
+                        <select id="historyFilter" onchange="loadRecentHistory()">
+                            <option value="all">전체 디자이너</option>
+                            <option value="mine">내 담당 디자이너만</option>
+                        </select>
+                        <button onclick="loadRecentHistory()" class="btn btn-sm">🔄 새로고침</button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>날짜</th>
+                                <th>디자이너</th>
+                                <th>지점</th>
+                                <th>리뷰</th>
+                                <th>포스팅</th>
+                                <th>체험단</th>
+                                <th>릴스</th>
+                                <th>사진</th>
+                                <th>총합</th>
+                                <th>등록시간</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentHistoryList">
+                            <!-- 동적으로 생성됨 -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination" id="historyPagination">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 체크리스트 수정 모달 -->
+    <div id="editChecklistModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">✏️ 체크리스트 수정</h3>
+                <button onclick="hideEditChecklist()" class="modal-close">❌</button>
+            </div>
+            <form id="editChecklistForm">
+                <input type="hidden" id="editChecklistId">
+                <div class="form-group">
+                    <label>📅 날짜</label>
+                    <input type="date" id="editChecklistDate" required>
+                </div>
+                <div class="form-group">
+                    <label>⭐ 네이버 리뷰</label>
+                    <input type="number" id="editNaverReviews" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>📝 블로그 포스팅</label>
+                    <input type="number" id="editNaverPosts" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>🎯 체험단 운영</label>
+                    <input type="number" id="editNaverExperience" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>🎬 인스타 릴스</label>
+                    <input type="number" id="editInstaReels" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>📷 인스타 사진</label>
+                    <input type="number" id="editInstaPhotos" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>📝 메모</label>
+                    <textarea id="editChecklistNotes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideEditChecklist()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">💾 저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/utils/data-manager.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/utils/ui-utils.js"></script>
+    <script src="../js/pages/checklist.js"></script>
+</body>
+</html>

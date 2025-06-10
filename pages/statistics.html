@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>통계 분석 - GOHAIR SNS 마케팅 관리 시스템</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/statistics.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>통계 데이터 로딩 중...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
+                <div class="header-actions">
+                    <span id="currentUser"></span>
+                    <button class="btn btn-green" onclick="exportToExcel()">📤 내보내기</button>
+                    <button class="btn" onclick="importData()">📥 가져오기</button>
+                    <button class="btn btn-red" onclick="goToMainSystem()">🏠 메인으로</button>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
+                <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
+                <button class="nav-btn" onclick="goToPage('branches')">🏢 지점 관리</button>
+                <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
+                <button class="nav-btn" onclick="goToPage('checklist')">📋 체크리스트 입력</button>
+                <button class="nav-btn active">📊 통계 분석</button>
+                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 통계분석 페이지 -->
+        <div id="statisticsPage">
+            <!-- 컨트롤 패널 -->
+            <div class="card">
+                <h2>📊 통계분석 설정</h2>
+                <div class="controls">
+                    <div class="control-group">
+                        <label>기간 선택</label>
+                        <div class="period-buttons">
+                            <button class="period-btn" onclick="setToday()">오늘</button>
+                            <button class="period-btn" onclick="setThisWeek()">이번주</button>
+                            <button class="period-btn active" onclick="setThisMonth()">이번달</button>
+                            <button class="period-btn" onclick="setThisQuarter()">분기</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>사용자 정의 기간</label>
+                        <input type="date" id="startDate" style="margin-bottom: 0.5rem;">
+                        <input type="date" id="endDate">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>지점 필터</label>
+                        <select id="branchFilter" onchange="applyFilters()">
+                            <option value="">전체 지점</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>카테고리</label>
+                        <select id="categoryFilter" onchange="applyFilters()">
+                            <option value="">전체</option>
+                            <option value="naverReviews">네이버 리뷰</option>
+                            <option value="naverPosts">블로그 포스팅</option>
+                            <option value="naverExperience">체험단</option>
+                            <option value="instaReels">인스타 릴스</option>
+                            <option value="instaPhotos">인스타 사진</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn" onclick="refreshData()">🔄 데이터 새로고침</button>
+                    <button class="btn btn-success" onclick="exportToExcel()">📥 Excel 다운로드</button>
+                    <span id="lastUpdated" style="color: #666; font-size: 0.9rem;"></span>
+                </div>
+            </div>
+
+            <!-- 요약 통계 카드 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">⭐</div>
+                    <div class="stat-number" id="totalReviews">0</div>
+                    <div class="stat-label">네이버 리뷰</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">📝</div>
+                    <div class="stat-number" id="totalPosts">0</div>
+                    <div class="stat-label">블로그 포스팅</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">🎯</div>
+                    <div class="stat-number" id="totalExperience">0</div>
+                    <div class="stat-label">체험단 운영</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">🎬</div>
+                    <div class="stat-number" id="totalReels">0</div>
+                    <div class="stat-label">인스타 릴스</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 1.5rem;">📷</div>
+                    <div class="stat-number" id="totalPhotos">0</div>
+                    <div class="stat-label">인스타 사진</div>
+                </div>
+            </div>
+
+            <!-- 차트 섹션 -->
+            <div class="charts-grid">
+                <div class="card">
+                    <h3>지점별 성과</h3>
+                    <div class="chart-container">
+                        <canvas id="branchChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>카테고리별 분석</h3>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 테이블 섹션 -->
+            <div class="tables-grid">
+                <div class="card">
+                    <h3>지점별 순위</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>순위</th>
+                                    <th>지점</th>
+                                    <th>총합</th>
+                                    <th>평균</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branchRankingTable">
+                                <!-- 동적으로 생성됨 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>디자이너별 순위</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>순위</th>
+                                    <th>디자이너</th>
+                                    <th>지점</th>
+                                    <th>총합</th>
+                                </tr>
+                            </thead>
+                            <tbody id="designerRankingTable">
+                                <!-- 동적으로 생성됨 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/utils/data-manager.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/utils/ui-utils.js"></script>
+    <script src="../js/pages/statistics.js"></script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디자이너 관리 - GOHAIR SNS 마케팅 관리 시스템</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/designers.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
+                <div class="header-actions">
+                    <span id="currentUser"></span>
+                    <button class="btn btn-green" onclick="exportDesigners()">📥 내보내기</button>
+                    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
+                <button class="nav-btn active">👥 디자이너 관리</button>
+                <button class="nav-btn" onclick="goToPage('branches')">🏢 지점 관리</button>
+                <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
+                <button class="nav-btn" onclick="goToPage('checklist')">📋 체크리스트 입력</button>
+                <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
+                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 디자이너 관리 페이지 -->
+        <div id="designersPage">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-4">👥 디자이너 관리</h2>
+                
+                <!-- 필터 컨트롤 -->
+                <div class="filter-controls">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="font-medium">📅 활동 기간</label>
+                            <select id="designersPeriod" onchange="loadDesigners()">
+                                <option value="week">이번 주</option>
+                                <option value="month" selected>이번 달</option>
+                                <option value="quarter">이번 분기</option>
+                                <option value="all">전체</option>
+                                <option value="custom">사용자 정의</option>
+                            </select>
+                        </div>
+                        <div id="branchFilterContainer">
+                            <label class="font-medium">🏢 지점 필터</label>
+                            <select id="designerBranchFilter" onchange="loadDesigners()">
+                                <option value="">전체 지점</option>
+                            </select>
+                        </div>
+                        <div id="designersCustomRange" class="hidden grid grid-cols-2 gap-4" style="grid-column: span 1;">
+                            <div>
+                                <label class="font-medium">시작일</label>
+                                <input type="date" id="designersStartDate" onchange="loadDesigners()">
+                            </div>
+                            <div>
+                                <label class="font-medium">종료일</label>
+                                <input type="date" id="designersEndDate" onchange="loadDesigners()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold">등록된 디자이너</h3>
+                    <button onclick="showAddDesigner()" class="btn">
+                        ➕ 새 디자이너 추가
+                    </button>
+                </div>
+                
+                <!-- 디자이너 통계 요약 -->
+                <div class="designer-stats-summary">
+                    <div class="stats-item">
+                        <span class="stats-label">전체 디자이너</span>
+                        <span class="stats-value" id="totalDesigners">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">활성 디자이너</span>
+                        <span class="stats-value" id="activeDesigners">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">평균 활동량</span>
+                        <span class="stats-value" id="avgActivity">0</span>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>지점</th>
+                                <th>직급</th>
+                                <th>전화번호</th>
+                                <th>등록일</th>
+                                <th class="sortable" onclick="sortDesigners('reviews')">
+                                    ⭐ 리뷰 <span class="sort-icon">🔀</span>
+                                </th>
+                                <th class="sortable" onclick="sortDesigners('posts')">
+                                    📝 포스팅 <span class="sort-icon">🔀</span>
+                                </th>
+                                <th class="sortable" onclick="sortDesigners('experience')">
+                                    🎯 체험단 <span class="sort-icon">🔀</span>
+                                </th>
+                                <th class="sortable" onclick="sortDesigners('reels')">
+                                    🎬 릴스 <span class="sort-icon">🔀</span>
+                                </th>
+                                <th class="sortable" onclick="sortDesigners('photos')">
+                                    📷 사진 <span class="sort-icon">🔀</span>
+                                </th>
+                                <th class="sortable" onclick="sortDesigners('total')">
+                                    총 활동량 <span class="sort-icon">🔀</span>
+                                </th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="designersList">
+                            <!-- 동적으로 생성됨 -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination" id="designersPagination">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달들 -->
+    <!-- 디자이너 추가 모달 -->
+    <div id="addDesignerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">👤 새 디자이너 추가</h3>
+                <button onclick="hideAddDesigner()" class="modal-close">❌</button>
+            </div>
+            <form id="addDesignerForm">
+                <div class="form-group">
+                    <label>👤 이름 <span class="required">*</span></label>
+                    <input type="text" id="designerName" required placeholder="디자이너 이름을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label>🏢 지점 <span class="required">*</span></label>
+                    <select id="designerBranch" required>
+                        <option value="">지점을 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🏷️ 직급 <span class="required">*</span></label>
+                    <select id="designerPosition" required>
+                        <option value="">직급을 선택하세요</option>
+                        <option value="인턴">인턴</option>
+                        <option value="디자이너">디자이너</option>
+                        <option value="팀장">팀장</option>
+                        <option value="실장">실장</option>
+                        <option value="부원장">부원장</option>
+                        <option value="원장">원장</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📞 전화번호 <span class="required">*</span></label>
+                    <input type="tel" id="designerPhone" required placeholder="010-0000-0000">
+                </div>
+                <div class="form-group">
+                    <label>📧 이메일</label>
+                    <input type="email" id="designerEmail" placeholder="designer@gohair.com">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideAddDesigner()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">➕ 추가</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 디자이너 편집 모달 -->
+    <div id="editDesignerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">✏️ 디자이너 정보 수정</h3>
+                <button onclick="hideEditDesigner()" class="modal-close">❌</button>
+            </div>
+            <form id="editDesignerForm">
+                <input type="hidden" id="editDesignerId">
+                <div class="form-group">
+                    <label>👤 이름 <span class="required">*</span></label>
+                    <input type="text" id="editDesignerName" required>
+                </div>
+                <div class="form-group">
+                    <label>🏢 지점 <span class="required">*</span></label>
+                    <select id="editDesignerBranch" required>
+                        <option value="">지점을 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🏷️ 직급 <span class="required">*</span></label>
+                    <select id="editDesignerPosition" required>
+                        <option value="">직급을 선택하세요</option>
+                        <option value="인턴">인턴</option>
+                        <option value="디자이너">디자이너</option>
+                        <option value="팀장">팀장</option>
+                        <option value="실장">실장</option>
+                        <option value="부원장">부원장</option>
+                        <option value="원장">원장</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📞 전화번호 <span class="required">*</span></label>
+                    <input type="tel" id="editDesignerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>📧 이메일</label>
+                    <input type="email" id="editDesignerEmail">
+                </div>
+                <div class="form-group">
+                    <label>📋 메모</label>
+                    <textarea id="editDesignerNotes" rows="3" placeholder="디자이너에 대한 메모나 특이사항"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideEditDesigner()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">💾 저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 디자이너 상세 보기 모달 -->
+    <div id="viewDesignerModal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">👤 디자이너 상세 정보</h3>
+                <button onclick="hideViewDesigner()" class="modal-close">❌</button>
+            </div>
+            <div id="designerDetailContent">
+                <!-- 동적으로 생성됨 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/utils/data-manager.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/utils/ui-utils.js"></script>
+    <script src="../js/pages/designers.js"></script>
+</body>
+</html>

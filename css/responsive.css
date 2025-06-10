@@ -1,0 +1,252 @@
+/* GOHAIR SNS 마케팅 관리 시스템 - 반응형 스타일 */
+
+/* 태블릿 및 모바일 */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .header-content {
+        padding: 0.75rem 1rem;
+    }
+    
+    .header h1 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .header-top {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .header-actions {
+        justify-content: center;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+    
+    .header-actions .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        flex: 1;
+        min-width: 0;
+        max-width: calc(50% - 0.125rem);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .header-actions #currentUser {
+        order: -1;
+        width: 100%;
+        text-align: center;
+        padding: 0.25rem;
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: #f8fafc;
+        border-radius: 4px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .nav {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.375rem;
+    }
+    
+    .nav-btn {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.75rem;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+    
+    .table {
+        font-size: 0.75rem;
+        min-width: 700px;
+    }
+    
+    .table th, .table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 100px;
+    }
+    
+    .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-group input, .form-group select {
+        padding: 0.75rem;
+        font-size: 16px;
+    }
+    
+    .btn {
+        padding: 0.75rem 1rem;
+        white-space: nowrap;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 1rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .filter-controls {
+        padding: 0.75rem;
+    }
+    
+    .filter-controls .grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .badge {
+        font-size: 0.625rem;
+        padding: 0.125rem 0.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .text-xl {
+        font-size: 1.125rem;
+    }
+    
+    .text-2xl {
+        font-size: 1.25rem;
+    }
+    
+    .login-form {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .connection-status {
+        position: fixed;
+        top: 0.5rem;
+        left: 0.5rem;
+        font-size: 0.625rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 0.875rem;
+    }
+    
+    .header-actions .btn {
+        font-size: 0.625rem;
+        padding: 0.375rem 0.5rem;
+    }
+    
+    .nav {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-btn {
+        font-size: 0.7rem;
+        padding: 0.625rem 0.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .card {
+        padding: 0.75rem;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+    
+    .table {
+        min-width: 600px;
+    }
+    
+    .table th, .table td {
+        padding: 0.375rem 0.25rem;
+        font-size: 0.7rem;
+        max-width: 80px;
+    }
+}
+
+/* 큰 화면 */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1400px;
+    }
+    
+    .header-content {
+        max-width: 1400px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* 프린트 스타일 */
+@media print {
+    .header-actions,
+    .nav,
+    .connection-status,
+    .btn,
+    .modal {
+        display: none !important;
+    }
+    
+    .container {
+        padding: 0;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+    
+    .table {
+        font-size: 0.75rem;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+}
