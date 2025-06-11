@@ -6,11 +6,6 @@ class AuthManager {
     }
 
     // 로그인 처리
-    // main.js에 추가해야 할 import들
-import './pages/statistics.js';
-import './pages/designers.js';
-import './pages/branches.js';
-import './pages/checklist.js';
     async login(email, password) {
         try {
             const user = await window.dataManager.getUser(email);
