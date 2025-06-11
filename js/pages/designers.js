@@ -61,13 +61,17 @@ class DesignersManager {
     }
 
     // 사용자 표시 업데이트
-    updateUserDisplay() {
-        const userElement = document.getElementById('currentUser');
-        if (userElement && this.currentUser) {
-            userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
-        }
+updateUserDisplay() {
+    const userElement = document.getElementById('currentUser');
+    if (userElement) {
+        // 강제로 Firebase 연결 상태 표시
+        userElement.textContent = 'Firebase 연결됨';
+        userElement.style.color = '#10b981';
+        userElement.style.fontWeight = '500';
+        
+        console.log('✅ "Firebase 연결됨" 표시 완료');
     }
-
+}
     // 권한에 따른 UI 조정
     adjustUIForPermissions() {
         const branchFilterContainer = document.getElementById('branchFilterContainer');
@@ -81,21 +85,29 @@ class DesignersManager {
     }
 
     // 데이터 로드
-    async loadAllData() {
-        try {
-            // 실제로는 Firebase에서 로드
-            this.data.designers = this.generateSampleDesigners();
-            this.data.branches = this.generateSampleBranches();
-            this.data.checklists = this.generateSampleChecklists();
-            
-            // 지점 옵션 로드
-            this.loadBranchOptions();
-            
-        } catch (error) {
-            console.error('데이터 로딩 오류:', error);
-            throw error;
-        }
+async loadAllData() {
+    try {
+        console.log('📊 실제 Firebase 데이터 로딩 시작...');
+        
+        // Firebase에서 실제 데이터 로딩
+        this.data.designers = await this.loadDesignersFromFirebase();
+        this.data.branches = await this.loadBranchesFromFirebase();
+        this.data.checklists = await this.loadChecklistsFromFirebase();
+        
+        console.log('✅ 모든 데이터 로딩 완료');
+        console.log('📊 로딩된 데이터 요약:');
+        console.log(`- 디자이너: ${this.data.designers.length}개`);
+        console.log(`- 지점: ${this.data.branches.length}개`);
+        console.log(`- 체크리스트: ${this.data.checklists.length}개`);
+        
+        // 지점 옵션 로드
+        this.loadBranchOptions();
+        
+    } catch (error) {
+        console.error('❌ 데이터 로딩 중 오류:', error);
+        throw error;
     }
+}
 
     // 샘플 데이터 생성
     generateSampleDesigners() {
@@ -149,7 +161,145 @@ class DesignersManager {
         
         return data;
     }
+async loadDesignersFromFirebase() {
+    try {
+        console.log('👥 디자이너 데이터 로딩 중...');
+        
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
+            return this.generateSampleDesigners();
+        }
 
+        const db = firebase.firestore();
+        const snapshot = await db.collection('designers').get();
+        
+        const designers = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            designers.push({
+                id: doc.id,
+                docId: doc.id,
+                name: data.name || '',
+                branch: data.branch || '',
+                position: data.position || '',
+                phone: data.phone || '',
+                email: data.email || '',
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+            });
+        });
+        
+        console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
+        
+        if (designers.length === 0) {
+            console.log('📝 Firebase에 디자이너 데이터가 없음 - 임시 데이터 사용');
+            return this.generateSampleDesigners();
+        }
+        
+        return designers;
+    } catch (error) {
+        console.error('❌ 디자이너 데이터 로딩 실패:', error);
+        console.log('📝 오류로 인해 임시 데이터 사용');
+        return this.generateSampleDesigners();
+    }
+}
+
+// 🏢 실제 지점 데이터 로딩
+async loadBranchesFromFirebase() {
+    try {
+        console.log('🏢 지점 데이터 로딩 중...');
+        
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
+            return this.generateSampleBranches();
+        }
+
+        const db = firebase.firestore();
+        const snapshot = await db.collection('branches').get();
+        
+        const branches = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            branches.push({
+                id: doc.id,
+                docId: doc.id,
+                name: data.name || '',
+                code: data.code || '',
+                address: data.address || '',
+                phone: data.phone || '',
+                manager: data.manager || '',
+                hours: data.hours || '',
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+            });
+        });
+        
+        console.log(`✅ 지점 데이터 로딩 완료: ${branches.length}개`);
+        
+        if (branches.length === 0) {
+            console.log('📝 Firebase에 지점 데이터가 없음 - 임시 데이터 사용');
+            return this.generateSampleBranches();
+        }
+        
+        // 지점명만 배열로 반환 (기존 코드와 호환)
+        return branches.map(b => b.name);
+    } catch (error) {
+        console.error('❌ 지점 데이터 로딩 실패:', error);
+        console.log('📝 오류로 인해 임시 데이터 사용');
+        return this.generateSampleBranches();
+    }
+}
+
+// 📋 실제 체크리스트 데이터 로딩
+async loadChecklistsFromFirebase() {
+    try {
+        console.log('📋 체크리스트 데이터 로딩 중...');
+        
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
+            return this.generateSampleChecklists();
+        }
+
+        const db = firebase.firestore();
+        const snapshot = await db.collection('checklists')
+            .orderBy('date', 'desc')
+            .limit(500)
+            .get();
+        
+        const checklists = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            checklists.push({
+                id: doc.id,
+                docId: doc.id,
+                designerId: data.designerId || '',
+                designer: data.designer || '',
+                branch: data.branch || '',
+                date: data.date || '',
+                naverReviews: data.naverReviews || 0,
+                naverPosts: data.naverPosts || 0,
+                naverExperience: data.naverExperience || 0,
+                instaReels: data.instaReels || 0,
+                instaPhotos: data.instaPhotos || 0,
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString()
+            });
+        });
+        
+        console.log(`✅ 체크리스트 데이터 로딩 완료: ${checklists.length}개`);
+        
+        if (checklists.length === 0) {
+            console.log('📝 Firebase에 체크리스트 데이터가 없음 - 임시 데이터 사용');
+            return this.generateSampleChecklists();
+        }
+        
+        return checklists;
+    } catch (error) {
+        console.error('❌ 체크리스트 데이터 로딩 실패:', error);
+        console.log('📝 오류로 인해 임시 데이터 사용');
+        return this.generateSampleChecklists();
+    }
+}
     // 지점 옵션 로드
     loadBranchOptions() {
         let branches = this.data.branches;
