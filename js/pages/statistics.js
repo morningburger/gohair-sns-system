@@ -19,49 +19,48 @@ class StatisticsManager {
     }
 
     // 페이지 초기화
-// 페이지 초기화
-async initialize() {
-    try {
-        this.showLoading();
-        
-        // Firebase 연결 확인
-        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
-            throw new Error('Firebase가 초기화되지 않았습니다');
+    async initialize() {
+        try {
+            this.showLoading();
+            
+            // Firebase 연결 확인
+            if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+                throw new Error('Firebase가 초기화되지 않았습니다');
+            }
+            
+            // 사용자 정보 확인
+            this.currentUser = this.getCurrentUser();
+            this.updateUserDisplay();
+            
+            // 기본 기간 설정 (이번 달)
+            this.setThisMonth();
+            
+            // 데이터 로드
+            await this.loadAllData();
+            
+            // 이벤트 리스너 설정
+            this.setupEventListeners();
+            
+            console.log('✅ 통계 페이지 초기화 완료');
+            
+        } catch (error) {
+            console.error('❌ 통계 페이지 초기화 오류:', error);
+            
+            // 에러 발생 시 사용자에게 알림
+            const errorElement = document.createElement('div');
+            errorElement.innerHTML = `
+                <div style="padding: 1rem; background: #fee2e2; color: #dc2626; border-radius: 0.5rem; margin: 1rem;">
+                    ⚠️ 데이터 로드 중 오류가 발생했습니다: ${error.message}
+                </div>
+            `;
+            document.querySelector('.container').prepend(errorElement);
+            
+        } finally {
+            this.hideLoading();
         }
-        
-        // 사용자 정보 확인
-        this.currentUser = this.getCurrentUser();
-        this.updateUserDisplay();
-        
-        // 기본 기간 설정 (이번 달)
-        this.setThisMonth();
-        
-        // 데이터 로드
-        await this.loadAllData();
-        
-        // 이벤트 리스너 설정
-        this.setupEventListeners();
-        
-        console.log('✅ 통계 페이지 초기화 완료');
-        
-    } catch (error) {
-        console.error('❌ 통계 페이지 초기화 오류:', error);
-        
-        // 에러 발생 시 사용자에게 알림
-        const errorElement = document.createElement('div');
-        errorElement.innerHTML = `
-            <div style="padding: 1rem; background: #fee2e2; color: #dc2626; border-radius: 0.5rem; margin: 1rem;">
-                ⚠️ 데이터 로드 중 오류가 발생했습니다: ${error.message}
-            </div>
-        `;
-        document.querySelector('.container').prepend(errorElement);
-        
-    } finally {
-        this.hideLoading();
     }
-}
 
-    // 현재 사용자 정보 가져오기 (간단한 세션 스토리지 사용)
+    // 현재 사용자 정보 가져오기
     getCurrentUser() {
         try {
             const userData = sessionStorage.getItem('currentUser');
@@ -74,65 +73,67 @@ async initialize() {
     // 사용자 표시 업데이트
     updateUserDisplay() {
         const userElement = document.getElementById('currentUser');
-        if (userElement && this.currentUser) {
-            userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
+        if (userElement) {
+            userElement.textContent = 'Firebase 연결됨';
+            userElement.style.color = '#10b981';
+            userElement.style.fontWeight = '500';
         }
     }
 
     // 데이터 로드
-// 데이터 로드
-async loadAllData() {
-    try {
-        if (!firebase.firestore) {
-            throw new Error('Firestore가 초기화되지 않았습니다');
+    async loadAllData() {
+        try {
+            if (!firebase.firestore) {
+                throw new Error('Firestore가 초기화되지 않았습니다');
+            }
+            
+            const db = firebase.firestore();
+            
+            // 체크리스트 데이터 로드
+            const checklistsSnapshot = await db.collection('checklists').get();
+            this.data.checklists = checklistsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            // 디자이너 데이터 로드  
+            const designersSnapshot = await db.collection('designers').get();
+            this.data.designers = designersSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            // 지점 데이터 로드
+            const branchesSnapshot = await db.collection('branches').get();
+            this.data.branches = branchesSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            console.log('📊 Firebase 데이터 로드 완료:', {
+                checklists: this.data.checklists.length,
+                designers: this.data.designers.length,
+                branches: this.data.branches.length
+            });
+            
+            // 지점 필터 옵션 로드
+            this.loadBranchFilterOptions();
+            
+            // 데이터 처리 및 표시
+            this.processData();
+            
+        } catch (error) {
+            console.error('❌ Firebase 데이터 로딩 오류:', error);
+            // 에러 발생 시 빈 데이터로 초기화
+            this.data.checklists = [];
+            this.data.designers = [];
+            this.data.branches = [];
+            
+            // 빈 데이터로도 화면 초기화
+            this.loadBranchFilterOptions();
+            this.processData();
         }
-        
-        const db = firebase.firestore();
-        
-        // 체크리스트 데이터 로드
-        const checklistsSnapshot = await db.collection('checklists').get();
-        this.data.checklists = checklistsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        // 디자이너 데이터 로드  
-        const designersSnapshot = await db.collection('designers').get();
-        this.data.designers = designersSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        // 지점 데이터 로드
-        const branchesSnapshot = await db.collection('branches').get();
-        this.data.branches = branchesSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        console.log('📊 Firebase 데이터 로드 완료:', {
-            checklists: this.data.checklists.length,
-            designers: this.data.designers.length,
-            branches: this.data.branches.length
-        });
-        
-        // 지점 필터 옵션 로드
-        this.loadBranchFilterOptions();
-        
-        // 데이터 처리 및 표시
-        this.processData();
-        
-    } catch (error) {
-        console.error('❌ Firebase 데이터 로딩 오류:', error);
-        // 에러 발생 시 빈 데이터로 초기화
-        this.data.checklists = [];
-        this.data.designers = [];
-        this.data.branches = [];
-        throw error;
     }
-}
-
-    // 샘플 데이터 생성 (실제로는 Firebase에서 로드)
 
     // 기간 설정 함수들
     setToday() {
@@ -173,32 +174,50 @@ async loadAllData() {
         this.currentPeriod.startDate = startDate;
         this.currentPeriod.endDate = endDate;
         
-        document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
-        document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+        const startInput = document.getElementById('startDate');
+        const endInput = document.getElementById('endDate');
+        
+        if (startInput) startInput.value = startDate.toISOString().split('T')[0];
+        if (endInput) endInput.value = endDate.toISOString().split('T')[0];
         
         this.processData();
     }
 
     updatePeriodButtons(active) {
         document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
-        // 활성 버튼 표시는 클릭 이벤트에서 처리
+        const activeBtn = document.querySelector(`[onclick*="${active}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
     }
 
-// 지점 필터 옵션 로드
-loadBranchFilterOptions() {
-    const select = document.getElementById('branchFilter');
-    if (select) {
-        // Firebase에서 로드한 지점 데이터는 객체 배열 (name 필드 사용)
-        let branches = this.data.branches.map(branch => branch.name);
-        
-        if (this.currentUser && this.currentUser.role === 'leader') {
-            branches = branches.filter(b => b === this.currentUser.branch);
+    // 지점 필터 옵션 로드
+    loadBranchFilterOptions() {
+        const select = document.getElementById('branchFilter');
+        if (select) {
+            console.log('🏢 지점 필터 옵션 로딩 중... 데이터:', this.data.branches);
+            
+            // Firebase에서 로드한 지점 데이터는 객체 배열 (name 필드 사용)
+            let branches = [];
+            if (this.data.branches && this.data.branches.length > 0) {
+                branches = this.data.branches.map(branch => branch.name).filter(name => name);
+            }
+            
+            if (this.currentUser && this.currentUser.role === 'leader') {
+                branches = branches.filter(b => b === this.currentUser.branch);
+            }
+            
+            if (branches.length === 0) {
+                select.innerHTML = '<option value="">지점 데이터 없음</option>';
+                console.warn('⚠️ 지점 데이터가 없습니다');
+            } else {
+                select.innerHTML = '<option value="">전체 지점</option>' +
+                    branches.map(b => `<option value="${b}">${b}</option>`).join('');
+                console.log(`✅ 지점 옵션 ${branches.length}개 로딩 완료`);
+            }
         }
-        
-        select.innerHTML = '<option value="">전체 지점</option>' +
-            branches.map(b => `<option value="${b}">${b}</option>`).join('');
     }
-}
+
     // 데이터 처리 및 표시
     processData() {
         const filteredData = this.getFilteredData();
@@ -223,9 +242,9 @@ loadBranchFilterOptions() {
         }
         
         // 지점 필터
-        const branchFilter = document.getElementById('branchFilter').value;
-        if (branchFilter) {
-            filtered = filtered.filter(item => item.branch === branchFilter);
+        const branchFilter = document.getElementById('branchFilter');
+        if (branchFilter && branchFilter.value) {
+            filtered = filtered.filter(item => item.branch === branchFilter.value);
         }
         
         // 사용자 권한에 따른 필터링
@@ -253,52 +272,38 @@ loadBranchFilterOptions() {
             instaPhotos: 0
         });
         
-        document.getElementById('totalReviews').textContent = totals.naverReviews;
-        document.getElementById('totalPosts').textContent = totals.naverPosts;
-        document.getElementById('totalExperience').textContent = totals.naverExperience;
-        document.getElementById('totalReels').textContent = totals.instaReels;
-        document.getElementById('totalPhotos').textContent = totals.instaPhotos;
+        const totalReviewsEl = document.getElementById('totalReviews');
+        const totalPostsEl = document.getElementById('totalPosts');
+        const totalExperienceEl = document.getElementById('totalExperience');
+        const totalReelsEl = document.getElementById('totalReels');
+        const totalPhotosEl = document.getElementById('totalPhotos');
+        
+        if (totalReviewsEl) totalReviewsEl.textContent = totals.naverReviews;
+        if (totalPostsEl) totalPostsEl.textContent = totals.naverPosts;
+        if (totalExperienceEl) totalExperienceEl.textContent = totals.naverExperience;
+        if (totalReelsEl) totalReelsEl.textContent = totals.instaReels;
+        if (totalPhotosEl) totalPhotosEl.textContent = totals.instaPhotos;
     }
 
     // 지점별 순위 업데이트
-// 지점별 순위 업데이트
-updateBranchRankings(data) {
-    const branchStats = {};
-    
-    data.forEach(item => {
-        // Firebase에서 가져온 데이터의 branch 필드 사용
-        const branchName = item.branch;
-        if (!branchName) return;
+    updateBranchRankings(data) {
+        const branchStats = {};
         
-        if (!branchStats[branchName]) {
-            branchStats[branchName] = { total: 0, count: 0 };
-        }
+        data.forEach(item => {
+            const branchName = item.branch;
+            if (!branchName) return;
+            
+            if (!branchStats[branchName]) {
+                branchStats[branchName] = { total: 0, count: 0 };
+            }
+            
+            const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                            (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+            
+            branchStats[branchName].total += itemTotal;
+            branchStats[branchName].count += 1;
+        });
         
-        const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
-                        (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
-        
-        branchStats[branchName].total += itemTotal;
-        branchStats[branchName].count += 1;
-    });
-    
-    const rankings = Object.entries(branchStats)
-        .map(([branch, stats]) => ({
-            branch,
-            total: stats.total,
-            average: Math.round(stats.total / stats.count * 10) / 10 || 0
-        }))
-        .sort((a, b) => b.total - a.total);
-    
-    const tbody = document.getElementById('branchRankingTable');
-    tbody.innerHTML = rankings.map((item, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${item.branch}</td>
-            <td>${item.total}</td>
-            <td>${item.average}</td>
-        </tr>
-    `).join('');
-}
         const rankings = Object.entries(branchStats)
             .map(([branch, stats]) => ({
                 branch,
@@ -308,57 +313,42 @@ updateBranchRankings(data) {
             .sort((a, b) => b.total - a.total);
         
         const tbody = document.getElementById('branchRankingTable');
-        tbody.innerHTML = rankings.map((item, index) => `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${item.branch}</td>
-                <td>${item.total}</td>
-                <td>${item.average}</td>
-            </tr>
-        `).join('');
+        if (tbody) {
+            if (rankings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #6b7280;">데이터가 없습니다</td></tr>';
+            } else {
+                tbody.innerHTML = rankings.map((item, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.branch}</td>
+                        <td>${item.total}</td>
+                        <td>${item.average}</td>
+                    </tr>
+                `).join('');
+            }
+        }
     }
 
     // 디자이너별 순위 업데이트
-// 디자이너별 순위 업데이트
-updateDesignerRankings(data) {
-    const designerStats = {};
-    
-    data.forEach(item => {
-        // Firebase에서 가져온 데이터의 designer 필드 사용
-        const designerName = item.designer;
-        if (!designerName) return;
+    updateDesignerRankings(data) {
+        const designerStats = {};
         
-        if (!designerStats[designerName]) {
-            designerStats[designerName] = {
-                branch: item.branch,
-                total: 0
-            };
-        }
-        
-        const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
-                        (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
-        
-        designerStats[designerName].total += itemTotal;
-    });
-    
-    const rankings = Object.entries(designerStats)
-        .map(([designer, stats]) => ({
-            designer,
-            branch: stats.branch,
-            total: stats.total
-        }))
-        .sort((a, b) => b.total - a.total);
-    
-    const tbody = document.getElementById('designerRankingTable');
-    tbody.innerHTML = rankings.map((item, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${item.designer}</td>
-            <td>${item.branch}</td>
-            <td>${item.total}</td>
-        </tr>
-    `).join('');
-}
+        data.forEach(item => {
+            const designerName = item.designer;
+            if (!designerName) return;
+            
+            if (!designerStats[designerName]) {
+                designerStats[designerName] = {
+                    branch: item.branch,
+                    total: 0
+                };
+            }
+            
+            const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                            (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+            
+            designerStats[designerName].total += itemTotal;
+        });
         
         const rankings = Object.entries(designerStats)
             .map(([designer, stats]) => ({
@@ -369,14 +359,20 @@ updateDesignerRankings(data) {
             .sort((a, b) => b.total - a.total);
         
         const tbody = document.getElementById('designerRankingTable');
-        tbody.innerHTML = rankings.map((item, index) => `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${item.designer}</td>
-                <td>${item.branch}</td>
-                <td>${item.total}</td>
-            </tr>
-        `).join('');
+        if (tbody) {
+            if (rankings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #6b7280;">데이터가 없습니다</td></tr>';
+            } else {
+                tbody.innerHTML = rankings.map((item, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.designer}</td>
+                        <td>${item.branch}</td>
+                        <td>${item.total}</td>
+                    </tr>
+                `).join('');
+            }
+        }
     }
 
     // 차트 업데이트
@@ -386,59 +382,43 @@ updateDesignerRankings(data) {
     }
 
     // 지점별 차트 업데이트
-// 지점별 차트 업데이트
-updateBranchChart(data) {
-    const branchStats = {};
-    
-    data.forEach(item => {
-        const branchName = item.branch;
-        if (!branchName) return;
+    updateBranchChart(data) {
+        const branchStats = {};
         
-        if (!branchStats[branchName]) {
-            branchStats[branchName] = 0;
-        }
-        branchStats[branchName] += (item.naverReviews || 0) + (item.naverPosts || 0) + 
-                                  (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
-    });
-    
-    const ctx = document.getElementById('branchChart').getContext('2d');
-    
-    if (this.charts.branchChart) {
-        this.charts.branchChart.destroy();
-    }
-    
-    this.charts.branchChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(branchStats),
-            datasets: [{
-                label: '총 활동량',
-                data: Object.values(branchStats),
-                backgroundColor: 'rgba(99, 102, 241, 0.5)',
-                borderColor: 'rgba(99, 102, 241, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: true }
-            },
-            scales: {
-                y: { beginAtZero: true }
+        data.forEach(item => {
+            const branchName = item.branch;
+            if (!branchName) return;
+            
+            if (!branchStats[branchName]) {
+                branchStats[branchName] = 0;
             }
+            branchStats[branchName] += (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                                      (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+        });
+        
+        const ctx = document.getElementById('branchChart');
+        if (!ctx) return;
+        
+        if (this.charts.branchChart) {
+            this.charts.branchChart.destroy();
         }
-    });
-}
+        
+        const labels = Object.keys(branchStats);
+        const values = Object.values(branchStats);
+        
+        if (labels.length === 0) {
+            // 데이터가 없을 때는 빈 차트
+            labels.push('데이터 없음');
+            values.push(0);
+        }
         
         this.charts.branchChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: Object.keys(branchStats),
+                labels: labels,
                 datasets: [{
                     label: '총 활동량',
-                    data: Object.values(branchStats),
+                    data: values,
                     backgroundColor: 'rgba(99, 102, 241, 0.5)',
                     borderColor: 'rgba(99, 102, 241, 1)',
                     borderWidth: 1
@@ -474,49 +454,76 @@ updateBranchChart(data) {
             instaPhotos: 0
         });
         
-        const ctx = document.getElementById('categoryChart').getContext('2d');
+        const ctx = document.getElementById('categoryChart');
+        if (!ctx) return;
         
         if (this.charts.categoryChart) {
             this.charts.categoryChart.destroy();
         }
         
-        this.charts.categoryChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['네이버 리뷰', '블로그 포스팅', '체험단', '인스타 릴스', '인스타 사진'],
-                datasets: [{
-                    data: [
-                        categoryTotals.naverReviews,
-                        categoryTotals.naverPosts,
-                        categoryTotals.naverExperience,
-                        categoryTotals.instaReels,
-                        categoryTotals.instaPhotos
-                    ],
-                    backgroundColor: [
-                        'rgba(255, 206, 84, 0.5)',
-                        'rgba(75, 192, 192, 0.5)',
-                        'rgba(153, 102, 255, 0.5)',
-                        'rgba(255, 99, 132, 0.5)',
-                        'rgba(54, 162, 235, 0.5)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 206, 84, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' }
+        const total = categoryTotals.naverReviews + categoryTotals.naverPosts + 
+                     categoryTotals.naverExperience + categoryTotals.instaReels + categoryTotals.instaPhotos;
+        
+        if (total === 0) {
+            // 데이터가 없을 때는 기본 차트
+            this.charts.categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['데이터 없음'],
+                    datasets: [{
+                        data: [1],
+                        backgroundColor: ['rgba(200, 200, 200, 0.5)'],
+                        borderColor: ['rgba(200, 200, 200, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            this.charts.categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['⭐ 네이버 리뷰', '📝 블로그 포스팅', '🎯 체험단', '🎬 인스타 릴스', '📷 인스타 사진'],
+                    datasets: [{
+                        data: [
+                            categoryTotals.naverReviews,
+                            categoryTotals.naverPosts,
+                            categoryTotals.naverExperience,
+                            categoryTotals.instaReels,
+                            categoryTotals.instaPhotos
+                        ],
+                        backgroundColor: [
+                            'rgba(255, 206, 84, 0.5)',
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(153, 102, 255, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 206, 84, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
     }
 
     // 이벤트 리스너 설정
@@ -620,31 +627,45 @@ updateBranchChart(data) {
 
 // 전역 함수들
 function setToday() {
-    window.statisticsManager.setToday();
+    if (window.statisticsManager) {
+        window.statisticsManager.setToday();
+    }
 }
 
 function setThisWeek() {
-    window.statisticsManager.setThisWeek();
+    if (window.statisticsManager) {
+        window.statisticsManager.setThisWeek();
+    }
 }
 
 function setThisMonth() {
-    window.statisticsManager.setThisMonth();
+    if (window.statisticsManager) {
+        window.statisticsManager.setThisMonth();
+    }
 }
 
 function setThisQuarter() {
-    window.statisticsManager.setThisQuarter();
+    if (window.statisticsManager) {
+        window.statisticsManager.setThisQuarter();
+    }
 }
 
 function applyFilters() {
-    window.statisticsManager.processData();
+    if (window.statisticsManager) {
+        window.statisticsManager.processData();
+    }
 }
 
 function refreshData() {
-    window.statisticsManager.loadAllData();
+    if (window.statisticsManager) {
+        window.statisticsManager.loadAllData();
+    }
 }
 
 function exportToExcel() {
-    window.statisticsManager.exportToExcel();
+    if (window.statisticsManager) {
+        window.statisticsManager.exportToExcel();
+    }
 }
 
 function importData() {
@@ -656,7 +677,18 @@ function goToMainSystem() {
 }
 
 function goToPage(pageId) {
-    window.location.href = `../index.html#${pageId}`;
+    const pages = {
+        'designers': 'designers.html',
+        'branches': 'branches.html',
+        'history': 'history.html',
+        'checklist': 'checklist.html',
+        'statistics': 'statistics.html',
+        'comparison': 'comparison.html'
+    };
+    
+    if (pages[pageId]) {
+        window.location.href = pages[pageId];
+    }
 }
 
 // 페이지 로드 시 초기화
