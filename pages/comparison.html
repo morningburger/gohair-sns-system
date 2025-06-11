@@ -192,20 +192,6 @@ function goToMainSystem() {
         }
         // 네비게이션 함수들
 
-
-        // 페이지 로드 시 인증 확인
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                if (window.authManager && window.authManager.isLoggedIn()) {
-                    const userElement = document.getElementById('currentUser');
-                    if (userElement) {
-                        userElement.textContent = window.authManager.getCurrentUser().name;
-                    }
-                } else {
-                    window.location.href = '../index.html';
-                }
-            }, 500);
-        });
     </script>
 </body>
 </html>
