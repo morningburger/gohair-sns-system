@@ -142,6 +142,85 @@
             `;
         }
     });
+        document.addEventListener('DOMContentLoaded', function() {
+    console.log('📈 히스토리 페이지 로드 시작');
+    
+    // Firebase 연결 상태 확인
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        console.log('🔥 파이어베이스 연결됨');
+        
+        // 연결 상태를 화면에 표시
+        const currentUser = document.getElementById('currentUser');
+        if (currentUser && !currentUser.textContent.trim()) {
+            currentUser.textContent = '파이어베이스 연결됨';
+            currentUser.style.color = '#10b981'; // 초록색
+        }
+        
+        // Firestore 연결 테스트
+        if (firebase.firestore) {
+            const db = firebase.firestore();
+            console.log('💾 Firestore 연결 확인됨');
+            
+            // 간단한 연결 테스트
+            db.collection('checklists').limit(1).get()
+                .then((snapshot) => {
+                    if (snapshot.empty) {
+                        console.log('📂 checklists 컬렉션이 비어있음 - 테스트 데이터 추가 제안');
+                        console.log('💡 브라우저 콘솔에서 다음 명령을 실행하세요:');
+                        console.log(`
+// 테스트 체크리스트 데이터 추가
+const db = firebase.firestore();
+db.collection('checklists').add({
+    designerId: 'designer_1',
+    designer: '김수현',
+    branch: '송도센트럴점',
+    date: '2024-06-10',
+    naverReviews: 3,
+    naverPosts: 2,
+    naverExperience: 1,
+    instaReels: 4,
+    instaPhotos: 5,
+    notes: '오늘은 고객 반응이 좋았음',
+    createdAt: new Date().toISOString()
+}).then(() => {
+    console.log('✅ 테스트 체크리스트 추가됨');
+    location.reload();
+});
+                        `);
+                    } else {
+                        console.log(`✅ checklists 컬렉션에 ${snapshot.size}개 문서 존재`);
+                    }
+                })
+                .catch((error) => {
+                    console.log('⚠️ Firestore 읽기 테스트 실패:', error.message);
+                });
+        }
+    } else {
+        console.log('❌ 파이어베이스 연결 실패');
+        
+        const currentUser = document.getElementById('currentUser');
+        if (currentUser && !currentUser.textContent.trim()) {
+            currentUser.textContent = '파이어베이스 연결 실패';
+            currentUser.style.color = '#ef4444'; // 빨간색
+        }
+    }
+    
+    // 1초 후 HistoryManager 확인
+    setTimeout(() => {
+        if (window.historyManager) {
+            console.log('✅ HistoryManager 초기화 완료');
+        } else {
+            console.log('⚠️ HistoryManager 초기화 대기 중...');
+        }
+    }, 1000);
+});
+
+// 에러 발생 시 로그
+window.addEventListener('error', function(e) {
+    console.error('❌ JavaScript 에러:', e.message);
+    console.error('📁 파일:', e.filename);
+    console.error('📍 라인:', e.lineno);
+});
 </script>
 </body>
 </html>
