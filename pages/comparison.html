@@ -121,7 +121,30 @@
         document.addEventListener('DOMContentLoaded', function() {
             const selectAllCheckbox = document.getElementById('selectAllBranches');
             const branchCheckboxes = document.querySelectorAll('#branchCheckboxes input[type="checkbox"]');
-            
+            document.addEventListener('DOMContentLoaded', function() {
+    // 기존 체크박스 코드는 그대로 두고...
+    
+    // Firebase 연결 상태 확인 추가
+    console.log('⚖️ 지점 비교 페이지 로드 시작');
+    
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        console.log('🔥 파이어베이스 연결됨');
+        
+        const currentUser = document.getElementById('currentUser');
+        if (currentUser && !currentUser.textContent.trim()) {
+            currentUser.textContent = '파이어베이스 연결됨';
+            currentUser.style.color = '#10b981';
+        }
+    } else {
+        console.log('❌ 파이어베이스 연결 실패');
+        
+        const currentUser = document.getElementById('currentUser');
+        if (currentUser && !currentUser.textContent.trim()) {
+            currentUser.textContent = '파이어베이스 연결 실패';
+            currentUser.style.color = '#ef4444';
+        }
+    }
+});
             selectAllCheckbox.addEventListener('change', function() {
                 branchCheckboxes.forEach(checkbox => {
                     checkbox.checked = this.checked;
