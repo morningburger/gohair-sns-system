@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디자이너 히스토리 - GOHAIR SNS 마케팅 관리 시스템</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
+                <div class="header-actions">
+                    <span id="currentUser"></span>
+                    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
+                <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
+                <button class="nav-btn" onclick="goToPage('branches')">🏢 지점 관리</button>
+                <button class="nav-btn active">📈 디자이너 히스토리</button>
+                <button class="nav-btn" onclick="goToPage('checklist')">📋 체크리스트 입력</button>
+                <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
+                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="historyPage">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-4">📈 디자이너 히스토리</h2>
+                
+                <!-- 필터 컨트롤 -->
+                <div class="filter-controls">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="font-medium">👤 디자이너 선택</label>
+                            <select id="historyDesigner">
+                                <option value="">디자이너를 선택하세요</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="font-medium">📅 기간 선택</label>
+                            <select id="historyPeriod">
+                                <option value="week">이번 주</option>
+                                <option value="month" selected>이번 달</option>
+                                <option value="quarter">이번 분기</option>
+                                <option value="all">전체</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: end;">
+                            <button onclick="loadHistory()" class="btn" style="height: fit-content;">
+                                🔄 조회
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="historyContent" class="card">
+                <div class="text-center" style="padding: 3rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">ℹ️</div>
+                    <p style="color: #6b7280;">디자이너를 선택하면 히스토리가 표시됩니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/config/data-manager.js"></script>
+    <script src="../js/config/auth.js"></script>
+    <script src="../js/config/ui-utils.js"></script>
+
+    <script>
+        // 히스토리 로드 함수
+        function loadHistory() {
+            const designerId = document.getElementById('historyDesigner').value;
+            const period = document.getElementById('historyPeriod').value;
+            
+            if (!designerId) {
+                alert('디자이너를 선택해주세요.');
+                return;
+            }
+            
+            // 임시 히스토리 표시
+            document.getElementById('historyContent').innerHTML = `
+                <h3>📊 ${document.getElementById('historyDesigner').selectedOptions[0].text} 활동 히스토리</h3>
+                <p style="color: #6b7280; margin-top: 1rem;">
+                    🚧 히스토리 기능은 개발 중입니다. 곧 업데이트 예정입니다.
+                </p>
+            `;
+        }
+
+        // 네비게이션 함수들
+        function goToMainSystem() {
+            window.location.href = '../index.html';
+        }
+
+        function goToPage(pageId) {
+            const pages = {
+                'designers': 'designers.html',
+                'branches': 'branches.html',
+                'checklist': 'checklist.html',
+                'statistics': 'statistics.html',
+                'comparison': 'comparison.html'
+            };
+            
+            if (pages[pageId]) {
+                window.location.href = pages[pageId];
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 인증 확인
+            setTimeout(() => {
+                if (window.authManager && window.authManager.isLoggedIn()) {
+                    // 사용자 정보 표시
+                    const userElement = document.getElementById('currentUser');
+                    if (userElement) {
+                        userElement.textContent = window.authManager.getCurrentUser().name;
+                    }
+                    
+                    // 디자이너 목록 로드 (임시)
+                    const designerSelect = document.getElementById('historyDesigner');
+                    designerSelect.innerHTML = `
+                        <option value="">디자이너를 선택하세요</option>
+                        <option value="1">김디자이너</option>
+                        <option value="2">이디자이너</option>
+                        <option value="3">박디자이너</option>
+                    `;
+                } else {
+                    window.location.href = '../index.html';
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
