@@ -18,32 +18,40 @@ class ComparisonManager {
     }
 
     // 페이지 초기화
-    async initialize() {
-        try {
-            // 사용자 정보 확인
-            this.currentUser = this.getCurrentUser();
-            this.updateUserDisplay();
-            
-            // 권한 확인
-            if (!this.currentUser) {
-                window.location.href = '../index.html';
-                return;
-            }
-            
-            // 데이터 로드
-            await this.loadAllData();
-            
-            // 이벤트 리스너 설정
-            this.setupEventListeners();
-            
-            // 지점 체크박스 생성
-            this.setupBranchCheckboxes();
-            
-            console.log('비교 페이지 초기화 완료');
-        } catch (error) {
-            console.error('비교 페이지 초기화 오류:', error);
+// 페이지 초기화
+async initialize() {
+    try {
+        // Firebase 연결 확인
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            throw new Error('Firebase가 초기화되지 않았습니다');
         }
+        
+        // 사용자 정보 확인
+        this.currentUser = this.getCurrentUser();
+        this.updateUserDisplay();
+        
+        // 데이터 로드
+        await this.loadAllData();
+        
+        // 이벤트 리스너 설정
+        this.setupEventListeners();
+        
+        // 지점 체크박스 생성
+        this.setupBranchCheckboxes();
+        
+        console.log('✅ 비교 페이지 초기화 완료');
+    } catch (error) {
+        console.error('❌ 비교 페이지 초기화 오류:', error);
+        
+        const errorElement = document.createElement('div');
+        errorElement.innerHTML = `
+            <div style="padding: 1rem; background: #fee2e2; color: #dc2626; border-radius: 0.5rem; margin: 1rem;">
+                ⚠️ 데이터 로드 중 오류가 발생했습니다: ${error.message}
+            </div>
+        `;
+        document.querySelector('.container').prepend(errorElement);
     }
+}
 
     // 현재 사용자 정보 가져오기
     getCurrentUser() {
@@ -64,97 +72,66 @@ class ComparisonManager {
     }
 
     // 데이터 로드
-    async loadAllData() {
-        try {
-            // 실제로는 Firebase에서 로드
-            this.data.branches = this.generateSampleBranches();
-            this.data.designers = this.generateSampleDesigners();
-            this.data.checklists = this.generateSampleChecklists();
-            
-        } catch (error) {
-            console.error('데이터 로딩 오류:', error);
-            throw error;
-        }
-    }
-
-    // 샘플 데이터 생성
-    generateSampleBranches() {
-        const branches = [
-            { id: 1, name: '송도센트럴점', code: 'SD01', address: '인천시 연수구 송도과학로 32' },
-            { id: 2, name: '검단테라스점', code: 'GD01', address: '인천시 서구 검단신도시로 123' },
-            { id: 3, name: '부평점', code: 'BP01', address: '인천시 부평구 부평대로 456' },
-            { id: 4, name: '인천논현점', code: 'IC01', address: '인천시 남동구 논현동 789' },
-            { id: 5, name: '청라국제점', code: 'CL01', address: '인천시 서구 청라국제로 321' }
-        ];
-        
-        // 사용자 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === 'leader') {
-            return branches.filter(b => b.name === this.currentUser.branch);
+// 데이터 로드
+async loadAllData() {
+    try {
+        if (!firebase.firestore) {
+            throw new Error('Firestore가 초기화되지 않았습니다');
         }
         
-        return branches;
-    }
-
-    generateSampleDesigners() {
-        const branches = ['송도센트럴점', '검단테라스점', '부평점', '인천논현점', '청라국제점'];
-        const names = ['김수현', '이지민', '박준호', '최미영', '정태윤', '한소희', '오민석', '신예은', '윤서연', '장도현'];
+        const db = firebase.firestore();
         
-        return names.map((name, index) => ({
-            id: index + 1,
-            name: name,
-            branch: branches[Math.floor(Math.random() * branches.length)],
-            position: '디자이너'
+        // 지점 데이터 로드
+        const branchesSnapshot = await db.collection('branches').get();
+        this.data.branches = branchesSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
         }));
-    }
-
-    generateSampleChecklists() {
-        const data = [];
-        const designers = this.data.designers || this.generateSampleDesigners();
         
-        designers.forEach(designer => {
-            const recordCount = Math.floor(Math.random() * 25) + 15; // 15-39개 기록
-            
-            for (let i = 0; i < recordCount; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() - Math.floor(Math.random() * 90)); // 최근 90일
-                
-                data.push({
-                    id: `checklist_${designer.id}_${i}`,
-                    designerId: designer.id,
-                    designer: designer.name,
-                    branch: designer.branch,
-                    date: date.toISOString().split('T')[0],
-                    naverReviews: Math.floor(Math.random() * 8),
-                    naverPosts: Math.floor(Math.random() * 4),
-                    naverExperience: Math.floor(Math.random() * 2),
-                    instaReels: Math.floor(Math.random() * 6),
-                    instaPhotos: Math.floor(Math.random() * 10)
-                });
-            }
+        // 디자이너 데이터 로드
+        const designersSnapshot = await db.collection('designers').get();
+        this.data.designers = designersSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        // 체크리스트 데이터 로드
+        const checklistsSnapshot = await db.collection('checklists').get();
+        this.data.checklists = checklistsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        console.log('⚖️ Firebase 데이터 로드 완료:', {
+            branches: this.data.branches.length,
+            designers: this.data.designers.length,
+            checklists: this.data.checklists.length
         });
         
-        return data;
+    } catch (error) {
+        console.error('❌ Firebase 데이터 로딩 오류:', error);
+        this.data.branches = [];
+        this.data.designers = [];
+        this.data.checklists = [];
+        throw error;
     }
+}
+
+
 
     // 지점 체크박스 설정
-    setupBranchCheckboxes() {
-        const container = document.getElementById('branchCheckboxes');
-        if (!container) return;
+// 지점 체크박스 설정
+setupBranchCheckboxes() {
+    const container = document.getElementById('branchCheckboxes');
+    if (!container) return;
 
-        container.innerHTML = this.data.branches.map(branch => `
-            
-
-
-                    
-${branch.name}
-
-                    
-${branch.code} • ${branch.address.substring(0, 20)}...
-
-                
-
-        `).join('');
-    }
+    container.innerHTML = this.data.branches.map(branch => `
+        <label style="display: flex; align-items: center;">
+            <input type="checkbox" value="${branch.name}" style="margin-right: 0.5rem;">
+            ${branch.name}
+        </label>
+    `).join('');
+}
 
     // 비교 업데이트
     updateComparison() {
