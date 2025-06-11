@@ -1,15 +1,27 @@
 // 디자이너 히스토리 페이지 전용 로직
 
 class HistoryManager {
-    constructor() {
-        this.data = {
-            designers: [],
-            checklists: [],
-            branches: []
-        };
-        this.currentUser = null;
-        this.selectedDesigner = null;
-        this.currentPeriod = 'month';
+constructor() {
+    this.data = {
+        designers: [],
+        checklists: [],
+        branches: []
+    };
+    this.currentUser = null;
+    this.selectedDesigner = null;
+    this.selectedBranch = '';
+    this.currentPeriod = 'month';
+    this.dateRange = {
+        start: null,
+        end: null
+    };
+    this.pagination = {
+        currentPage: 1,
+        itemsPerPage: 15,
+        totalItems: 0,
+        totalPages: 0
+    };
+}
         this.pagination = {
             currentPage: 1,
             itemsPerPage: 15,
@@ -34,7 +46,11 @@ class HistoryManager {
             
             // 디자이너 옵션 로드
             this.loadDesignerOptions();
-            
+            // 지점 옵션 로드
+this.loadBranchOptions();
+
+// 초기 날짜 범위 설정
+this.setPeriod('month');
             console.log('히스토리 페이지 초기화 완료');
         } catch (error) {
             console.error('히스토리 페이지 초기화 오류:', error);
@@ -280,52 +296,147 @@ loadDesignerOptions() {
             designers.map(d => `<option value="${d.id}">${d.name} (${d.branch} - ${d.position})</option>`).join('');
     }
 }
-
-    // 히스토리 로드
-    loadHistory() {
-        const designerId = document.getElementById('historyDesigner').value;
-        const period = document.getElementById('historyPeriod').value;
-        
-        if (!designerId) {
-            document.getElementById('historyContent').innerHTML = `
-                
-
-                    
-ℹ️
-
-                    
-디자이너를 선택해주세요.
-
-
-                
-
-            `;
-            return;
-        }
-
-        this.selectedDesigner = this.data.designers.find(d => d.id == designerId);
-        this.currentPeriod = period;
-        
-        // 로딩 표시
-        document.getElementById('historyContent').innerHTML = `
-            
-
-                
-⏳
-
-                
-히스토리를 불러오는 중...
-
-
-            
-
-        `;
-
-        // 약간의 지연 후 히스토리 표시 (실제 로딩 시뮬레이션)
-        setTimeout(() => {
-            this.displayHistory();
-        }, 500);
+// 지점 옵션 로드
+loadBranchOptions() {
+    const select = document.getElementById('historyBranch');
+    if (select && this.data.branches) {
+        select.innerHTML = '<option value="">전체 지점</option>' +
+            this.data.branches.map(branch => `<option value="${branch}">${branch}</option>`).join('');
     }
+}
+// 기간 설정
+setPeriod(period) {
+    this.currentPeriod = period;
+    
+    // 기간 버튼 활성화 상태 업데이트
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-period="${period}"]`).classList.add('active');
+    
+    // 날짜 범위 계산 및 표시
+    this.updateDateRange();
+    
+    // 사용자 정의 날짜 입력 필드 표시/숨김
+    const customDateRange = document.getElementById('customDateRange');
+    if (period === 'custom') {
+        customDateRange.classList.remove('hidden');
+    } else {
+        customDateRange.classList.add('hidden');
+    }
+}
+
+updateDateRange() {
+    const now = new Date();
+    let startDate, endDate, label;
+    
+    switch(this.currentPeriod) {
+        case 'day':
+            startDate = new Date(now);
+            endDate = new Date(now);
+            label = '오늘';
+            break;
+            
+        case 'week':
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - now.getDay() + 1);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            startDate = monday;
+            endDate = sunday;
+            label = '이번 주';
+            break;
+            
+        case 'month':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            label = '이번 달';
+            break;
+            
+        case 'quarter':
+            const quarter = Math.floor(now.getMonth() / 3);
+            startDate = new Date(now.getFullYear(), quarter * 3, 1);
+            endDate = new Date(now.getFullYear(), quarter * 3 + 3, 0);
+            label = '이번 분기';
+            break;
+            
+        case 'all':
+            startDate = new Date('2020-01-01');
+            endDate = now;
+            label = '전체 기간';
+            break;
+            
+        case 'custom':
+            const customStart = document.getElementById('customStartDate').value;
+            const customEnd = document.getElementById('customEndDate').value;
+            if (customStart && customEnd) {
+                startDate = new Date(customStart);
+                endDate = new Date(customEnd);
+                label = '사용자 정의';
+            } else {
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                label = '기간을 선택하세요';
+            }
+            break;
+            
+        default:
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            label = '이번 달';
+    }
+    
+    this.dateRange = { start: startDate, end: endDate };
+    
+    // 날짜 범위 표시 업데이트
+    const dateRangeDisplay = document.getElementById('dateRangeDisplay');
+    if (dateRangeDisplay) {
+        const startStr = startDate.toISOString().split('T')[0];
+        const endStr = endDate.toISOString().split('T')[0];
+        dateRangeDisplay.textContent = `${startStr} ~ ${endStr} (${label})`;
+    }
+    
+    // 사용자 정의 날짜 입력 필드 업데이트
+    if (this.currentPeriod === 'custom') {
+        document.getElementById('customStartDate').value = startDate.toISOString().split('T')[0];
+        document.getElementById('customEndDate').value = endDate.toISOString().split('T')[0];
+    }
+}
+// 히스토리 로드
+loadHistory() {
+    const designerId = document.getElementById('historyDesigner').value;
+    const branchFilter = document.getElementById('historyBranch').value;
+    
+    if (!designerId) {
+        document.getElementById('historyContent').innerHTML = `
+            <div class="text-center" style="padding: 3rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">ℹ️</div>
+                <p style="color: #6b7280;">디자이너를 선택해주세요.</p>
+            </div>
+        `;
+        return;
+    }
+
+    this.selectedDesigner = this.data.designers.find(d => d.id == designerId);
+    this.selectedBranch = branchFilter;
+    
+    // 사용자 정의 기간인 경우 날짜 범위 업데이트
+    if (this.currentPeriod === 'custom') {
+        this.updateDateRange();
+    }
+    
+    // 로딩 표시
+    document.getElementById('historyContent').innerHTML = `
+        <div class="text-center" style="padding: 3rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+            <p style="color: #6b7280;">히스토리를 불러오는 중...</p>
+        </div>
+    `;
+
+    setTimeout(() => {
+        this.displayHistory();
+    }, 500);
+}
 
     // 히스토리 표시
     displayHistory() {
@@ -475,33 +586,28 @@ ${checklist.date}	${checklist.naverReviews || 0}	${checklist.naverPosts || 0}	${
         document.getElementById('historyContent').innerHTML = historyHTML;
     }
 
-    // 필터링된 체크리스트 가져오기
-    getFilteredChecklists() {
-        let checklists = this.data.checklists.filter(c => c.designerId == this.selectedDesigner.id);
+// 필터링된 체크리스트 가져오기
+getFilteredChecklists() {
+    let checklists = this.data.checklists.filter(c => {
+        // 디자이너 필터
+        if (c.designerId != this.selectedDesigner.id) return false;
         
-        const now = new Date();
-        let filterDate;
-
-        switch(this.currentPeriod) {
-            case 'week':
-                filterDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                break;
-            case 'month':
-                filterDate = new Date(now.getFullYear(), now.getMonth(), 1);
-                break;
-            case 'quarter':
-                const quarter = Math.floor(now.getMonth() / 3);
-                filterDate = new Date(now.getFullYear(), quarter * 3, 1);
-                break;
-            case 'all':
-            default:
-                return checklists.sort((a, b) => new Date(b.date) - new Date(a.date));
-        }
-
-        return checklists
-            .filter(c => new Date(c.date) >= filterDate)
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
+        // 지점 필터 (선택된 경우에만)
+        if (this.selectedBranch && c.branch !== this.selectedBranch) return false;
+        
+        return true;
+    });
+    
+    // 날짜 필터링
+    if (this.dateRange.start && this.dateRange.end) {
+        checklists = checklists.filter(c => {
+            const checklistDate = new Date(c.date);
+            return checklistDate >= this.dateRange.start && checklistDate <= this.dateRange.end;
+        });
     }
+
+    return checklists.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
 
     // 통계 계산
     calculateStats(checklists) {
@@ -581,23 +687,50 @@ ${paginationHTML}
     }
 
     // 이벤트 리스너 설정
-    setupEventListeners() {
-        // 폼 요소들이 존재할 때만 이벤트 리스너 추가
-        const designerSelect = document.getElementById('historyDesigner');
-        const periodSelect = document.getElementById('historyPeriod');
+// 이벤트 리스너 설정
+setupEventListeners() {
+    // 기간 버튼 클릭 이벤트
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const period = e.target.getAttribute('data-period');
+            this.setPeriod(period);
+        });
+    });
+    
+    // 사용자 정의 날짜 변경 이벤트
+    const customStartDate = document.getElementById('customStartDate');
+    const customEndDate = document.getElementById('customEndDate');
+    
+    if (customStartDate && customEndDate) {
+        customStartDate.addEventListener('change', () => {
+            if (this.currentPeriod === 'custom') {
+                this.updateDateRange();
+            }
+        });
         
-        if (designerSelect) {
-            designerSelect.addEventListener('change', () => {
-                this.pagination.currentPage = 1; // 페이지 리셋
-            });
-        }
-        
-        if (periodSelect) {
-            periodSelect.addEventListener('change', () => {
-                this.pagination.currentPage = 1; // 페이지 리셋
-            });
-        }
+        customEndDate.addEventListener('change', () => {
+            if (this.currentPeriod === 'custom') {
+                this.updateDateRange();
+            }
+        });
     }
+    
+    // 폼 요소들 이벤트 리스너
+    const designerSelect = document.getElementById('historyDesigner');
+    const branchSelect = document.getElementById('historyBranch');
+    
+    if (designerSelect) {
+        designerSelect.addEventListener('change', () => {
+            this.pagination.currentPage = 1;
+        });
+    }
+    
+    if (branchSelect) {
+        branchSelect.addEventListener('change', () => {
+            this.pagination.currentPage = 1;
+        });
+    }
+}
 
     // 히스토리 내보내기
     exportHistory() {
