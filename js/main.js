@@ -1,9 +1,4 @@
 // 메인 애플리케이션 로직
-// main.js에 추가해야 할 import들
-import './pages/statistics.js';
-import './pages/designers.js';
-import './pages/branches.js';
-import './pages/checklist.js';
 // 전역 변수
 let currentPage = 'dashboard';
 let sortOrder = {};
