@@ -1,8 +1,32 @@
-// 인증 관리 모듈
+// 인증 관리 모듈 (세션 저장 기능 추가)
 
 class AuthManager {
     constructor() {
         this.currentUser = null;
+        // 페이지 로드 시 저장된 세션 확인
+        this.loadSessionUser();
+    }
+
+    // 세션에서 사용자 정보 로드
+    loadSessionUser() {
+        try {
+            const savedUser = sessionStorage.getItem('gohair_current_user');
+            if (savedUser) {
+                this.currentUser = JSON.parse(savedUser);
+                this.updateUI();
+                console.log('저장된 세션에서 로그인 복원:', this.currentUser.name);
+            }
+        } catch (error) {
+            console.error('세션 로드 오류:', error);
+            sessionStorage.removeItem('gohair_current_user');
+        }
+    }
+
+    // 세션에 사용자 정보 저장
+    saveSessionUser() {
+        if (this.currentUser) {
+            sessionStorage.setItem('gohair_current_user', JSON.stringify(this.currentUser));
+        }
     }
 
     // 로그인 처리
@@ -11,6 +35,7 @@ class AuthManager {
             const user = await window.dataManager.getUser(email);
             if (user && user.password === password) {
                 this.currentUser = { email: email, ...user };
+                this.saveSessionUser(); // 세션에 저장
                 this.updateUI();
                 return { success: true, user: this.currentUser };
             } else {
@@ -50,6 +75,7 @@ class AuthManager {
     // 로그아웃
     logout() {
         this.currentUser = null;
+        sessionStorage.removeItem('gohair_current_user'); // 세션에서 제거
         this.showLoginPage();
     }
 
@@ -57,9 +83,13 @@ class AuthManager {
     updateUI() {
         if (this.currentUser) {
             // 로그인 성공 시 메인 시스템 표시
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('signupPage').classList.add('hidden');
-            document.getElementById('mainSystem').classList.remove('hidden');
+            const loginPage = document.getElementById('loginPage');
+            const signupPage = document.getElementById('signupPage');
+            const mainSystem = document.getElementById('mainSystem');
+            
+            if (loginPage) loginPage.classList.add('hidden');
+            if (signupPage) signupPage.classList.add('hidden');
+            if (mainSystem) mainSystem.classList.remove('hidden');
             
             // 사용자 이름 표시
             const userElement = document.getElementById('currentUser');
@@ -81,9 +111,13 @@ class AuthManager {
 
     // 로그인 페이지 표시
     showLoginPage() {
-        document.getElementById('loginPage').classList.remove('hidden');
-        document.getElementById('signupPage').classList.add('hidden');
-        document.getElementById('mainSystem').classList.add('hidden');
+        const loginPage = document.getElementById('loginPage');
+        const signupPage = document.getElementById('signupPage');
+        const mainSystem = document.getElementById('mainSystem');
+        
+        if (loginPage) loginPage.classList.remove('hidden');
+        if (signupPage) signupPage.classList.add('hidden');
+        if (mainSystem) mainSystem.classList.add('hidden');
         
         // 폼 리셋
         const loginForm = document.getElementById('loginForm');
@@ -94,9 +128,13 @@ class AuthManager {
 
     // 회원가입 페이지 표시
     showSignupPage() {
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('signupPage').classList.remove('hidden');
-        document.getElementById('mainSystem').classList.add('hidden');
+        const loginPage = document.getElementById('loginPage');
+        const signupPage = document.getElementById('signupPage');
+        const mainSystem = document.getElementById('mainSystem');
+        
+        if (loginPage) loginPage.classList.add('hidden');
+        if (signupPage) signupPage.classList.remove('hidden');
+        if (mainSystem) mainSystem.classList.add('hidden');
     }
 
     // 현재 사용자 정보 반환
@@ -111,6 +149,11 @@ class AuthManager {
 
     isLeader() {
         return this.currentUser && this.currentUser.role === 'leader';
+    }
+
+    // 로그인 상태 확인
+    isLoggedIn() {
+        return this.currentUser !== null;
     }
 
     // 사용자 지점 반환
