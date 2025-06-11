@@ -25,12 +25,7 @@ class HistoryManager {
             this.currentUser = this.getCurrentUser();
             this.updateUserDisplay();
             
-            // 권한 확인
-            if (!this.currentUser) {
-                window.location.href = '../index.html';
-                return;
-            }
-            
+
             // 데이터 로드
             await this.loadAllData();
             
