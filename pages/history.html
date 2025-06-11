@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,33 @@
     <!-- Firebase CDN -->
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
+    <style>
+.period-buttons .period-btn {
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.period-buttons .period-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.period-buttons .period-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.hidden {
+    display: none !important;
+}
+</style>
 </head>
 <body>
     <!-- Header -->
