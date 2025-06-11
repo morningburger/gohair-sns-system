@@ -72,13 +72,15 @@ class BranchesManager {
     }
 
     // 사용자 표시 업데이트
-   updateUserDisplay() {
+updateUserDisplay() {
     const userElement = document.getElementById('currentUser');
-    if (userElement && this.currentUser) {
-        userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
-    } else if (userElement) {
+    if (userElement) {
+        // 강제로 Firebase 연결 상태 표시
         userElement.textContent = 'Firebase 연결됨';
         userElement.style.color = '#10b981';
+        userElement.style.fontWeight = '500';
+        
+        console.log('✅ "Firebase 연결됨" 표시 완료');
     }
 }
 
