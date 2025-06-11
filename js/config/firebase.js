@@ -1,6 +1,4 @@
-// Firebase 설정 및 초기화
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+// Firebase 설정 및 초기화 (CDN 방식)
 
 // Firebase 설정
 const firebaseConfig = {
@@ -14,21 +12,22 @@ const firebaseConfig = {
 };
 
 // Firebase 초기화
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-// 전역으로 Firebase 함수들 노출
+// 전역으로 Firebase 객체들 노출
 window.db = db;
+window.firebase = firebase;
 window.firestoreFunctions = {
-    collection,
-    addDoc,
-    getDocs,
-    doc,
-    updateDoc,
-    deleteDoc,
-    onSnapshot,
-    setDoc,
-    getDoc
+    collection: firebase.firestore.collection,
+    doc: firebase.firestore.doc,
+    addDoc: firebase.firestore.addDoc,
+    getDocs: firebase.firestore.getDocs,
+    getDoc: firebase.firestore.getDoc,
+    updateDoc: firebase.firestore.updateDoc,
+    deleteDoc: firebase.firestore.deleteDoc,
+    onSnapshot: firebase.firestore.onSnapshot,
+    setDoc: firebase.firestore.setDoc
 };
 
 // 연결 상태 업데이트 함수
@@ -47,7 +46,8 @@ function updateConnectionStatus(connected) {
 
 // Firebase 연결 테스트
 try {
-    const testCollection = collection(db, 'test');
+    // Firestore 컬렉션 참조 테스트
+    db.collection('test');
     updateConnectionStatus(true);
     console.log('Firebase 연결 성공');
 } catch (error) {
