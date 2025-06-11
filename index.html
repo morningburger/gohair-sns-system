@@ -4,13 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOHAIR SNS 마케팅 관리 시스템</title>
-        <!-- GitHub Pages용 base tag 추가 -->
-    <base href="https://morningburger.github.io/gohair-sns-system/">
-      <!-- Firebase CDN 추가 -->
-    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
     
-    <!-- 나머지 코드... -->
+    <!-- GitHub Pages Base -->
+    <base href="https://morningburger.github.io/gohair-sns-system/">
+    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -20,6 +17,10 @@
     
     <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- 🔥 Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <!-- 연결 상태 표시 -->
@@ -90,7 +91,7 @@
         </div>
     </div>
 
-    <!-- 메인 시스템 -->
+    <!-- 메인 시스템 (대시보드만) -->
     <div id="mainSystem" class="hidden">
         <!-- 헤더 -->
         <header class="header">
@@ -111,25 +112,25 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <button onclick="showPage('dashboard')" class="nav-btn active">
+                    <button class="nav-btn active">
                         🏠 대시보드
                     </button>
-                    <button onclick="showPage('designers')" class="nav-btn">
+                    <button onclick="goToPage('designers')" class="nav-btn">
                         👥 디자이너 관리
                     </button>
-                    <button onclick="showPage('branches')" class="nav-btn admin-only hidden">
+                    <button onclick="goToPage('branches')" class="nav-btn admin-only hidden">
                         🏢 지점 관리
                     </button>
-                    <button onclick="showPage('history')" class="nav-btn">
+                    <button onclick="goToPage('history')" class="nav-btn">
                         📈 디자이너 히스토리
                     </button>
-                    <button onclick="showPage('checklist')" class="nav-btn">
+                    <button onclick="goToPage('checklist')" class="nav-btn">
                         📋 체크리스트 입력
                     </button>
-                    <button onclick="showPage('statistics')" class="nav-btn">
+                    <button onclick="goToPage('statistics')" class="nav-btn">
                         📊 통계 분석
                     </button>
-                    <button onclick="showPage('comparison')" class="nav-btn">
+                    <button onclick="goToPage('comparison')" class="nav-btn">
                         ⚖️ 지점 비교
                     </button>
                 </nav>
@@ -137,7 +138,7 @@
         </header>
 
         <main class="container">
-            <!-- 대시보드 -->
+            <!-- 대시보드 (메인 페이지) -->
             <div id="dashboardPage">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold mb-4">🏠 대시보드</h2>
@@ -235,583 +236,38 @@
                     </div>
                 </div>
             </div>
-
-            <!-- 디자이너 관리 -->
-            <div id="designersPage" class="hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold mb-4">👥 디자이너 관리</h2>
-                    
-                    <!-- 기간 및 필터 추가 -->
-                    <div class="filter-controls">
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="font-medium">📅 활동 기간</label>
-                                <select id="designersPeriod" onchange="loadDesigners()">
-                                    <option value="week">이번 주</option>
-                                    <option value="month" selected>이번 달</option>
-                                    <option value="quarter">이번 분기</option>
-                                    <option value="all">전체</option>
-                                    <option value="custom">사용자 정의</option>
-                                </select>
-                            </div>
-                            <div class="admin-only hidden">
-                                <label class="font-medium">🏢 지점 필터</label>
-                                <select id="designerBranchFilter" onchange="loadDesigners()">
-                                    <option value="">전체 지점</option>
-                                </select>
-                            </div>
-                            <div id="designersCustomRange" class="hidden grid grid-cols-2 gap-4" style="grid-column: span 2;">
-                                <div>
-                                    <label class="font-medium">시작일</label>
-                                    <input type="date" id="designersStartDate" onchange="loadDesigners()">
-                                </div>
-                                <div>
-                                    <label class="font-medium">종료일</label>
-                                    <input type="date" id="designersEndDate" onchange="loadDesigners()">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 class="text-xl font-bold">등록된 디자이너</h3>
-                        <button onclick="showAddDesigner()" class="btn">
-                            ➕ 새 디자이너 추가
-                        </button>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>이름</th>
-                                    <th>지점</th>
-                                    <th>직급</th>
-                                    <th>전화번호</th>
-                                    <th>등록일</th>
-                                    <th>⭐ 리뷰</th>
-                                    <th>📝 포스팅</th>
-                                    <th>🎯 체험단</th>
-                                    <th>🎬 릴스</th>
-                                    <th>📷 사진</th>
-                                    <th>총 활동량</th>
-                                    <th>관리</th>
-                                </tr>
-                            </thead>
-                            <tbody id="designersList">
-                                <!-- 동적으로 생성됨 -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 지점 관리 -->
-            <div id="branchesPage" class="hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold mb-4">🏢 지점 관리</h2>
-                </div>
-
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 class="text-xl font-bold">등록된 지점</h3>
-                        <button onclick="showAddBranch()" class="btn">
-                            ➕ 새 지점 추가
-                        </button>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>지점명</th>
-                                    <th>지점코드</th>
-                                    <th>주소</th>
-                                    <th>디자이너 수</th>
-                                    <th>등록일</th>
-                                    <th>관리</th>
-                                </tr>
-                            </thead>
-                            <tbody id="branchesList">
-                                <!-- 동적으로 생성됨 -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 디자이너 히스토리 -->
-            <div id="historyPage" class="hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold mb-4">📈 디자이너 히스토리</h2>
-                    
-                    <!-- 필터 컨트롤 -->
-                    <div class="filter-controls">
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="font-medium">👤 디자이너 선택</label>
-                                <select id="historyDesigner" onchange="loadDesignerHistory()">
-                                    <option value="">디자이너를 선택하세요</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="font-medium">📅 기간 선택</label>
-                                <select id="historyPeriod" onchange="loadDesignerHistory()">
-                                    <option value="week">이번 주</option>
-                                    <option value="month" selected>이번 달</option>
-                                    <option value="quarter">이번 분기</option>
-                                    <option value="all">전체</option>
-                                    <option value="custom">사용자 정의</option>
-                                </select>
-                            </div>
-                            <div id="historyCustomRange" class="hidden grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="font-medium">시작일</label>
-                                    <input type="date" id="historyStartDate" onchange="loadDesignerHistory()">
-                                </div>
-                                <div>
-                                    <label class="font-medium">종료일</label>
-                                    <input type="date" id="historyEndDate" onchange="loadDesignerHistory()">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="historyContent" class="card">
-                    <div class="text-center" style="padding: 3rem;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">ℹ️</div>
-                        <p style="color: #6b7280;">디자이너를 선택하면 히스토리가 표시됩니다.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 체크리스트 입력 -->
-            <div id="checklistPage" class="hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold mb-4">📋 체크리스트 입력</h2>
-                </div>
-
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="card">
-                        <h3 class="text-xl font-bold mb-4">일일 체크리스트 입력</h3>
-                        <form id="checklistForm">
-                            <div class="form-group">
-                                <label>👤 디자이너 선택</label>
-                                <select id="checklistDesigner" required>
-                                    <option value="">디자이너를 선택하세요</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>📅 날짜</label>
-                                <input type="date" id="checklistDate" required>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <h4 class="font-bold text-lg mb-3" style="color: #10b981; border-bottom: 1px solid #d1fae5; padding-bottom: 0.5rem;">
-                                    🟢 네이버
-                                </h4>
-                                <div style="display: grid; gap: 1rem;">
-                                    <div class="form-group">
-                                        <label>⭐ 리뷰 수</label>
-                                        <input type="number" id="naverReviews" min="0" value="0">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>📝 블로그 포스팅 수</label>
-                                        <input type="number" id="naverPosts" min="0" value="0">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>🎯 체험단 운영 건수</label>
-                                        <input type="number" id="naverExperience" min="0" value="0">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <h4 class="font-bold text-lg mb-3" style="color: #ef4444; border-bottom: 1px solid #fecaca; padding-bottom: 0.5rem;">
-                                    📱 인스타그램
-                                </h4>
-                                <div style="display: grid; gap: 1rem;">
-                                    <div class="form-group">
-                                        <label>🎬 릴스 게시 수</label>
-                                        <input type="number" id="instaReels" min="0" value="0">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>📷 사진 게시 수</label>
-                                        <input type="number" id="instaPhotos" min="0" value="0">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="btn" style="width: 100%;">
-                                🚀 체크리스트 제출
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="card">
-                        <h3 class="text-xl font-bold mb-4">📊 선택된 디자이너 정보</h3>
-                        <div id="selectedDesignerInfo">
-                            <div class="text-center" style="padding: 3rem;">
-                                <div style="font-size: 3rem; margin-bottom: 1rem;">ℹ️</div>
-                                <p style="color: #6b7280;">디자이너를 선택하면 정보가 표시됩니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 통계 분석 -->
-            <div id="statisticsPage" class="hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold mb-4">📊 통계 분석</h2>
-                </div>
-
-                <div class="filter-controls">
-                    <div class="grid grid-cols-4 gap-4">
-                        <div>
-                            <label class="font-medium">📅 기간 선택</label>
-                            <select id="statisticsPeriod">
-                                <option value="today">오늘</option>
-                                <option value="week">이번 주</option>
-                                <option value="month">이번 달</option>
-                                <option value="quarter">이번 분기</option>
-                                <option value="custom">사용자 정의</option>
-                            </select>
-                        </div>
-                        <div class="admin-only">
-                            <label class="font-medium">🏢 지점 선택</label>
-                            <select id="statisticsBranch">
-                                <option value="">전체 지점</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="font-medium">🏷️ 카테고리</label>
-                            <select id="statisticsCategory">
-                                <option value="all">전체</option>
-                                <option value="reviews">네이버 리뷰</option>
-                                <option value="posts">블로그 포스팅</option>
-                                <option value="experience">체험단</option>
-                                <option value="reels">인스타 릴스</option>
-                                <option value="photos">인스타 사진</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="font-medium">🔀 정렬</label>
-                            <select id="statisticsSort">
-                                <option value="desc">높은 순</option>
-                                <option value="asc">낮은 순</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div id="customDateRange" class="hidden grid grid-cols-2 gap-4 mt-4">
-                        <div>
-                            <label class="font-medium">시작일</label>
-                            <input type="date" id="startDate">
-                        </div>
-                        <div>
-                            <label class="font-medium">종료일</label>
-                            <input type="date" id="endDate">
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 1rem;">
-                        <button onclick="updateStatisticsChart()" class="btn">
-                            🔄 데이터 새로고침
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="card">
-                        <h3 class="text-lg font-bold mb-4">차트 분석</h3>
-                        <div class="chart-container">
-                            <canvas id="statisticsChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3 class="text-lg font-bold mb-4">순위 테이블</h3>
-                        <div class="overflow-x-auto" id="statisticsTable">
-                            <!-- 동적으로 생성됨 -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 지점 비교 -->
-            <div id="comparisonPage" class="hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold mb-4">⚖️ 지점 비교 분석</h2>
-                </div>
-
-                <div class="filter-controls">
-                    <div class="grid grid-cols-2 gap-6">
-                        <div>
-                            <h3 class="text-lg font-bold mb-4">비교할 지점 선택</h3>
-                            <div class="mb-4">
-                                <label style="display: flex; align-items: center; font-weight: 600; color: #6366f1;">
-                                    <input type="checkbox" id="selectAllBranches" style="margin-right: 0.5rem;"> 
-                                    ✅ 전지점 선택
-                                </label>
-                            </div>
-                            
-                            <div id="branchCheckboxes" style="display: grid; gap: 0.5rem;">
-                                <!-- 동적으로 생성됨 -->
-                            </div>
-                        </div>
-
-                        <div>
-                            <div style="display: grid; gap: 1rem;">
-                                <div>
-                                    <label class="font-medium">📅 비교 기간</label>
-                                    <select id="comparisonPeriod">
-                                        <option value="week">이번 주</option>
-                                        <option value="month">이번 달</option>
-                                        <option value="quarter">이번 분기</option>
-                                        <option value="custom">사용자 정의</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="font-medium">🏷️ 카테고리</label>
-                                    <select id="comparisonCategory">
-                                        <option value="all">전체</option>
-                                        <option value="reviews">네이버 리뷰</option>
-                                        <option value="posts">블로그 포스팅</option>
-                                        <option value="experience">체험단</option>
-                                        <option value="reels">인스타 릴스</option>
-                                        <option value="photos">인스타 사진</option>
-                                    </select>
-                                </div>
-                                <div id="comparisonCustomDateRange" class="hidden">
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label class="font-medium">시작일</label>
-                                            <input type="date" id="comparisonStartDate">
-                                        </div>
-                                        <div>
-                                            <label class="font-medium">종료일</label>
-                                            <input type="date" id="comparisonEndDate">
-                                        </div>
-                                    </div>
-                                </div>
-                                <button onclick="updateComparisonCharts()" class="btn" style="width: 100%;">
-                                    🔄 비교 차트 업데이트
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 카테고리별 차트 -->
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="card">
-                        <h3 class="font-bold mb-4" style="color: #10b981; border-bottom: 1px solid #d1fae5; padding-bottom: 0.5rem;">
-                            ⭐ 네이버 리뷰
-                        </h3>
-                        <div class="chart-container">
-                            <canvas id="reviewsChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3 class="font-bold mb-4" style="color: #10b981; border-bottom: 1px solid #d1fae5; padding-bottom: 0.5rem;">
-                            📝 블로그 포스팅
-                        </h3>
-                        <div class="chart-container">
-                            <canvas id="postsChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3 class="font-bold mb-4" style="color: #f59e0b; border-bottom: 1px solid #fef3c7; padding-bottom: 0.5rem;">
-                            🎯 체험단 운영
-                        </h3>
-                        <div class="chart-container">
-                            <canvas id="experienceChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3 class="font-bold mb-4" style="color: #ef4444; border-bottom: 1px solid #fecaca; padding-bottom: 0.5rem;">
-                            🎬 인스타 릴스
-                        </h3>
-                        <div class="chart-container">
-                            <canvas id="reelsChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card" style="grid-column: span 2;">
-                        <h3 class="font-bold mb-4" style="color: #ef4444; border-bottom: 1px solid #fecaca; padding-bottom: 0.5rem;">
-                            📷 인스타 사진
-                        </h3>
-                        <div class="chart-container">
-                            <canvas id="photosChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 상세 비교 표 -->
-                <div class="card" style="margin-top: 1.5rem;">
-                    <h3 class="text-lg font-bold mb-4">📊 상세 비교 표</h3>
-                    <div class="overflow-x-auto" id="comparisonTable">
-                        <!-- 동적으로 생성됨 -->
-                    </div>
-                </div>
-            </div>
         </main>
-    </div>
-
-    <!-- 모달들 -->
-    <!-- 디자이너 추가 모달 -->
-    <div id="addDesignerModal" class="modal hidden">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 class="text-lg font-bold">👤 새 디자이너 추가</h3>
-                <button onclick="hideAddDesigner()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">❌</button>
-            </div>
-            <form id="addDesignerForm">
-                <div class="form-group">
-                    <label>👤 이름</label>
-                    <input type="text" id="designerName" required>
-                </div>
-                <div class="form-group">
-                    <label>🏢 지점</label>
-                    <select id="designerBranch" required>
-                        <option value="">지점을 선택하세요</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>🏷️ 직급</label>
-                    <select id="designerPosition" required>
-                        <option value="">직급을 선택하세요</option>
-                        <option value="인턴">인턴</option>
-                        <option value="디자이너">디자이너</option>
-                        <option value="팀장">팀장</option>
-                        <option value="실장">실장</option>
-                        <option value="부원장">부원장</option>
-                        <option value="원장">원장</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>📞 전화번호</label>
-                    <input type="tel" id="designerPhone" required>
-                </div>
-                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                    <button type="button" onclick="hideAddDesigner()" class="btn btn-secondary">❌ 취소</button>
-                    <button type="submit" class="btn">➕ 추가</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 디자이너 편집 모달 -->
-    <div id="editDesignerModal" class="modal hidden">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 class="text-lg font-bold">✏️ 디자이너 정보 수정</h3>
-                <button onclick="hideEditDesigner()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">❌</button>
-            </div>
-            <form id="editDesignerForm">
-                <input type="hidden" id="editDesignerId">
-                <div class="form-group">
-                    <label>👤 이름</label>
-                    <input type="text" id="editDesignerName" required>
-                </div>
-                <div class="form-group">
-                    <label>🏢 지점</label>
-                    <select id="editDesignerBranch" required>
-                        <option value="">지점을 선택하세요</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>🏷️ 직급</label>
-                    <select id="editDesignerPosition" required>
-                        <option value="">직급을 선택하세요</option>
-                        <option value="인턴">인턴</option>
-                        <option value="디자이너">디자이너</option>
-                        <option value="팀장">팀장</option>
-                        <option value="실장">실장</option>
-                        <option value="부원장">부원장</option>
-                        <option value="원장">원장</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>📞 전화번호</label>
-                    <input type="tel" id="editDesignerPhone" required>
-                </div>
-                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                    <button type="button" onclick="hideEditDesigner()" class="btn btn-secondary">❌ 취소</button>
-                    <button type="submit" class="btn">💾 저장</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 지점 추가 모달 -->
-    <div id="addBranchModal" class="modal hidden">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 class="text-lg font-bold">🏢 새 지점 추가</h3>
-                <button onclick="hideAddBranch()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">❌</button>
-            </div>
-            <form id="addBranchForm">
-                <div class="form-group">
-                    <label>🏪 지점명</label>
-                    <input type="text" id="branchName" required>
-                </div>
-                <div class="form-group">
-                    <label>🏷️ 지점코드</label>
-                    <input type="text" id="branchCode" required>
-                </div>
-                <div class="form-group">
-                    <label>📍 주소</label>
-                    <input type="text" id="branchAddress" required>
-                </div>
-                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                    <button type="button" onclick="hideAddBranch()" class="btn btn-secondary">❌ 취소</button>
-                    <button type="submit" class="btn">➕ 추가</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 지점 편집 모달 -->
-    <div id="editBranchModal" class="modal hidden">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 class="text-lg font-bold">✏️ 지점 편집</h3>
-                <button onclick="hideEditBranch()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">❌</button>
-            </div>
-            <form id="editBranchForm">
-                <input type="hidden" id="editBranchId">
-                <div class="form-group">
-                    <label>🏪 지점명</label>
-                    <input type="text" id="editBranchName" required>
-                </div>
-                <div class="form-group">
-                    <label>🏷️ 지점코드</label>
-                    <input type="text" id="editBranchCode" required>
-                </div>
-                <div class="form-group">
-                    <label>📍 주소</label>
-                    <input type="text" id="editBranchAddress" required>
-                </div>
-                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                    <button type="button" onclick="hideEditBranch()" class="btn btn-secondary">❌ 취소</button>
-                    <button type="submit" class="btn">💾 저장</button>
-                </div>
-            </form>
-        </div>
     </div>
 
     <!-- 파일 입력 (숨김) -->
     <input type="file" id="fileInput" accept=".json" style="display: none;">
 
-    <!-- JavaScript Files -->
-<script src="js/config/firebase.js"></script>
-<script src="js/utils/data-manager.js"></script>
-<script src="js/utils/auth.js"></script>
-<script src="js/utils/ui-utils.js"></script>
-<script src="js/main.js"></script>
+    <!-- JavaScript Files (의존성 순서대로) -->
+    <script src="js/config/firebase.js"></script>
+    <script src="js/utils/data-manager.js"></script>
+    <script src="js/utils/auth.js"></script>
+    <script src="js/utils/ui-utils.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- 페이지 네비게이션 함수 -->
+    <script>
+        // 다른 페이지로 이동하는 함수
+        function goToPage(pageId) {
+            const pages = {
+                'designers': 'designers.html',
+                'branches': 'branches.html',
+                'history': 'history.html',
+                'checklist': 'checklist.html',
+                'statistics': 'statistics.html',
+                'comparison': 'comparison.html'
+            };
+            
+            if (pages[pageId]) {
+                window.location.href = pages[pageId];
+            } else {
+                console.error('Unknown page:', pageId);
+            }
+        }
+    </script>
 </body>
 </html>
