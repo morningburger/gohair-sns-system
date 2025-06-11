@@ -28,13 +28,13 @@ class BranchesManager {
             // 사용자 정보 확인
             this.currentUser = this.getCurrentUser();
             this.updateUserDisplay();
-            
+            /*
             // 관리자 권한 확인
             if (!this.isAdmin()) {
                 this.redirectToMain();
                 return;
             }
-            
+            */
             // 데이터 로드
             await this.loadAllData();
             
