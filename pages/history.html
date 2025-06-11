@@ -127,16 +127,6 @@ function goToMainSystem() {
         }
 
         // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', function() {
-          /*  // 인증 확인
-            setTimeout(() => {
-                if (window.authManager && window.authManager.isLoggedIn()) {
-                    // 사용자 정보 표시
-                    const userElement = document.getElementById('currentUser');
-                    if (userElement) {
-                        userElement.textContent = window.authManager.getCurrentUser().name;
-                    }
-                    
                     // 디자이너 목록 로드 (임시)
                     const designerSelect = document.getElementById('historyDesigner');
                     designerSelect.innerHTML = `
@@ -149,7 +139,7 @@ function goToMainSystem() {
                     window.location.href = '../index.html';
                 }
             }, 500);
-            */
+    
         });
     </script>
 </body>
