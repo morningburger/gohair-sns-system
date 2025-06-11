@@ -6,9 +6,9 @@
     <title>디자이너 관리 - GOHAIR SNS 마케팅 관리 시스템</title>
     
     <!-- CSS Files -->
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/responsive.css">
-    <link rel="stylesheet" href="/css/designers.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/designers.css">
         <!-- 🔥 Firebase CDN 추가 -->
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
@@ -258,18 +258,17 @@
     </div>
 
     <!-- JavaScript Files -->
-    <script src="js/config/firebase.js"></script>
-    <script src="js/utils/data-manager.js"></script>
-    <script src="js/utils/auth.js"></script>
-    <script src="js/utils/ui-utils.js"></script>
-    <script src="js/pages/designers.js"></script>
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/utils/data-manager.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/utils/ui-utils.js"></script>
+    <script src="../js/pages/designers.js"></script>
     
     <!-- 페이지 네비게이션 함수 -->
     <script>
-        function goToMainSystem() {
-            window.location.href = 'index.html';
-        }
-
+function goToMainSystem() {
+    window.location.href = '../index.html';  // 상위 폴더로 이동
+}
         function goToPage(pageId) {
             const pages = {
                 'designers': 'designers.html',
