@@ -401,6 +401,65 @@ function goToMainSystem() {
                 window.location.href = pages[pageId];
             }
         }
+        document.addEventListener('DOMContentLoaded', function() {
+    console.log('📋 체크리스트 페이지 로드 시작');
+    
+    // Firebase 연결 상태 확인
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        console.log('🔥 파이어베이스 연결됨');
+        
+        // 연결 상태를 화면에 표시
+        const currentUser = document.getElementById('currentUser');
+        if (currentUser && !currentUser.textContent.trim()) {
+            currentUser.textContent = '파이어베이스 연결됨';
+            currentUser.style.color = '#10b981'; // 초록색
+        }
+        
+        // Firestore 연결 테스트
+        if (firebase.firestore) {
+            const db = firebase.firestore();
+            console.log('💾 Firestore 연결 확인됨');
+            
+            // 간단한 연결 테스트
+            db.collection('checklists').limit(1).get()
+                .then((snapshot) => {
+                    if (snapshot.empty) {
+                        console.log('📂 checklists 컬렉션이 비어있음');
+                        console.log('💡 체크리스트를 입력하면 Firebase에 자동 저장됩니다!');
+                    } else {
+                        console.log(`✅ checklists 컬렉션에 ${snapshot.size}개 문서 존재`);
+                    }
+                })
+                .catch((error) => {
+                    console.log('⚠️ Firestore 읽기 테스트 실패:', error.message);
+                });
+        }
+    } else {
+        console.log('❌ 파이어베이스 연결 실패');
+        
+        const currentUser = document.getElementById('currentUser');
+        if (currentUser && !currentUser.textContent.trim()) {
+            currentUser.textContent = '파이어베이스 연결 실패';
+            currentUser.style.color = '#ef4444'; // 빨간색
+        }
+    }
+    
+    // 1초 후 ChecklistManager 확인
+    setTimeout(() => {
+        if (window.checklistManager) {
+            console.log('✅ ChecklistManager 초기화 완료');
+        } else {
+            console.log('⚠️ ChecklistManager 초기화 대기 중...');
+        }
+    }, 1000);
+});
+
+// 에러 발생 시 로그
+window.addEventListener('error', function(e) {
+    console.error('❌ JavaScript 에러:', e.message);
+    console.error('📁 파일:', e.filename);
+    console.error('📍 라인:', e.lineno);
+});
     </script>
 </body>
 </html>
