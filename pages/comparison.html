@@ -163,25 +163,35 @@
                 </div>
             `;
         }
+    <!-- JavaScript Files -->
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/utils/data-manager.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/utils/ui-utils.js"></script>
+    <script src="../js/pages/designers.js"></script>
+    <script src="../js/pages/history.js"></script>
+    <script src="../js/pages/comparison.js"></script>
 
-        // 네비게이션 함수들
-        function goToMainSystem() {
-            window.location.href = '../index.html';
-        }
-
+    <!-- 페이지 네비게이션 함수 -->
+    <script>
+function goToMainSystem() {
+    window.location.href = '../index.html';  // 상위 폴더로 이동
+}
         function goToPage(pageId) {
             const pages = {
                 'designers': 'designers.html',
                 'branches': 'branches.html',
-                'history': 'history.html',
-                'checklist': 'checklist.html',
+                'checklist': 'checklist.html', 
                 'statistics': 'statistics.html'
+                
             };
             
             if (pages[pageId]) {
                 window.location.href = pages[pageId];
             }
         }
+        // 네비게이션 함수들
+
 
         // 페이지 로드 시 인증 확인
         document.addEventListener('DOMContentLoaded', function() {
