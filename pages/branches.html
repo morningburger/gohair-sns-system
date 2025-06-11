@@ -8,162 +8,10 @@
     <!-- CSS Files -->
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/responsive.css">
-    
-    <style>
-        /* 지점 관리 전용 스타일 */
-        .branch-stats-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        .stats-item {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .stats-icon {
-            font-size: 2rem;
-        }
-        .stats-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #3498db;
-        }
-        .filter-controls {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .search-filters {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 1rem;
-            align-items: end;
-        }
-        .search-input, select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .view-toggle {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .view-toggle-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .view-toggle-btn.active {
-            background: #3498db;
-            color: white;
-        }
-        .branches-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-        }
-        .branch-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal.hidden {
-            display: none;
-        }
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .required {
-            color: red;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-        .btn-secondary {
-            background: #6c757d;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin: 2rem 0;
-        }
-        .pagination button {
-            padding: 0.5rem 1rem;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .pagination button.active {
-            background: #3498db;
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/branches.css">
+     <!-- 🔥 Firebase CDN 추가 -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -172,7 +20,7 @@
             <div class="header-top">
                 <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
                 <div class="header-actions">
-                    <span id="currentUser">관리자</span>
+                    <span id="currentUser"></span>
                     <button class="btn btn-green" onclick="exportBranches()">📥 지점 내보내기</button>
                     <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
                 </div>
@@ -194,35 +42,35 @@
         <!-- 지점 관리 페이지 -->
         <div id="branchesPage">
             <div class="mb-6">
-                <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">🏢 지점 관리</h2>
+                <h2 class="text-2xl font-bold mb-4">🏢 지점 관리</h2>
                 
                 <!-- 지점 통계 요약 -->
                 <div class="branch-stats-summary">
                     <div class="stats-item">
                         <div class="stats-icon">🏢</div>
                         <div class="stats-content">
-                            <div class="stats-value" id="totalBranches">5</div>
+                            <div class="stats-value" id="totalBranches">0</div>
                             <div class="stats-label">전체 지점</div>
                         </div>
                     </div>
                     <div class="stats-item">
                         <div class="stats-icon">👥</div>
                         <div class="stats-content">
-                            <div class="stats-value" id="totalDesigners">23</div>
+                            <div class="stats-value" id="totalDesigners">0</div>
                             <div class="stats-label">전체 디자이너</div>
                         </div>
                     </div>
                     <div class="stats-item">
                         <div class="stats-icon">📊</div>
                         <div class="stats-content">
-                            <div class="stats-value" id="avgDesignersPerBranch">4.6</div>
+                            <div class="stats-value" id="avgDesignersPerBranch">0</div>
                             <div class="stats-label">평균 디자이너/지점</div>
                         </div>
                     </div>
                     <div class="stats-item">
                         <div class="stats-icon">🎯</div>
                         <div class="stats-content">
-                            <div class="stats-value" id="topPerformingBranch">송도센트럴점</div>
+                            <div class="stats-value" id="topPerformingBranch">-</div>
                             <div class="stats-label">최고 성과 지점</div>
                         </div>
                     </div>
@@ -235,7 +83,7 @@
                             <label>🔍 지점 검색</label>
                             <input type="text" id="branchSearch" class="search-input" 
                                    placeholder="지점명, 주소, 지점코드로 검색..." 
-                                   onkeyup="filterBranches()">
+                                   onchange="loadBranches()">
                         </div>
                         <div class="filter-group">
                             <label>📊 정렬 기준</label>
@@ -259,10 +107,10 @@
             </div>
 
             <!-- 지점 목록 -->
-            <div class="card" style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="font-size: 1.25rem; font-weight: bold;">등록된 지점</h3>
-                    <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold">등록된 지점</h3>
+                    <div class="header-actions">
                         <div class="view-toggle">
                             <button class="view-toggle-btn active" onclick="switchView('table')">
                                 📋 테이블
@@ -279,65 +127,21 @@
                 
                 <!-- 테이블 뷰 -->
                 <div id="tableView" class="view-content">
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse;">
+                    <div class="overflow-x-auto">
+                        <table class="table">
                             <thead>
-                                <tr style="background: #f8f9fa;">
-                                    <th style="padding: 1rem; text-align: left; border: 1px solid #dee2e6;">지점명</th>
-                                    <th style="padding: 1rem; text-align: left; border: 1px solid #dee2e6;">지점코드</th>
-                                    <th style="padding: 1rem; text-align: left; border: 1px solid #dee2e6;">주소</th>
-                                    <th style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">디자이너 수</th>
-                                    <th style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">월간 성과</th>
-                                    <th style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">등록일</th>
-                                    <th style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">관리</th>
+                                <tr>
+                                    <th>지점명</th>
+                                    <th>지점코드</th>
+                                    <th>주소</th>
+                                    <th>디자이너 수</th>
+                                    <th>월간 성과</th>
+                                    <th>등록일</th>
+                                    <th>관리</th>
                                 </tr>
                             </thead>
                             <tbody id="branchesList">
-                                <tr>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6; font-weight: 500;">송도센트럴점</td>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6;"><span style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 4px;">SD01</span></td>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6;">인천시 연수구 송도과학로 32</td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;"><span style="background: #3498db; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">6명</span></td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;"><span style="background: #2ecc71; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">125</span></td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">2024-01-15</td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">
-                                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                                            <button onclick="viewBranch('branch_1')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">👁️</button>
-                                            <button onclick="editBranch('branch_1')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">✏️</button>
-                                            <button onclick="deleteBranch('branch_1')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: #e74c3c;">🗑️</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6; font-weight: 500;">검단테라스점</td>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6;"><span style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 4px;">GD01</span></td>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6;">인천시 서구 검단신도시로 123</td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;"><span style="background: #3498db; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">5명</span></td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;"><span style="background: #2ecc71; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">98</span></td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">2024-02-01</td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">
-                                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                                            <button onclick="viewBranch('branch_2')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">👁️</button>
-                                            <button onclick="editBranch('branch_2')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">✏️</button>
-                                            <button onclick="deleteBranch('branch_2')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: #e74c3c;">🗑️</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6; font-weight: 500;">부평점</td>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6;"><span style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 4px;">BP01</span></td>
-                                    <td style="padding: 1rem; border: 1px solid #dee2e6;">인천시 부평구 부평대로 456</td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;"><span style="background: #3498db; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">4명</span></td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;"><span style="background: #2ecc71; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">87</span></td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">2024-01-20</td>
-                                    <td style="padding: 1rem; text-align: center; border: 1px solid #dee2e6;">
-                                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                                            <button onclick="viewBranch('branch_3')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">👁️</button>
-                                            <button onclick="editBranch('branch_3')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">✏️</button>
-                                            <button onclick="deleteBranch('branch_3')" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: #e74c3c;">🗑️</button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <!-- 동적으로 생성됨 -->
                             </tbody>
                         </table>
                     </div>
@@ -346,64 +150,27 @@
                 <!-- 그리드 뷰 -->
                 <div id="gridView" class="view-content hidden">
                     <div class="branches-grid" id="branchesGrid">
-                        <div class="branch-card">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-                                <div>
-                                    <div style="font-weight: bold; font-size: 1.1rem;">송도센트럴점</div>
-                                    <div style="color: #6b7280;">SD01</div>
-                                </div>
-                                <span style="background: #2ecc71; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">우수</span>
-                            </div>
-                            <div style="margin-bottom: 1rem;">
-                                <div>📍 인천시 연수구 송도과학로 32</div>
-                                <div>📞 032-850-1234</div>
-                                <div>👥 6명의 디자이너</div>
-                            </div>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button onclick="viewBranch('branch_1')" class="btn" style="flex: 1;">👁️ 보기</button>
-                                <button onclick="editBranch('branch_1')" class="btn" style="flex: 1;">✏️ 수정</button>
-                            </div>
-                        </div>
-                        <div class="branch-card">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-                                <div>
-                                    <div style="font-weight: bold; font-size: 1.1rem;">검단테라스점</div>
-                                    <div style="color: #6b7280;">GD01</div>
-                                </div>
-                                <span style="background: #f39c12; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">양호</span>
-                            </div>
-                            <div style="margin-bottom: 1rem;">
-                                <div>📍 인천시 서구 검단신도시로 123</div>
-                                <div>📞 032-567-8901</div>
-                                <div>👥 5명의 디자이너</div>
-                            </div>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button onclick="viewBranch('branch_2')" class="btn" style="flex: 1;">👁️ 보기</button>
-                                <button onclick="editBranch('branch_2')" class="btn" style="flex: 1;">✏️ 수정</button>
-                            </div>
-                        </div>
+                        <!-- 동적으로 생성됨 -->
                     </div>
                 </div>
 
                 <!-- 페이지네이션 -->
                 <div class="pagination" id="branchesPagination">
-                    <button>◀ 이전</button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>다음 ▶</button>
+                    <!-- 동적으로 생성됨 -->
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 모달들 -->
     <!-- 지점 추가 모달 -->
     <div id="addBranchModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>🏢 새 지점 추가</h3>
+                <h3 class="text-lg font-bold">🏢 새 지점 추가</h3>
                 <button onclick="hideAddBranch()" class="modal-close">❌</button>
             </div>
-            <form id="addBranchForm" onsubmit="handleAddBranch(event)">
+            <form id="addBranchForm">
                 <div class="form-row">
                     <div class="form-group">
                         <label>🏪 지점명 <span class="required">*</span></label>
@@ -411,7 +178,8 @@
                     </div>
                     <div class="form-group">
                         <label>🏷️ 지점코드 <span class="required">*</span></label>
-                        <input type="text" id="branchCode" required placeholder="예: SD01">
+                        <input type="text" id="branchCode" required placeholder="예: SD01" 
+                               pattern="[A-Z]{2}[0-9]{2}" title="대문자 2자 + 숫자 2자 (예: SD01)">
                     </div>
                 </div>
                 <div class="form-group">
@@ -444,94 +212,94 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
-    <script>
-        // 네비게이션 함수
-        function goToMainSystem() {
-            window.location.href = '../index.html';
-        }
+    <!-- 지점 편집 모달 -->
+    <div id="editBranchModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">✏️ 지점 정보 수정</h3>
+                <button onclick="hideEditBranch()" class="modal-close">❌</button>
+            </div>
+            <form id="editBranchForm">
+                <input type="hidden" id="editBranchId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🏪 지점명 <span class="required">*</span></label>
+                        <input type="text" id="editBranchName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🏷️ 지점코드 <span class="required">*</span></label>
+                        <input type="text" id="editBranchCode" required pattern="[A-Z]{2}[0-9]{2}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📍 주소 <span class="required">*</span></label>
+                    <input type="text" id="editBranchAddress" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📞 전화번호</label>
+                        <input type="tel" id="editBranchPhone">
+                    </div>
+                    <div class="form-group">
+                        <label>🏃‍♂️ 점장명</label>
+                        <input type="text" id="editBranchManager">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>🕐 운영시간</label>
+                    <input type="text" id="editBranchHours">
+                </div>
+                <div class="form-group">
+                    <label>📝 메모</label>
+                    <textarea id="editBranchNotes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideEditBranch()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">💾 저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <!-- 지점 상세 보기 모달 -->
+    <div id="viewBranchModal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">🏢 지점 상세 정보</h3>
+                <button onclick="hideViewBranch()" class="modal-close">❌</button>
+            </div>
+            <div id="branchDetailContent">
+                <!-- 동적으로 생성됨 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/utils/data-manager.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/utils/ui-utils.js"></script>
+    <script src="../js/pages/branches.js"></script>
+
+    <!-- 페이지 네비게이션 함수 -->
+    <script>
+function goToMainSystem() {
+    window.location.href = '../index.html';  // 상위 폴더로 이동
+}
         function goToPage(pageId) {
             const pages = {
-                'designers': 'designers.html',
-                'branches': 'branches.html',
-                'history': 'history.html',
-                'checklist': 'checklist.html', 
-                'statistics': 'statistics.html',
-                'comparison': 'comparison.html'
-            };
+    'designers': 'designers.html',
+    'branches': 'branches.html',
+    'history': 'history.html',          // 추가!
+    'checklist': 'checklist.html', 
+    'statistics': 'statistics.html',
+    'comparison': 'comparison.html'     // 추가!
+};
             if (pages[pageId]) {
                 window.location.href = pages[pageId];
             }
         }
-
-        // 지점 관리 함수들
-        function loadBranches() {
-            console.log('지점 목록 로드 중...');
-        }
-
-        function filterBranches() {
-            console.log('지점 검색 중...');
-        }
-
-        function switchView(view) {
-            const tableView = document.getElementById('tableView');
-            const gridView = document.getElementById('gridView');
-            const toggleBtns = document.querySelectorAll('.view-toggle-btn');
-            
-            toggleBtns.forEach(btn => btn.classList.remove('active'));
-            
-            if (view === 'table') {
-                tableView.classList.remove('hidden');
-                gridView.classList.add('hidden');
-                toggleBtns[0].classList.add('active');
-            } else {
-                tableView.classList.add('hidden');
-                gridView.classList.remove('hidden');
-                toggleBtns[1].classList.add('active');
-            }
-        }
-
-        function showAddBranch() {
-            document.getElementById('addBranchModal').classList.remove('hidden');
-        }
-
-        function hideAddBranch() {
-            document.getElementById('addBranchModal').classList.add('hidden');
-            document.getElementById('addBranchForm').reset();
-        }
-
-        function handleAddBranch(event) {
-            event.preventDefault();
-            const name = document.getElementById('branchName').value;
-            const code = document.getElementById('branchCode').value;
-            console.log('새 지점 추가:', name, code);
-            alert(`"${name}" 지점이 추가되었습니다!`);
-            hideAddBranch();
-        }
-
-        function viewBranch(branchId) {
-            alert(`지점 상세 보기: ${branchId}`);
-        }
-
-        function editBranch(branchId) {
-            alert(`지점 편집: ${branchId}`);
-        }
-
-        function deleteBranch(branchId) {
-            if (confirm('정말로 이 지점을 삭제하시겠습니까?')) {
-                alert(`지점 삭제됨: ${branchId}`);
-            }
-        }
-
-        function exportBranches() {
-            alert('지점 목록을 내보냅니다!');
-        }
-
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ 지점 관리 페이지 로드 완료');
-        });
     </script>
+    
 </body>
 </html>
