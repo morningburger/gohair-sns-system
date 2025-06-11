@@ -42,31 +42,60 @@
             <div class="mb-6">
                 <h2 class="text-2xl font-bold mb-4">📈 디자이너 히스토리</h2>
                 
-                <!-- 필터 컨트롤 -->
-                <div class="filter-controls">
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <label class="font-medium">👤 디자이너 선택</label>
-                            <select id="historyDesigner">
-                                <option value="">디자이너를 선택하세요</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="font-medium">📅 기간 선택</label>
-                            <select id="historyPeriod">
-                                <option value="week">이번 주</option>
-                                <option value="month" selected>이번 달</option>
-                                <option value="quarter">이번 분기</option>
-                                <option value="all">전체</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; align-items: end;">
-                            <button onclick="loadHistory()" class="btn" style="height: fit-content;">
-                                🔄 조회
-                            </button>
-                        </div>
-                    </div>
+<!-- 필터 컨트롤 -->
+<div class="filter-controls">
+    <div class="grid grid-cols-2 gap-6">
+        <!-- 첫 번째 행: 디자이너와 지점 선택 -->
+        <div>
+            <label class="font-medium">👤 디자이너 선택</label>
+            <select id="historyDesigner">
+                <option value="">디자이너를 선택하세요</option>
+            </select>
+        </div>
+        <div>
+            <label class="font-medium">🏢 지점 필터</label>
+            <select id="historyBranch">
+                <option value="">전체 지점</option>
+            </select>
+        </div>
+        
+        <!-- 두 번째 행: 기간 선택과 날짜 범위 -->
+        <div>
+            <label class="font-medium">📅 기간 선택</label>
+            <div class="period-buttons" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.5rem;">
+                <button type="button" class="period-btn" data-period="day">오늘</button>
+                <button type="button" class="period-btn" data-period="week">이번 주</button>
+                <button type="button" class="period-btn active" data-period="month">이번 달</button>
+                <button type="button" class="period-btn" data-period="quarter">이번 분기</button>
+                <button type="button" class="period-btn" data-period="all">전체</button>
+                <button type="button" class="period-btn" data-period="custom">사용자 정의</button>
+            </div>
+        </div>
+        
+        <div>
+            <label class="font-medium">📆 날짜 범위</label>
+            <div id="dateRangeDisplay" style="background: #f3f4f6; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">
+                2024-06-01 ~ 2024-06-30 (이번 달)
+            </div>
+            
+            <!-- 사용자 정의 날짜 입력 (기본적으로 숨김) -->
+            <div id="customDateRange" class="hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <div>
+                    <label style="font-size: 0.875rem; color: #6b7280;">시작일</label>
+                    <input type="date" id="customStartDate" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
                 </div>
+                <div>
+                    <label style="font-size: 0.875rem; color: #6b7280;">종료일</label>
+                    <input type="date" id="customEndDate" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
+                </div>
+            </div>
+            
+            <button onclick="loadHistory()" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                🔄 히스토리 조회
+            </button>
+        </div>
+    </div>
+</div>
             </div>
 
             <div id="historyContent" class="card">
