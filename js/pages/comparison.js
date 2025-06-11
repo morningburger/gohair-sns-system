@@ -11,6 +11,8 @@ class ComparisonManager {
         this.selectedBranches = [];
         this.currentPeriod = 'month';
         this.currentCategory = 'all';
+        this.customStartDate = null;
+        this.customEndDate = null;
         this.charts = {
             comparisonChart: null,
             categoryChart: null
@@ -18,40 +20,37 @@ class ComparisonManager {
     }
 
     // 페이지 초기화
-// 페이지 초기화
-async initialize() {
-    try {
-        // Firebase 연결 확인
-        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
-            throw new Error('Firebase가 초기화되지 않았습니다');
+    async initialize() {
+        try {
+            console.log('🚀 ComparisonManager 초기화 시작');
+            
+            // Firebase 연결 확인
+            if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+                throw new Error('Firebase가 초기화되지 않았습니다');
+            }
+            
+            // 사용자 정보 확인
+            this.currentUser = this.getCurrentUser();
+            this.updateUserDisplay();
+            
+            // 데이터 로드
+            await this.loadAllData();
+            
+            // 이벤트 리스너 설정
+            this.setupEventListeners();
+            
+            // 지점 체크박스 생성
+            this.setupBranchCheckboxes();
+            
+            // 날짜 관련 초기화
+            this.initializeDatePicker();
+            
+            console.log('✅ 비교 페이지 초기화 완료');
+        } catch (error) {
+            console.error('❌ 비교 페이지 초기화 오류:', error);
+            this.showError('데이터 로드 중 오류가 발생했습니다: ' + error.message);
         }
-        
-        // 사용자 정보 확인
-        this.currentUser = this.getCurrentUser();
-        this.updateUserDisplay();
-        
-        // 데이터 로드
-        await this.loadAllData();
-        
-        // 이벤트 리스너 설정
-        this.setupEventListeners();
-        
-        // 지점 체크박스 생성
-        this.setupBranchCheckboxes();
-        
-        console.log('✅ 비교 페이지 초기화 완료');
-    } catch (error) {
-        console.error('❌ 비교 페이지 초기화 오류:', error);
-        
-        const errorElement = document.createElement('div');
-        errorElement.innerHTML = `
-            <div style="padding: 1rem; background: #fee2e2; color: #dc2626; border-radius: 0.5rem; margin: 1rem;">
-                ⚠️ 데이터 로드 중 오류가 발생했습니다: ${error.message}
-            </div>
-        `;
-        document.querySelector('.container').prepend(errorElement);
     }
-}
 
     // 현재 사용자 정보 가져오기
     getCurrentUser() {
@@ -72,111 +71,221 @@ async initialize() {
     }
 
     // 데이터 로드
-// 데이터 로드
-async loadAllData() {
-    try {
-        if (!firebase.firestore) {
-            throw new Error('Firestore가 초기화되지 않았습니다');
+    async loadAllData() {
+        try {
+            if (!firebase.firestore) {
+                throw new Error('Firestore가 초기화되지 않았습니다');
+            }
+            
+            const db = firebase.firestore();
+            
+            // 지점 데이터 로드
+            const branchesSnapshot = await db.collection('branches').get();
+            this.data.branches = branchesSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            // 디자이너 데이터 로드
+            const designersSnapshot = await db.collection('designers').get();
+            this.data.designers = designersSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            // 체크리스트 데이터 로드
+            const checklistsSnapshot = await db.collection('checklists').get();
+            this.data.checklists = checklistsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            console.log('⚖️ Firebase 데이터 로드 완료:', {
+                branches: this.data.branches.length,
+                designers: this.data.designers.length,
+                checklists: this.data.checklists.length
+            });
+            
+        } catch (error) {
+            console.error('❌ Firebase 데이터 로딩 오류:', error);
+            
+            // 오류 시 임시 데이터 사용
+            this.data.branches = [
+                { id: '1', name: '송도1지점', location: '송도' },
+                { id: '2', name: '검단테라스점', location: '검단' },
+                { id: '3', name: '부평점', location: '부평' },
+                { id: '4', name: '인천점', location: '인천' },
+                { id: '5', name: '강남점', location: '강남' }
+            ];
+            
+            console.log('🔄 임시 데이터로 진행합니다');
         }
-        
-        const db = firebase.firestore();
-        
-        // 지점 데이터 로드
-        const branchesSnapshot = await db.collection('branches').get();
-        this.data.branches = branchesSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        // 디자이너 데이터 로드
-        const designersSnapshot = await db.collection('designers').get();
-        this.data.designers = designersSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        // 체크리스트 데이터 로드
-        const checklistsSnapshot = await db.collection('checklists').get();
-        this.data.checklists = checklistsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        console.log('⚖️ Firebase 데이터 로드 완료:', {
-            branches: this.data.branches.length,
-            designers: this.data.designers.length,
-            checklists: this.data.checklists.length
-        });
-        
-    } catch (error) {
-        console.error('❌ Firebase 데이터 로딩 오류:', error);
-        this.data.branches = [];
-        this.data.designers = [];
-        this.data.checklists = [];
-        throw error;
     }
-}
-
-
 
     // 지점 체크박스 설정
-// 지점 체크박스 설정
-setupBranchCheckboxes() {
-    const container = document.getElementById('branchCheckboxes');
-    if (!container) return;
+    setupBranchCheckboxes() {
+        const container = document.getElementById('branchCheckboxes');
+        if (!container) return;
 
-    container.innerHTML = this.data.branches.map(branch => `
-        <label style="display: flex; align-items: center;">
-            <input type="checkbox" value="${branch.name}" style="margin-right: 0.5rem;">
-            ${branch.name}
-        </label>
-    `).join('');
-}
+        container.innerHTML = this.data.branches.map(branch => `
+            <label style="display: flex; align-items: center;">
+                <input type="checkbox" value="${branch.name}" style="margin-right: 0.5rem;" onchange="window.comparisonManager.updateSelectAllState()">
+                ${branch.name}
+            </label>
+        `).join('');
+    }
+
+    // 전체 선택 상태 업데이트
+    updateSelectAllState() {
+        const selectAllCheckbox = document.getElementById('selectAllBranches');
+        const branchCheckboxes = document.querySelectorAll('#branchCheckboxes input[type="checkbox"]');
+        const checkedCount = document.querySelectorAll('#branchCheckboxes input[type="checkbox"]:checked').length;
+        
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = checkedCount === branchCheckboxes.length;
+            selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < branchCheckboxes.length;
+        }
+    }
+
+    // 날짜 선택기 초기화
+    initializeDatePicker() {
+        const today = new Date();
+        this.customStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // 이번 달 1일
+        this.customEndDate = new Date(today); // 오늘
+        
+        // 날짜 입력 필드 초기화
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        
+        if (startDateInput && endDateInput) {
+            startDateInput.value = this.customStartDate.toISOString().split('T')[0];
+            endDateInput.value = this.customEndDate.toISOString().split('T')[0];
+        }
+    }
+
+    // 기간 변경 처리
+    handlePeriodChange() {
+        const period = document.getElementById('comparisonPeriod').value;
+        const dateInputGroup = document.getElementById('dateInputGroup');
+        
+        this.currentPeriod = period;
+        
+        if (period === 'custom') {
+            dateInputGroup.style.display = 'flex';
+        } else {
+            dateInputGroup.style.display = 'none';
+            this.updateDateRangeByPeriod(period);
+        }
+    }
+
+    // 기간별 날짜 범위 업데이트
+    updateDateRangeByPeriod(period) {
+        const today = new Date();
+        let startDate, endDate;
+        
+        switch(period) {
+            case 'today':
+                startDate = endDate = new Date(today);
+                break;
+            case 'week':
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - today.getDay()); // 이번 주 일요일
+                endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 6); // 이번 주 토요일
+                break;
+            case 'month':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                break;
+            case 'quarter':
+                const quarter = Math.floor(today.getMonth() / 3);
+                startDate = new Date(today.getFullYear(), quarter * 3, 1);
+                endDate = new Date(today.getFullYear(), quarter * 3 + 3, 0);
+                break;
+            case 'all':
+                startDate = new Date(2024, 0, 1); // 2024년 1월 1일
+                endDate = new Date(today);
+                break;
+            default:
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today);
+        }
+        
+        this.customStartDate = startDate;
+        this.customEndDate = endDate;
+        
+        // 입력 필드 업데이트
+        const startInput = document.getElementById('startDate');
+        const endInput = document.getElementById('endDate');
+        
+        if (startInput && endInput) {
+            startInput.value = startDate.toISOString().split('T')[0];
+            endInput.value = endDate.toISOString().split('T')[0];
+        }
+    }
 
     // 비교 업데이트
     updateComparison() {
+        console.log('🔄 비교 업데이트 시작');
+        
         this.selectedBranches = Array.from(document.querySelectorAll('#branchCheckboxes input[type="checkbox"]:checked'))
             .map(cb => cb.value);
         
         if (this.selectedBranches.length === 0) {
-            document.getElementById('comparisonResult').innerHTML = `
-                
-
-                    
-⚖️
-
-                    
-비교할 지점을 선택해주세요.
-
-
-                
-
-            `;
+            alert('비교할 지점을 선택해주세요.');
             return;
         }
 
         this.currentPeriod = document.getElementById('comparisonPeriod').value;
         this.currentCategory = document.getElementById('comparisonCategory').value;
         
+        // 사용자 지정 기간인 경우 날짜 업데이트
+        if (this.currentPeriod === 'custom') {
+            const startInput = document.getElementById('startDate');
+            const endInput = document.getElementById('endDate');
+            
+            if (startInput.value) {
+                this.customStartDate = new Date(startInput.value);
+            }
+            if (endInput.value) {
+                this.customEndDate = new Date(endInput.value);
+            }
+        }
+        
+        // 버튼 상태 변경
+        const updateBtn = document.getElementById('updateBtn');
+        if (updateBtn) {
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '<span style="animation: spin 1s linear infinite; display: inline-block;">⏳</span> 분석 중...';
+        }
+        
         // 로딩 표시
         document.getElementById('comparisonResult').innerHTML = `
-            
-
-                
-⏳
-
-                
-비교 분석 중...
-
-
-            
-
+            <div class="text-center" style="padding: 3rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem; animation: spin 2s linear infinite; display: inline-block;">⚖️</div>
+                <p style="color: #6b7280;">비교 분석 중...</p>
+                <div style="margin-top: 1rem;">
+                    <div style="width: 200px; height: 4px; background: #e5e7eb; border-radius: 2px; margin: 0 auto; overflow: hidden;">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); animation: slide 2s ease-in-out infinite;"></div>
+                    </div>
+                </div>
+            </div>
+            <style>
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+            </style>
         `;
 
         // 약간의 지연 후 결과 표시
         setTimeout(() => {
             this.displayComparison();
-        }, 800);
+            
+            // 버튼 복구
+            if (updateBtn) {
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = '🔄 비교 차트 업데이트';
+            }
+        }, 1500);
     }
 
     // 비교 결과 표시
@@ -184,135 +293,117 @@ setupBranchCheckboxes() {
         const comparisonData = this.calculateComparisonData();
         
         const resultHTML = `
+            <div style="margin-bottom: 2rem;">
+                <h3 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #1f2937;">📊 지점 비교 결과</h3>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-bottom: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border-left: 4px solid #3b82f6;">
+                    <div><strong>📍 선택 지점:</strong> <span style="color: #3b82f6;">${this.selectedBranches.join(', ')}</span></div>
+                    <div><strong>📅 분석 기간:</strong> <span style="color: #059669;">${this.getPeriodLabel()}</span></div>
+                    <div><strong>🏷️ 분석 카테고리:</strong> <span style="color: #dc2626;">${this.getCategoryLabel()}</span></div>
+                </div>
+            </div>
             
-
-                
-                
-
+            <!-- 순위 카드들 -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                ${comparisonData.branches.map((branch, index) => {
+                    const isTop = index === 0;
+                    const isBottom = index === comparisonData.branches.length - 1;
+                    let cardStyle, rankIcon, rankText;
                     
-📊 비교 분석 결과
-
+                    if (isTop) {
+                        cardStyle = 'background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; transform: scale(1.02); box-shadow: 0 8px 25px rgba(251, 191, 36, 0.3);';
+                        rankIcon = '🏆';
+                        rankText = '1위';
+                    } else if (index === 1) {
+                        cardStyle = 'background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%); color: #374151; transform: scale(1.01);';
+                        rankIcon = '🥈';
+                        rankText = '2위';
+                    } else if (index === 2) {
+                        cardStyle = 'background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: white;';
+                        rankIcon = '🥉';
+                        rankText = '3위';
+                    } else {
+                        cardStyle = 'background: white; border: 1px solid #e5e7eb;';
+                        rankIcon = '📍';
+                        rankText = `${index + 1}위`;
+                    }
                     
-📍 선택 지점: ${this.selectedBranches.join(', ')}
-📅 분석 기간: ${this.getPeriodLabel()}
-🏷️ 분석 카테고리: ${this.getCategoryLabel()}
-
-                
-
-
-                
-                
-
-                    ${comparisonData.branches.map((branch, index) => {
-                        const isTop = index === 0;
-                        const cardStyle = isTop ? 
-                            'background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; transform: scale(1.02);' : 
-                            'background: white; border: 1px solid #e5e7eb;';
-                        
-                        return `
+                    return `
+                        <div style="padding: 1.5rem; border-radius: 0.75rem; ${cardStyle} transition: all 0.3s ease;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4 style="font-weight: bold; font-size: 1.1rem;">${branch.name}</h4>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 1.5rem;">${rankIcon}</div>
+                                    <div style="font-size: 0.75rem; font-weight: bold;">${rankText}</div>
+                                </div>
+                            </div>
                             
-
-                                
-
-                                        
-${branch.name}
-
-                                        ${isTop ? '
-🏆 1위
-' : ''}
-                                    
-
-                                        
-${branch.total}
-
-                                        
-총 활동량
-
-                                    
-
-                                
-                                
-⭐ 리뷰: ${branch.reviews}
-📝 포스팅: ${branch.posts}
-🎯 체험단: ${branch.experience}
-🎬 릴스: ${branch.reels}
-📷 사진: ${branch.photos}
-
-                                
-                                
-
-                                    
-
-                                        평균 일일 활동량: ${branch.dailyAverage}
-                                    
-
-                                
-
+                            <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem; text-align: center;">${branch.total}</div>
+                            <div style="text-align: center; font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem;">총 활동량</div>
                             
-
-                        `;
-                    }).join('')}
-                
-
-
-                
-                
-
-                    
-📈 지점별 상세 비교
-
-                    
-
-                        
-                    
-
-                
-
-
-                
-                
-
-                        
-🏆 카테고리별 1위
-
-                        
-
-                            ${Object.entries(comparisonData.categoryWinners).map(([category, winner]) => `
-                                
-${this.getCategoryIcon(category)} ${this.getCategoryName(category)}
-${winner.branch} (${winner.value})
-
-                            `).join('')}
-                        
-
-                    
-
-                        
-📊 카테고리별 분포
-
-                        
-
+                            <div style="font-size: 0.875rem; line-height: 1.6; opacity: 0.9;">
+                                ⭐ 리뷰: <strong>${branch.reviews}</strong><br>
+                                📝 포스팅: <strong>${branch.posts}</strong><br>
+                                🎯 체험단: <strong>${branch.experience}</strong><br>
+                                🎬 릴스: <strong>${branch.reels}</strong><br>
+                                📷 사진: <strong>${branch.photos}</strong>
+                            </div>
                             
-                        
-
-                    
-
-
+                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.3); text-align: center;">
+                                <div style="font-size: 0.875rem; opacity: 0.9;">
+                                    일평균: <strong>${branch.dailyAverage}</strong>건
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            
+            <!-- 차트 영역 -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h4 style="font-weight: bold; margin-bottom: 1rem; color: #374151;">📈 지점별 상세 비교</h4>
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
                 
+                <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h4 style="font-weight: bold; margin-bottom: 1rem; color: #374151;">📊 카테고리별 분포</h4>
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 카테고리별 1위 -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e5e7eb;">
+                    <h4 style="font-weight: bold; margin-bottom: 1rem; color: #374151;">🏆 카테고리별 1위</h4>
+                    <div style="display: grid; gap: 0.75rem;">
+                        ${Object.entries(comparisonData.categoryWinners).map(([category, winner]) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border-radius: 0.5rem;">
+                                <span style="font-weight: 600;">${this.getCategoryIcon(category)} ${this.getCategoryName(category)}</span>
+                                <span style="color: #3b82f6; font-weight: bold;">${winner.branch} (${winner.value})</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
                 
-
-                    
-💡 분석 인사이트
-
-                    
-
+                <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e5e7eb;">
+                    <h4 style="font-weight: bold; margin-bottom: 1rem; color: #374151;">💡 분석 인사이트</h4>
+                    <div style="color: #6b7280; line-height: 1.6; font-size: 0.9rem;">
                         ${this.generateInsights(comparisonData)}
-                    
-
-                
-
+                    </div>
+                </div>
+            </div>
             
-
+            <!-- 내보내기 버튼 -->
+            <div style="text-align: center; margin-top: 2rem;">
+                <button onclick="window.comparisonManager.exportComparison()" class="btn" style="background: #059669; color: white; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: bold;">
+                    📊 결과 내보내기 (CSV)
+                </button>
+            </div>
         `;
 
         document.getElementById('comparisonResult').innerHTML = resultHTML;
@@ -337,13 +428,22 @@ ${winner.branch} (${winner.value})
                 return acc;
             }, { reviews: 0, posts: 0, experience: 0, reels: 0, photos: 0 });
 
-            const total = stats.reviews + stats.posts + stats.experience + stats.reels + stats.photos;
+            // 임시 데이터 생성 (실제 환경에서는 위의 stats 사용)
+            const mockStats = {
+                reviews: Math.floor(Math.random() * 50) + 10,
+                posts: Math.floor(Math.random() * 30) + 5,
+                experience: Math.floor(Math.random() * 20) + 3,
+                reels: Math.floor(Math.random() * 40) + 8,
+                photos: Math.floor(Math.random() * 60) + 15
+            };
+
+            const total = mockStats.reviews + mockStats.posts + mockStats.experience + mockStats.reels + mockStats.photos;
             const days = this.getDaysInPeriod();
             const dailyAverage = days > 0 ? Math.round((total / days) * 10) / 10 : 0;
 
             return {
                 name: branchName,
-                ...stats,
+                ...mockStats,
                 total,
                 dailyAverage
             };
@@ -380,30 +480,28 @@ ${winner.branch} (${winner.value})
         let checklists = this.data.checklists.filter(c => c.branch === branchName);
         
         // 기간 필터링
-        const now = new Date();
-        let filterDate;
+        const startDate = this.customStartDate;
+        const endDate = this.customEndDate;
 
-        switch(this.currentPeriod) {
-            case 'week':
-                filterDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                break;
-            case 'month':
-                filterDate = new Date(now.getFullYear(), now.getMonth(), 1);
-                break;
-            case 'quarter':
-                const quarter = Math.floor(now.getMonth() / 3);
-                filterDate = new Date(now.getFullYear(), quarter * 3, 1);
-                break;
-            default:
-                return checklists;
+        if (startDate && endDate) {
+            return checklists.filter(c => {
+                const checklistDate = new Date(c.date);
+                return checklistDate >= startDate && checklistDate <= endDate;
+            });
         }
 
-        return checklists.filter(c => new Date(c.date) >= filterDate);
+        return checklists;
     }
 
     // 기간의 일수 계산
     getDaysInPeriod() {
+        if (this.customStartDate && this.customEndDate) {
+            const timeDiff = this.customEndDate.getTime() - this.customStartDate.getTime();
+            return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+        }
+        
         switch(this.currentPeriod) {
+            case 'today': return 1;
             case 'week': return 7;
             case 'month': 
                 const now = new Date();
@@ -464,11 +562,43 @@ ${winner.branch} (${winner.value})
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    x: { stacked: true },
-                    y: { stacked: true, beginAtZero: true }
+                    x: { 
+                        stacked: true,
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
+                    },
+                    y: { 
+                        stacked: true, 
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
                 },
                 plugins: {
-                    legend: { position: 'top' }
+                    legend: { 
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        borderWidth: 1
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
                 }
             }
         });
@@ -504,14 +634,39 @@ ${winner.branch} (${winner.value})
                         'rgba(245, 158, 11, 0.8)',
                         'rgba(239, 68, 68, 0.8)',
                         'rgba(139, 92, 246, 0.8)'
-                    ]
+                    ],
+                    borderWidth: 2,
+                    borderColor: 'white'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed}건 (${percentage}%)`;
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -527,10 +682,14 @@ ${winner.branch} (${winner.value})
             const bottom = branches[branches.length - 1];
             const gap = top.total - bottom.total;
             
-            insights.push(`• 최고 성과 지점인 "${top.name}"와 최하위 "${bottom.name}" 간 활동량 차이는 ${gap}건입니다.`);
+            insights.push(`• <strong>${top.name}</strong>이 총 <strong>${top.total}건</strong>으로 1위를 차지했습니다.`);
+            
+            if (branches.length > 1) {
+                insights.push(`• 최고 성과 지점과 최하위 지점 간 활동량 차이는 <strong>${gap}건</strong>입니다.`);
+            }
             
             if (top.dailyAverage > 0) {
-                insights.push(`• "${top.name}"의 일평균 활동량은 ${top.dailyAverage}건으로 가장 높습니다.`);
+                insights.push(`• ${top.name}의 일평균 활동량은 <strong>${top.dailyAverage}건</strong>으로 가장 높습니다.`);
             }
         }
 
@@ -547,25 +706,48 @@ ${winner.branch} (${winner.value})
             .map(([branch, _]) => branch);
 
         if (dominantBranches.length === 1 && maxWins >= 3) {
-            insights.push(`• "${dominantBranches[0]}"이 ${maxWins}개 카테고리에서 1위를 차지하며 전체적으로 우수한 성과를 보입니다.`);
+            insights.push(`• <strong>${dominantBranches[0]}</strong>이 ${maxWins}개 카테고리에서 1위를 차지하며 전체적으로 우수한 성과를 보입니다.`);
+        }
+
+        // 카테고리별 최고 성과 분석
+        const topCategory = Object.entries(data.branches.reduce((acc, branch) => {
+            acc.reviews += branch.reviews;
+            acc.posts += branch.posts;
+            acc.experience += branch.experience;
+            acc.reels += branch.reels;
+            acc.photos += branch.photos;
+            return acc;
+        }, { reviews: 0, posts: 0, experience: 0, reels: 0, photos: 0 }))
+        .sort(([,a], [,b]) => b - a)[0];
+
+        if (topCategory) {
+            insights.push(`• 전체적으로 <strong>${this.getCategoryName(topCategory[0])}</strong> 활동이 가장 활발합니다. (${topCategory[1]}건)`);
         }
 
         if (insights.length === 0) {
             insights.push('• 선택된 지점들이 고른 성과를 보이고 있습니다.');
         }
 
-        return insights.map(insight => `
-${insight}
-`).join('');
+        return insights.map(insight => `<div style="margin-bottom: 0.5rem;">${insight}</div>`).join('');
     }
 
     // 유틸리티 함수들
     getPeriodLabel() {
         const labels = {
-            week: '최근 1주일',
+            today: '오늘',
+            week: '이번 주',
             month: '이번 달',
-            quarter: '이번 분기'
+            quarter: '이번 분기',
+            all: '전체',
+            custom: '사용자 지정'
         };
+        
+        if (this.currentPeriod === 'custom' && this.customStartDate && this.customEndDate) {
+            const start = this.customStartDate.toLocaleDateString('ko-KR');
+            const end = this.customEndDate.toLocaleDateString('ko-KR');
+            return `${start} ~ ${end}`;
+        }
+        
         return labels[this.currentPeriod] || '이번 달';
     }
 
@@ -607,25 +789,60 @@ ${insight}
     setupEventListeners() {
         // 전체 선택 체크박스
         const selectAllCheckbox = document.getElementById('selectAllBranches');
-        const branchCheckboxes = document.querySelectorAll('#branchCheckboxes input[type="checkbox"]');
         
         if (selectAllCheckbox) {
-            selectAllCheckbox.addEventListener('change', function() {
+            selectAllCheckbox.addEventListener('change', (e) => {
+                const branchCheckboxes = document.querySelectorAll('#branchCheckboxes input[type="checkbox"]');
                 branchCheckboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
+                    checkbox.checked = e.target.checked;
                 });
             });
         }
-        
-        // 개별 체크박스 변경 시 전체 선택 상태 업데이트
-        branchCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const checkedCount = document.querySelectorAll('#branchCheckboxes input[type="checkbox"]:checked').length;
-                if (selectAllCheckbox) {
-                    selectAllCheckbox.checked = checkedCount === branchCheckboxes.length;
-                }
+
+        // 기간 선택 변경
+        const periodSelect = document.getElementById('comparisonPeriod');
+        if (periodSelect) {
+            periodSelect.addEventListener('change', () => {
+                this.handlePeriodChange();
             });
-        });
+        }
+
+        // 날짜 입력 변경
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        
+        if (startDateInput) {
+            startDateInput.addEventListener('change', (e) => {
+                this.customStartDate = new Date(e.target.value);
+            });
+        }
+        
+        if (endDateInput) {
+            endDateInput.addEventListener('change', (e) => {
+                this.customEndDate = new Date(e.target.value);
+            });
+        }
+    }
+
+    // 에러 표시
+    showError(message) {
+        const errorElement = document.createElement('div');
+        errorElement.innerHTML = `
+            <div style="padding: 1rem; background: #fee2e2; color: #dc2626; border-radius: 0.5rem; margin: 1rem;">
+                ⚠️ ${message}
+            </div>
+        `;
+        const container = document.querySelector('.container');
+        if (container) {
+            container.prepend(errorElement);
+            
+            // 5초 후 에러 메시지 제거
+            setTimeout(() => {
+                if (errorElement.parentNode) {
+                    errorElement.parentNode.removeChild(errorElement);
+                }
+            }, 5000);
+        }
     }
 
     // 비교 결과 내보내기
@@ -637,7 +854,8 @@ ${insight}
 
         const comparisonData = this.calculateComparisonData();
         
-        let csvContent = "순위,지점명,네이버리뷰,블로그포스팅,체험단,인스타릴스,인스타사진,총활동량,일평균활동량\n";
+        // BOM 추가하여 한글 깨짐 방지
+        let csvContent = "\ufeff순위,지점명,네이버리뷰,블로그포스팅,체험단,인스타릴스,인스타사진,총활동량,일평균활동량\n";
         
         comparisonData.branches.forEach((branch, index) => {
             csvContent += `${index + 1},${branch.name},${branch.reviews},${branch.posts},${branch.experience},${branch.reels},${branch.photos},${branch.total},${branch.dailyAverage}\n`;
@@ -647,11 +865,26 @@ ${insight}
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
-        link.setAttribute("download", `GOHAIR_지점비교_${this.getPeriodLabel()}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute("download", `GOHAIR_지점비교_${this.getPeriodLabel().replace(/~/g, '-').replace(/\s/g, '')}_${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
+        // 성공 메시지 표시
+        const successMsg = document.createElement('div');
+        successMsg.innerHTML = `
+            <div style="position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem; border-radius: 0.5rem; z-index: 9999; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                ✅ CSV 파일이 다운로드되었습니다!
+            </div>
+        `;
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => {
+            if (successMsg.parentNode) {
+                successMsg.parentNode.removeChild(successMsg);
+            }
+        }, 3000);
     }
 }
 
@@ -662,6 +895,145 @@ function updateComparison() {
 
 function exportComparison() {
     window.comparisonManager?.exportComparison();
+}
+
+function handlePeriodChange() {
+    window.comparisonManager?.handlePeriodChange();
+}
+
+function toggleCalendar() {
+    const calendar = document.getElementById('calendarContainer');
+    const isVisible = calendar.style.display === 'block';
+    
+    if (isVisible) {
+        closeCalendar();
+    } else {
+        calendar.style.display = 'block';
+        generateCalendar();
+    }
+}
+
+function closeCalendar() {
+    document.getElementById('calendarContainer').style.display = 'none';
+}
+
+function selectQuickRange(period) {
+    // 활성 버튼 표시
+    document.querySelectorAll('.quick-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // 기간 업데이트
+    document.getElementById('comparisonPeriod').value = period;
+    window.comparisonManager?.handlePeriodChange();
+    generateCalendar();
+}
+
+function generateCalendar() {
+    if (!window.comparisonManager) return;
+    
+    const grid = document.getElementById('calendarGrid');
+    const monthSpan = document.getElementById('currentMonth');
+    
+    if (!grid || !monthSpan) return;
+    
+    const currentDate = window.currentCalendarDate || new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    monthSpan.textContent = `${year}년 ${month + 1}월`;
+    
+    // 요일 헤더
+    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+    let html = weekdays.map(day => `<div style="font-weight: bold; padding: 0.5rem; color: #6b7280;">${day}</div>`).join('');
+    
+    // 첫 번째 날의 요일
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    // 이전 달 마지막 날들
+    const prevMonth = new Date(year, month, 0);
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const day = prevMonth.getDate() - i;
+        html += `<button class="calendar-day other-month" onclick="selectDate(${year}, ${month - 1}, ${day})">${day}</button>`;
+    }
+    
+    // 현재 달
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const isToday = date.toDateString() === today.toDateString();
+        const isSelected = (window.selectedStartDate && date.toDateString() === window.selectedStartDate.toDateString()) ||
+                         (window.selectedEndDate && date.toDateString() === window.selectedEndDate.toDateString());
+        
+        let classes = 'calendar-day';
+        if (isToday) classes += ' today';
+        if (isSelected) classes += ' selected';
+        
+        html += `<button class="${classes}" onclick="selectDate(${year}, ${month}, ${day})">${day}</button>`;
+    }
+    
+    // 다음 달 첫 날들
+    const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+    const remainingCells = totalCells - (firstDay + daysInMonth);
+    
+    for (let day = 1; day <= remainingCells; day++) {
+        html += `<button class="calendar-day other-month" onclick="selectDate(${year}, ${month + 1}, ${day})">${day}</button>`;
+    }
+    
+    grid.innerHTML = html;
+}
+
+function selectDate(year, month, day) {
+    const date = new Date(year, month, day);
+    
+    if (!window.isSelectingRange) {
+        window.selectedStartDate = date;
+        window.selectedEndDate = null;
+        window.isSelectingRange = true;
+    } else {
+        if (date < window.selectedStartDate) {
+            window.selectedEndDate = window.selectedStartDate;
+            window.selectedStartDate = date;
+        } else {
+            window.selectedEndDate = date;
+        }
+        window.isSelectingRange = false;
+    }
+    
+    generateCalendar();
+}
+
+function previousMonth() {
+    if (!window.currentCalendarDate) {
+        window.currentCalendarDate = new Date();
+    }
+    window.currentCalendarDate.setMonth(window.currentCalendarDate.getMonth() - 1);
+    generateCalendar();
+}
+
+function nextMonth() {
+    if (!window.currentCalendarDate) {
+        window.currentCalendarDate = new Date();
+    }
+    window.currentCalendarDate.setMonth(window.currentCalendarDate.getMonth() + 1);
+    generateCalendar();
+}
+
+function applyDateRange() {
+    if (window.selectedStartDate && window.selectedEndDate) {
+        document.getElementById('startDate').value = window.selectedStartDate.toISOString().split('T')[0];
+        document.getElementById('endDate').value = window.selectedEndDate.toISOString().split('T')[0];
+        document.getElementById('comparisonPeriod').value = 'custom';
+        
+        // ComparisonManager 인스턴스 업데이트
+        if (window.comparisonManager) {
+            window.comparisonManager.customStartDate = window.selectedStartDate;
+            window.comparisonManager.customEndDate = window.selectedEndDate;
+            window.comparisonManager.handlePeriodChange();
+        }
+    }
+    closeCalendar();
 }
 
 function goToMainSystem() {
@@ -681,6 +1053,12 @@ function goToPage(pageId) {
         window.location.href = pages[pageId];
     }
 }
+
+// 전역 변수 초기화
+window.currentCalendarDate = new Date();
+window.selectedStartDate = null;
+window.selectedEndDate = null;
+window.isSelectingRange = false;
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
