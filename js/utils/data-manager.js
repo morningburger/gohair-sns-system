@@ -1,4 +1,4 @@
-// Firebase 데이터 관리 클래스
+// Firebase 데이터 관리 클래스 (CDN 호환)
 class FirebaseDataManager {
     constructor() {
         this.collections = {
@@ -13,11 +13,9 @@ class FirebaseDataManager {
     async initializeDefaultData() {
         try {
             // 기본 관리자 계정 확인 및 생성
-            const adminDoc = await window.firestoreFunctions.getDoc(
-                window.firestoreFunctions.doc(window.db, this.collections.users, 'admin@gohair.com')
-            );
+            const adminDoc = await window.db.collection(this.collections.users).doc('admin@gohair.com').get();
             
-            if (!adminDoc.exists()) {
+            if (!adminDoc.exists) {
                 await this.createDefaultData();
             }
         } catch (error) {
@@ -48,26 +46,17 @@ class FirebaseDataManager {
         try {
             // 사용자 데이터 생성
             for (const [email, userData] of Object.entries(defaultUsers)) {
-                await window.firestoreFunctions.setDoc(
-                    window.firestoreFunctions.doc(window.db, this.collections.users, email),
-                    userData
-                );
+                await window.db.collection(this.collections.users).doc(email).set(userData);
             }
 
             // 지점 데이터 생성
             for (const branch of defaultBranches) {
-                await window.firestoreFunctions.addDoc(
-                    window.firestoreFunctions.collection(window.db, this.collections.branches),
-                    branch
-                );
+                await window.db.collection(this.collections.branches).add(branch);
             }
 
             // 디자이너 데이터 생성
             for (const designer of defaultDesigners) {
-                await window.firestoreFunctions.addDoc(
-                    window.firestoreFunctions.collection(window.db, this.collections.designers),
-                    designer
-                );
+                await window.db.collection(this.collections.designers).add(designer);
             }
 
             console.log('기본 데이터 생성 완료');
@@ -79,10 +68,8 @@ class FirebaseDataManager {
     // 사용자 관련 메서드
     async getUser(email) {
         try {
-            const userDoc = await window.firestoreFunctions.getDoc(
-                window.firestoreFunctions.doc(window.db, this.collections.users, email)
-            );
-            return userDoc.exists() ? userDoc.data() : null;
+            const userDoc = await window.db.collection(this.collections.users).doc(email).get();
+            return userDoc.exists ? userDoc.data() : null;
         } catch (error) {
             console.error('사용자 조회 오류:', error);
             return null;
@@ -91,10 +78,7 @@ class FirebaseDataManager {
 
     async addUser(email, userData) {
         try {
-            await window.firestoreFunctions.setDoc(
-                window.firestoreFunctions.doc(window.db, this.collections.users, email),
-                userData
-            );
+            await window.db.collection(this.collections.users).doc(email).set(userData);
             return userData;
         } catch (error) {
             console.error('사용자 추가 오류:', error);
@@ -105,9 +89,7 @@ class FirebaseDataManager {
     // 지점 관련 메서드
     async getBranches() {
         try {
-            const querySnapshot = await window.firestoreFunctions.getDocs(
-                window.firestoreFunctions.collection(window.db, this.collections.branches)
-            );
+            const querySnapshot = await window.db.collection(this.collections.branches).get();
             return querySnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
         } catch (error) {
             console.error('지점 조회 오류:', error);
@@ -117,10 +99,10 @@ class FirebaseDataManager {
 
     async addBranch(branchData) {
         try {
-            const docRef = await window.firestoreFunctions.addDoc(
-                window.firestoreFunctions.collection(window.db, this.collections.branches),
-                { ...branchData, createdAt: new Date().toISOString().split('T')[0] }
-            );
+            const docRef = await window.db.collection(this.collections.branches).add({
+                ...branchData, 
+                createdAt: new Date().toISOString().split('T')[0]
+            });
             return { docId: docRef.id, ...branchData };
         } catch (error) {
             console.error('지점 추가 오류:', error);
@@ -130,10 +112,7 @@ class FirebaseDataManager {
 
     async updateBranch(docId, branchData) {
         try {
-            await window.firestoreFunctions.updateDoc(
-                window.firestoreFunctions.doc(window.db, this.collections.branches, docId),
-                branchData
-            );
+            await window.db.collection(this.collections.branches).doc(docId).update(branchData);
             return branchData;
         } catch (error) {
             console.error('지점 수정 오류:', error);
@@ -143,9 +122,7 @@ class FirebaseDataManager {
 
     async deleteBranch(docId) {
         try {
-            await window.firestoreFunctions.deleteDoc(
-                window.firestoreFunctions.doc(window.db, this.collections.branches, docId)
-            );
+            await window.db.collection(this.collections.branches).doc(docId).delete();
         } catch (error) {
             console.error('지점 삭제 오류:', error);
             throw error;
@@ -155,9 +132,7 @@ class FirebaseDataManager {
     // 디자이너 관련 메서드
     async getDesigners() {
         try {
-            const querySnapshot = await window.firestoreFunctions.getDocs(
-                window.firestoreFunctions.collection(window.db, this.collections.designers)
-            );
+            const querySnapshot = await window.db.collection(this.collections.designers).get();
             return querySnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
         } catch (error) {
             console.error('디자이너 조회 오류:', error);
@@ -167,10 +142,10 @@ class FirebaseDataManager {
 
     async addDesigner(designerData) {
         try {
-            const docRef = await window.firestoreFunctions.addDoc(
-                window.firestoreFunctions.collection(window.db, this.collections.designers),
-                { ...designerData, createdAt: new Date().toISOString().split('T')[0] }
-            );
+            const docRef = await window.db.collection(this.collections.designers).add({
+                ...designerData, 
+                createdAt: new Date().toISOString().split('T')[0]
+            });
             return { docId: docRef.id, ...designerData };
         } catch (error) {
             console.error('디자이너 추가 오류:', error);
@@ -180,10 +155,7 @@ class FirebaseDataManager {
 
     async updateDesigner(docId, designerData) {
         try {
-            await window.firestoreFunctions.updateDoc(
-                window.firestoreFunctions.doc(window.db, this.collections.designers, docId),
-                designerData
-            );
+            await window.db.collection(this.collections.designers).doc(docId).update(designerData);
             return designerData;
         } catch (error) {
             console.error('디자이너 수정 오류:', error);
@@ -193,9 +165,7 @@ class FirebaseDataManager {
 
     async deleteDesigner(docId) {
         try {
-            await window.firestoreFunctions.deleteDoc(
-                window.firestoreFunctions.doc(window.db, this.collections.designers, docId)
-            );
+            await window.db.collection(this.collections.designers).doc(docId).delete();
         } catch (error) {
             console.error('디자이너 삭제 오류:', error);
             throw error;
@@ -205,9 +175,7 @@ class FirebaseDataManager {
     // 체크리스트 관련 메서드
     async getChecklists() {
         try {
-            const querySnapshot = await window.firestoreFunctions.getDocs(
-                window.firestoreFunctions.collection(window.db, this.collections.checklists)
-            );
+            const querySnapshot = await window.db.collection(this.collections.checklists).get();
             return querySnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
         } catch (error) {
             console.error('체크리스트 조회 오류:', error);
@@ -217,10 +185,7 @@ class FirebaseDataManager {
 
     async addChecklist(checklistData) {
         try {
-            const docRef = await window.firestoreFunctions.addDoc(
-                window.firestoreFunctions.collection(window.db, this.collections.checklists),
-                checklistData
-            );
+            const docRef = await window.db.collection(this.collections.checklists).add(checklistData);
             return { docId: docRef.id, ...checklistData };
         } catch (error) {
             console.error('체크리스트 추가 오류:', error);
@@ -230,33 +195,24 @@ class FirebaseDataManager {
 
     // 실시간 데이터 동기화
     onBranchesChange(callback) {
-        return window.firestoreFunctions.onSnapshot(
-            window.firestoreFunctions.collection(window.db, this.collections.branches),
-            (snapshot) => {
-                const branches = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-                callback(branches);
-            }
-        );
+        return window.db.collection(this.collections.branches).onSnapshot((snapshot) => {
+            const branches = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+            callback(branches);
+        });
     }
 
     onDesignersChange(callback) {
-        return window.firestoreFunctions.onSnapshot(
-            window.firestoreFunctions.collection(window.db, this.collections.designers),
-            (snapshot) => {
-                const designers = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-                callback(designers);
-            }
-        );
+        return window.db.collection(this.collections.designers).onSnapshot((snapshot) => {
+            const designers = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+            callback(designers);
+        });
     }
 
     onChecklistsChange(callback) {
-        return window.firestoreFunctions.onSnapshot(
-            window.firestoreFunctions.collection(window.db, this.collections.checklists),
-            (snapshot) => {
-                const checklists = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-                callback(checklists);
-            }
-        );
+        return window.db.collection(this.collections.checklists).onSnapshot((snapshot) => {
+            const checklists = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+            callback(checklists);
+        });
     }
 }
 
