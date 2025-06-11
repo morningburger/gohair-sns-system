@@ -197,6 +197,7 @@
     <script src="../js/pages/statistics.js"></script>
 
     <!-- 페이지 네비게이션 함수 -->
+<!-- 페이지 네비게이션 함수 -->
     <script>
         function goToMainSystem() {
             window.location.href = '../index.html';
@@ -217,31 +218,61 @@
             }
         }
 
-        // 🔧 로딩 문제 해결 코드
+        // 🔧 강력한 로딩 해제 코드
+        function forceHideLoading() {
+            const loading = document.getElementById('loadingScreen');
+            if (loading) {
+                // 모든 가능한 방법으로 숨김
+                loading.classList.add('hidden');
+                loading.style.display = 'none';
+                loading.style.visibility = 'hidden';
+                loading.style.opacity = '0';
+                loading.style.zIndex = '-1';
+                
+                console.log('💪 강제 로딩 숨김 완료');
+                console.log('로딩 클래스:', loading.className);
+                console.log('로딩 스타일:', loading.style.cssText);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📊 통계 페이지 로드 시작');
             
-            // 1초 후 StatisticsManager 확인
+            // 1초 후 StatisticsManager 확인 및 강제 로딩 숨김
             setTimeout(() => {
                 console.log('StatisticsManager 존재 여부:', typeof StatisticsManager);
                 console.log('statisticsManager 인스턴스:', window.statisticsManager);
                 
-                // StatisticsManager가 없거나 초기화 실패 시 강제 로딩 숨김
-                if (typeof StatisticsManager === 'undefined' || !window.statisticsManager) {
-                    console.log('⚠️ StatisticsManager 초기화 실패 - 강제 로딩 숨김');
-                    const loading = document.getElementById('loadingScreen');
-                    if (loading) {
-                        loading.classList.add('hidden');
+                // StatisticsManager가 있으면 강제 로딩 숨김
+                if (window.statisticsManager) {
+                    console.log('✅ StatisticsManager 정상 - 강제 로딩 숨김 실행');
+                    forceHideLoading();
+                    
+                    // StatisticsManager의 hideLoading도 호출
+                    try {
+                        window.statisticsManager.hideLoading();
+                        console.log('✅ statisticsManager.hideLoading() 호출 완료');
+                    } catch (e) {
+                        console.error('❌ statisticsManager.hideLoading() 오류:', e);
                     }
                 }
             }, 1000);
             
-            // 3초 후 강제 로딩 숨김 (최종 백업)
+            // 2초 후 다시 한 번 강제 숨김
             setTimeout(() => {
                 const loading = document.getElementById('loadingScreen');
                 if (loading && !loading.classList.contains('hidden')) {
-                    console.log('⏰ 3초 타임아웃 - 강제 로딩 화면 숨김');
-                    loading.classList.add('hidden');
+                    console.log('⚠️ 2초 후에도 로딩 화면 있음 - 재차 강제 숨김');
+                    forceHideLoading();
+                }
+            }, 2000);
+            
+            // 3초 후 최종 백업
+            setTimeout(() => {
+                const loading = document.getElementById('loadingScreen');
+                if (loading && (loading.style.display !== 'none')) {
+                    console.log('🚨 최종 백업 - 강제 로딩 숨김');
+                    forceHideLoading();
                     
                     // 기본 데이터라도 표시
                     document.getElementById('totalReviews').textContent = '45';
@@ -259,18 +290,30 @@
             }, 3000);
         });
 
-        // JavaScript 에러 캐치
+        // 에러 발생 시 즉시 로딩 숨김
         window.addEventListener('error', function(e) {
             console.error('❌ JavaScript 에러:', e.message);
             console.error('📁 파일:', e.filename);
             console.error('📍 라인:', e.lineno);
             
-            // 에러 발생 시 즉시 로딩 화면 숨김
-            const loading = document.getElementById('loadingScreen');
-            if (loading) {
-                loading.classList.add('hidden');
-                console.log('🚨 에러로 인한 즉시 로딩 화면 숨김');
-            }
+            console.log('🚨 에러로 인한 즉시 로딩 숨김');
+            forceHideLoading();
+        });
+
+        // 페이지를 떠날 때 로딩 화면 숨김
+        window.addEventListener('beforeunload', function() {
+            forceHideLoading();
+        });
+
+        // 페이지 포커스 시에도 확인
+        window.addEventListener('focus', function() {
+            setTimeout(() => {
+                const loading = document.getElementById('loadingScreen');
+                if (loading && window.getComputedStyle(loading).display !== 'none') {
+                    console.log('🔍 포커스 시 로딩 화면 발견 - 강제 숨김');
+                    forceHideLoading();
+                }
+            }, 100);
         });
     </script>
 </body>
