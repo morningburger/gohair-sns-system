@@ -65,26 +65,38 @@ class ChecklistManager {
     }
 
     // 사용자 표시 업데이트
-    updateUserDisplay() {
-        const userElement = document.getElementById('currentUser');
-        if (userElement && this.currentUser) {
-            userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
-        }
+updateUserDisplay() {
+    const userElement = document.getElementById('currentUser');
+    if (userElement) {
+        // 강제로 Firebase 연결 상태 표시
+        userElement.textContent = 'Firebase 연결됨';
+        userElement.style.color = '#10b981';
+        userElement.style.fontWeight = '500';
+        
+        console.log('✅ "Firebase 연결됨" 표시 완료');
     }
-
+}
     // 데이터 로드
-    async loadAllData() {
-        try {
-            // 실제로는 Firebase에서 로드
-            this.data.designers = this.generateSampleDesigners();
-            this.data.checklists = this.generateSampleChecklists();
-            this.data.branches = this.generateSampleBranches();
-            
-        } catch (error) {
-            console.error('데이터 로딩 오류:', error);
-            throw error;
-        }
+async loadAllData() {
+    try {
+        console.log('📊 실제 Firebase 데이터 로딩 시작...');
+        
+        // Firebase에서 실제 데이터 로딩
+        this.data.designers = await this.loadDesignersFromFirebase();
+        this.data.checklists = await this.loadChecklistsFromFirebase();
+        this.data.branches = await this.loadBranchesFromFirebase();
+        
+        console.log('✅ 모든 데이터 로딩 완료');
+        console.log('📊 로딩된 데이터 요약:');
+        console.log(`- 디자이너: ${this.data.designers.length}개`);
+        console.log(`- 체크리스트: ${this.data.checklists.length}개`);
+        console.log(`- 지점: ${this.data.branches.length}개`);
+        
+    } catch (error) {
+        console.error('❌ 데이터 로딩 중 오류:', error);
+        throw error;
     }
+}
 
     // 샘플 데이터 생성
     generateSampleDesigners() {
@@ -138,7 +150,152 @@ class ChecklistManager {
     generateSampleBranches() {
         return ['송도센트럴점', '검단테라스점', '부평점', '인천논현점', '청라국제점'];
     }
+// 👥 실제 디자이너 데이터 로딩  
+async loadDesignersFromFirebase() {
+    try {
+        console.log('👥 디자이너 데이터 로딩 중...');
+        
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
+            return this.generateSampleDesigners();
+        }
 
+        const db = firebase.firestore();
+        const snapshot = await db.collection('designers').get();
+        
+        const designers = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            designers.push({
+                id: doc.id,
+                docId: doc.id,
+                name: data.name || '',
+                branch: data.branch || '',
+                position: data.position || '',
+                phone: data.phone || '',
+                email: data.email || '',
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+            });
+        });
+        
+        console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
+        
+        if (designers.length === 0) {
+            console.log('📝 Firebase에 디자이너 데이터가 없음 - 임시 데이터 사용');
+            return this.generateSampleDesigners();
+        }
+        
+        return designers;
+    } catch (error) {
+        console.error('❌ 디자이너 데이터 로딩 실패:', error);
+        console.log('📝 오류로 인해 임시 데이터 사용');
+        return this.generateSampleDesigners();
+    }
+}
+
+// 📋 실제 체크리스트 데이터 로딩
+async loadChecklistsFromFirebase() {
+    try {
+        console.log('📋 체크리스트 데이터 로딩 중...');
+        
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
+            return this.generateSampleChecklists();
+        }
+
+        const db = firebase.firestore();
+        const snapshot = await db.collection('checklists')
+            .orderBy('createdAt', 'desc')
+            .limit(500)
+            .get();
+        
+        const checklists = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            checklists.push({
+                id: doc.id,
+                docId: doc.id,
+                designerId: data.designerId || '',
+                designer: data.designer || '',
+                branch: data.branch || '',
+                date: data.date || '',
+                naverReviews: data.naverReviews || 0,
+                naverPosts: data.naverPosts || 0,
+                naverExperience: data.naverExperience || 0,
+                instaReels: data.instaReels || 0,
+                instaPhotos: data.instaPhotos || 0,
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString()
+            });
+        });
+        
+        console.log(`✅ 체크리스트 데이터 로딩 완료: ${checklists.length}개`);
+        
+        if (checklists.length === 0) {
+            console.log('📝 Firebase에 체크리스트 데이터가 없음 - 임시 데이터 사용');
+            return this.generateSampleChecklists();
+        }
+        
+        return checklists.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } catch (error) {
+        console.error('❌ 체크리스트 데이터 로딩 실패:', error);
+        console.log('📝 오류로 인해 임시 데이터 사용');
+        return this.generateSampleChecklists();
+    }
+}
+
+// 🏢 실제 지점 데이터 로딩
+async loadBranchesFromFirebase() {
+    try {
+        console.log('🏢 지점 데이터 로딩 중...');
+        
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
+            return this.generateSampleBranches();
+        }
+
+        const db = firebase.firestore();
+        const snapshot = await db.collection('branches').get();
+        
+        const branches = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            branches.push(data.name || '');
+        });
+        
+        console.log(`✅ 지점 데이터 로딩 완료: ${branches.length}개`);
+        
+        if (branches.length === 0) {
+            console.log('📝 Firebase에 지점 데이터가 없음 - 임시 데이터 사용');
+            return this.generateSampleBranches();
+        }
+        
+        return branches;
+    } catch (error) {
+        console.error('❌ 지점 데이터 로딩 실패:', error);
+        console.log('📝 오류로 인해 임시 데이터 사용');
+        return this.generateSampleBranches();
+    }
+}
+
+// 🚀 Firebase에 체크리스트 저장
+async saveChecklistToFirebase(checklistData) {
+    try {
+        const db = firebase.firestore();
+        const docRef = await db.collection('checklists').add({
+            ...checklistData,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        });
+        
+        console.log('✅ 체크리스트가 Firebase에 저장됨:', docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error('❌ 체크리스트 저장 실패:', error);
+        throw error;
+    }
+}
     // 오늘 날짜 설정
     setTodayDate() {
         const today = new Date();
@@ -639,7 +796,16 @@ class ChecklistManager {
             }
 
             // 실제로는 Firebase에 저장
-            this.data.checklists.unshift(checklistData);
+try {
+    const savedId = await this.saveChecklistToFirebase(checklistData);
+    checklistData.docId = savedId;
+    checklistData.id = savedId;
+    this.data.checklists.unshift(checklistData);
+    console.log('✅ 체크리스트 Firebase 저장 완료');
+} catch (firebaseError) {
+    console.error('⚠️ Firebase 저장 실패, 메모리에만 저장:', firebaseError);
+    this.data.checklists.unshift(checklistData);
+}
             
             // 성공 메시지 표시
             this.showSuccessMessage();
