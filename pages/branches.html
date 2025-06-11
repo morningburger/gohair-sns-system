@@ -299,6 +299,39 @@ function goToMainSystem() {
                 window.location.href = pages[pageId];
             }
         }
+
+          // 🔧 권한 체크 함수 추가
+    function checkBranchAccess() {
+        // 로그인 상태 확인
+        if (!window.authManager || !window.authManager.isLoggedIn()) {
+            alert('로그인이 필요합니다.');
+            window.location.href = '../index.html';
+            return false;
+        }
+
+        // 관리자 권한 확인
+        if (!window.authManager.isAdmin()) {
+            alert('지점 관리는 관리자만 접근할 수 있습니다.');
+            window.location.href = '../index.html';
+            return false;
+        }
+
+        return true;
+    }
+
+    // 페이지 로드 시 권한 체크
+    document.addEventListener('DOMContentLoaded', function() {
+        // 잠시 후 권한 체크 (auth 로드 대기)
+        setTimeout(() => {
+            if (!checkBranchAccess()) {
+                return;
+            }
+            // 권한이 있으면 브랜치 매니저 초기화
+            if (window.branchesManager) {
+                window.branchesManager.initialize();
+            }
+        }, 500);
+    });
     </script>
     
 </body>
