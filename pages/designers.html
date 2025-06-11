@@ -283,6 +283,81 @@ function goToMainSystem() {
                 window.location.href = pages[pageId];
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+    console.log('👥 디자이너 관리 페이지 로드 시작');
+    
+    // Firebase 연결 상태 확인
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        console.log('🔥 파이어베이스 연결됨');
+        
+        // 연결 상태를 화면에 표시
+        const currentUser = document.getElementById('currentUser');
+        if (currentUser && !currentUser.textContent.trim()) {
+            currentUser.textContent = '파이어베이스 연결됨';
+            currentUser.style.color = '#10b981'; // 초록색
+        }
+        
+        // Firestore 연결 테스트
+        if (firebase.firestore) {
+            const db = firebase.firestore();
+            console.log('💾 Firestore 연결 확인됨');
+            
+            // 간단한 연결 테스트
+            db.collection('designers').limit(1).get()
+                .then((snapshot) => {
+                    if (snapshot.empty) {
+                        console.log('📂 designers 컬렉션이 비어있음 - 테스트 데이터 추가 제안');
+                        console.log('💡 브라우저 콘솔에서 다음 명령을 실행하세요:');
+                        console.log(`
+// 테스트 디자이너 데이터 추가
+const db = firebase.firestore();
+db.collection('designers').add({
+    name: '김수현',
+    branch: '송도센트럴점',
+    position: '디자이너',
+    phone: '010-1234-5678',
+    email: 'kim@gohair.com',
+    createdAt: '2024-01-15'
+}).then(() => {
+    console.log('✅ 테스트 디자이너 추가됨');
+    location.reload();
+});
+                        `);
+                    } else {
+                        console.log(`✅ designers 컬렉션에 ${snapshot.size}개 문서 존재`);
+                    }
+                })
+                .catch((error) => {
+                    console.log('⚠️ Firestore 읽기 테스트 실패:', error.message);
+                });
+        }
+    } else {
+        console.log('❌ 파이어베이스 연결 실패');
+        
+        const currentUser = document.getElementById('currentUser');
+        if (currentUser && !currentUser.textContent.trim()) {
+            currentUser.textContent = '파이어베이스 연결 실패';
+            currentUser.style.color = '#ef4444'; // 빨간색
+        }
+    }
+    
+    // 1초 후 DesignersManager 확인
+    setTimeout(() => {
+        if (window.designersManager) {
+            console.log('✅ DesignersManager 초기화 완료');
+        } else {
+            console.log('⚠️ DesignersManager 초기화 대기 중...');
+        }
+    }, 1000);
+});
+
+// 에러 발생 시 로그
+window.addEventListener('error', function(e) {
+    console.error('❌ JavaScript 에러:', e.message);
+    console.error('📁 파일:', e.filename);
+    console.error('📍 라인:', e.lineno);
+});
     </script>
 </body>
 </html>
