@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,33 +12,34 @@
     <!-- Firebase CDN -->
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
+    
     <style>
-.period-buttons .period-btn {
-    padding: 0.5rem 0.75rem;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.2s;
-}
+    .period-buttons .period-btn {
+        padding: 0.5rem 0.75rem;
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
 
-.period-buttons .period-btn:hover {
-    background: #f3f4f6;
-    border-color: #9ca3af;
-}
+    .period-buttons .period-btn:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+    }
 
-.period-buttons .period-btn.active {
-    background: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
-}
+    .period-buttons .period-btn.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
 
-.hidden {
-    display: none !important;
-}
-</style>
+    .hidden {
+        display: none !important;
+    }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -70,60 +70,60 @@
             <div class="mb-6">
                 <h2 class="text-2xl font-bold mb-4">📈 디자이너 히스토리</h2>
                 
-<!-- 필터 컨트롤 -->
-<div class="filter-controls">
-    <div class="grid grid-cols-2 gap-6">
-        <!-- 첫 번째 행: 디자이너와 지점 선택 -->
-        <div>
-            <label class="font-medium">👤 디자이너 선택</label>
-            <select id="historyDesigner">
-                <option value="">디자이너를 선택하세요</option>
-            </select>
-        </div>
-        <div>
-            <label class="font-medium">🏢 지점 필터</label>
-            <select id="historyBranch">
-                <option value="">전체 지점</option>
-            </select>
-        </div>
-        
-        <!-- 두 번째 행: 기간 선택과 날짜 범위 -->
-        <div>
-            <label class="font-medium">📅 기간 선택</label>
-            <div class="period-buttons" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.5rem;">
-                <button type="button" class="period-btn" data-period="day">오늘</button>
-                <button type="button" class="period-btn" data-period="week">이번 주</button>
-                <button type="button" class="period-btn active" data-period="month">이번 달</button>
-                <button type="button" class="period-btn" data-period="quarter">이번 분기</button>
-                <button type="button" class="period-btn" data-period="all">전체</button>
-                <button type="button" class="period-btn" data-period="custom">사용자 정의</button>
-            </div>
-        </div>
-        
-        <div>
-            <label class="font-medium">📆 날짜 범위</label>
-            <div id="dateRangeDisplay" style="background: #f3f4f6; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">
-                2024-06-01 ~ 2024-06-30 (이번 달)
-            </div>
-            
-            <!-- 사용자 정의 날짜 입력 (기본적으로 숨김) -->
-            <div id="customDateRange" class="hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                <div>
-                    <label style="font-size: 0.875rem; color: #6b7280;">시작일</label>
-                    <input type="date" id="customStartDate" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
+                <!-- 필터 컨트롤 -->
+                <div class="filter-controls">
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- 첫 번째 행: 디자이너와 지점 선택 -->
+                        <div>
+                            <label class="font-medium">👤 디자이너 선택</label>
+                            <select id="historyDesigner">
+                                <option value="">디자이너를 선택하세요</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="font-medium">🏢 지점 필터</label>
+                            <select id="historyBranch">
+                                <option value="">전체 지점</option>
+                            </select>
+                        </div>
+                        
+                        <!-- 두 번째 행: 기간 선택과 날짜 범위 -->
+                        <div>
+                            <label class="font-medium">📅 기간 선택</label>
+                            <div class="period-buttons" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <button type="button" class="period-btn" data-period="day">오늘</button>
+                                <button type="button" class="period-btn" data-period="week">이번 주</button>
+                                <button type="button" class="period-btn active" data-period="month">이번 달</button>
+                                <button type="button" class="period-btn" data-period="quarter">이번 분기</button>
+                                <button type="button" class="period-btn" data-period="all">전체</button>
+                                <button type="button" class="period-btn" data-period="custom">사용자 정의</button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="font-medium">📆 날짜 범위</label>
+                            <div id="dateRangeDisplay" style="background: #f3f4f6; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">
+                                2024-06-01 ~ 2024-06-30 (이번 달)
+                            </div>
+                            
+                            <!-- 사용자 정의 날짜 입력 (기본적으로 숨김) -->
+                            <div id="customDateRange" class="hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                <div>
+                                    <label style="font-size: 0.875rem; color: #6b7280;">시작일</label>
+                                    <input type="date" id="customStartDate" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.875rem; color: #6b7280;">종료일</label>
+                                    <input type="date" id="customEndDate" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
+                                </div>
+                            </div>
+                            
+                            <button onclick="loadHistory()" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                                🔄 히스토리 조회
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label style="font-size: 0.875rem; color: #6b7280;">종료일</label>
-                    <input type="date" id="customEndDate" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
-                </div>
-            </div>
-            
-            <button onclick="loadHistory()" class="btn" style="width: 100%; margin-top: 0.5rem;">
-                🔄 히스토리 조회
-            </button>
-        </div>
-    </div>
-</div>
             </div>
 
             <div id="historyContent" class="card">
@@ -138,33 +138,11 @@
     <!-- JavaScript Files -->
     <script src="../js/config/firebase.js"></script>
     <script src="../js/utils/data-manager.js"></script>
-    <!-- <script src="../js/utils/auth.js"></script> --> <!-- 임시로 주석 처리 -->
     <script src="../js/utils/ui-utils.js"></script>
     <script src="../js/pages/history.js"></script>
 
-
     <!-- 페이지 네비게이션 함수 -->
-
     <script>
-    // 히스토리 로드 함수
-    function loadHistory() {
-        const designerId = document.getElementById('historyDesigner').value;
-        const period = document.getElementById('historyPeriod').value;
-        
-        if (!designerId) {
-            alert('디자이너를 선택해주세요.');
-            return;
-        }
-        
-        // 임시 히스토리 표시
-        document.getElementById('historyContent').innerHTML = `
-            <h3>📊 ${document.getElementById('historyDesigner').selectedOptions[0].text} 활동 히스토리</h3>
-            <p style="color: #6b7280; margin-top: 1rem;">
-                🚧 히스토리 기능은 개발 중입니다. 곧 업데이트 예정입니다.
-            </p>
-        `;
-    }
-
     function goToMainSystem() {
         window.location.href = '../index.html';
     }
@@ -184,100 +162,59 @@
         }
     }
 
-    // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
-        // 디자이너 목록 로드
-        const designerSelect = document.getElementById('historyDesigner');
-        if (designerSelect) {
-            designerSelect.innerHTML = `
-                <option value="">디자이너를 선택하세요</option>
-                <option value="1">김수현</option>
-                <option value="2">이지민</option>
-                <option value="3">박준호</option>
-                <option value="4">최미영</option>
-                <option value="5">정태윤</option>
-            `;
-        }
-    });
-        document.addEventListener('DOMContentLoaded', function() {
-    console.log('📈 히스토리 페이지 로드 시작');
-    
-    // Firebase 연결 상태 확인
-    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-        console.log('🔥 파이어베이스 연결됨');
+        console.log('📈 히스토리 페이지 로드 시작');
         
-        // 연결 상태를 화면에 표시
-        const currentUser = document.getElementById('currentUser');
-        if (currentUser && !currentUser.textContent.trim()) {
-            currentUser.textContent = '파이어베이스 연결됨';
-            currentUser.style.color = '#10b981'; // 초록색
-        }
-        
-        // Firestore 연결 테스트
-        if (firebase.firestore) {
-            const db = firebase.firestore();
-            console.log('💾 Firestore 연결 확인됨');
+        // Firebase 연결 상태 확인
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            console.log('🔥 파이어베이스 연결됨');
             
-            // 간단한 연결 테스트
-            db.collection('checklists').limit(1).get()
-                .then((snapshot) => {
-                    if (snapshot.empty) {
-                        console.log('📂 checklists 컬렉션이 비어있음 - 테스트 데이터 추가 제안');
-                        console.log('💡 브라우저 콘솔에서 다음 명령을 실행하세요:');
-                        console.log(`
-// 테스트 체크리스트 데이터 추가
-const db = firebase.firestore();
-db.collection('checklists').add({
-    designerId: 'designer_1',
-    designer: '김수현',
-    branch: '송도센트럴점',
-    date: '2024-06-10',
-    naverReviews: 3,
-    naverPosts: 2,
-    naverExperience: 1,
-    instaReels: 4,
-    instaPhotos: 5,
-    notes: '오늘은 고객 반응이 좋았음',
-    createdAt: new Date().toISOString()
-}).then(() => {
-    console.log('✅ 테스트 체크리스트 추가됨');
-    location.reload();
-});
-                        `);
-                    } else {
-                        console.log(`✅ checklists 컬렉션에 ${snapshot.size}개 문서 존재`);
-                    }
-                })
-                .catch((error) => {
-                    console.log('⚠️ Firestore 읽기 테스트 실패:', error.message);
-                });
-        }
-    } else {
-        console.log('❌ 파이어베이스 연결 실패');
-        
-        const currentUser = document.getElementById('currentUser');
-        if (currentUser && !currentUser.textContent.trim()) {
-            currentUser.textContent = '파이어베이스 연결 실패';
-            currentUser.style.color = '#ef4444'; // 빨간색
-        }
-    }
-    
-    // 1초 후 HistoryManager 확인
-    setTimeout(() => {
-        if (window.historyManager) {
-            console.log('✅ HistoryManager 초기화 완료');
+            const currentUser = document.getElementById('currentUser');
+            if (currentUser && !currentUser.textContent.trim()) {
+                currentUser.textContent = '파이어베이스 연결됨';
+                currentUser.style.color = '#10b981';
+            }
+            
+            if (firebase.firestore) {
+                const db = firebase.firestore();
+                console.log('💾 Firestore 연결 확인됨');
+                
+                db.collection('checklists').limit(1).get()
+                    .then((snapshot) => {
+                        if (snapshot.empty) {
+                            console.log('📂 checklists 컬렉션이 비어있음');
+                        } else {
+                            console.log(`✅ checklists 컬렉션에 ${snapshot.size}개 문서 존재`);
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('⚠️ Firestore 읽기 테스트 실패:', error.message);
+                    });
+            }
         } else {
-            console.log('⚠️ HistoryManager 초기화 대기 중...');
+            console.log('❌ 파이어베이스 연결 실패');
+            
+            const currentUser = document.getElementById('currentUser');
+            if (currentUser && !currentUser.textContent.trim()) {
+                currentUser.textContent = '파이어베이스 연결 실패';
+                currentUser.style.color = '#ef4444';
+            }
         }
-    }, 1000);
-});
+        
+        setTimeout(() => {
+            if (window.historyManager) {
+                console.log('✅ HistoryManager 초기화 완료');
+            } else {
+                console.log('⚠️ HistoryManager 초기화 대기 중...');
+            }
+        }, 1000);
+    });
 
-// 에러 발생 시 로그
-window.addEventListener('error', function(e) {
-    console.error('❌ JavaScript 에러:', e.message);
-    console.error('📁 파일:', e.filename);
-    console.error('📍 라인:', e.lineno);
-});
-</script>
+    window.addEventListener('error', function(e) {
+        console.error('❌ JavaScript 에러:', e.message);
+        console.error('📁 파일:', e.filename);
+        console.error('📍 라인:', e.lineno);
+    });
+    </script>
 </body>
 </html>
