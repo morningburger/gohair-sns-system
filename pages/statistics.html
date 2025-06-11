@@ -237,7 +237,24 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📊 통계 페이지 로드 시작');
-            
+            // Firebase 연결 상태 확인
+if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+    console.log('🔥 파이어베이스 연결됨');
+    
+    const currentUser = document.getElementById('currentUser');
+    if (currentUser && !currentUser.textContent.trim()) {
+        currentUser.textContent = '파이어베이스 연결됨';
+        currentUser.style.color = '#10b981';
+    }
+} else {
+    console.log('❌ 파이어베이스 연결 실패');
+    
+    const currentUser = document.getElementById('currentUser');
+    if (currentUser && !currentUser.textContent.trim()) {
+        currentUser.textContent = '파이어베이스 연결 실패';
+        currentUser.style.color = '#ef4444';
+    }
+}
             // 1초 후 StatisticsManager 확인 및 강제 로딩 숨김
             setTimeout(() => {
                 console.log('StatisticsManager 존재 여부:', typeof StatisticsManager);
