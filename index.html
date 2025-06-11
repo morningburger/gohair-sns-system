@@ -251,23 +251,20 @@
     
     <!-- 페이지 네비게이션 함수 -->
     <script>
-        // 다른 페이지로 이동하는 함수
-        function goToPage(pageId) {
-            const pages = {
-                'designers': 'designers.html',
-                'branches': 'branches.html',
-                'history': 'history.html',
-                'checklist': 'checklist.html',
-                'statistics': 'statistics.html',
-                'comparison': 'comparison.html'
-            };
-            
-            if (pages[pageId]) {
-                window.location.href = pages[pageId];
-            } else {
-                console.error('Unknown page:', pageId);
-            }
-        }
+function goToPage(pageId) {
+    const pages = {
+        'designers': 'pages/designers.html',      // pages/ 폴더 추가
+        'branches': 'pages/branches.html',        // pages/ 폴더 추가
+        'checklist': 'pages/checklist.html',      // pages/ 폴더 추가
+        'statistics': 'pages/statistics.html',    // pages/ 폴더 추가
+    };
+    
+    if (pages[pageId]) {
+        window.location.href = pages[pageId];
+    } else {
+        console.error('Unknown page:', pageId);
+    }
+}
     </script>
 </body>
 </html>
