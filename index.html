@@ -252,16 +252,20 @@
     <!-- 페이지 네비게이션 함수 -->
     <script>
 function goToPage(pageId) {
+    // index.html에서 pages 폴더로 이동
     const pages = {
-        'designers': 'pages/designers.html',      // pages/ 폴더 추가
-        'branches': 'pages/branches.html',        // pages/ 폴더 추가
-        'checklist': 'pages/checklist.html',      // pages/ 폴더 추가
-        'statistics': 'pages/statistics.html',    // pages/ 폴더 추가
+        'designers': 'pages/designers.html',
+        'branches': 'pages/branches.html', 
+        'history': 'pages/history.html',
+        'checklist': 'pages/checklist.html',
+        'statistics': 'pages/statistics.html',
+        'comparison': 'pages/comparison.html'
     };
     
     if (pages[pageId]) {
         window.location.href = pages[pageId];
-    } else {
+    }
+} else {
         console.error('Unknown page:', pageId);
     }
 }
