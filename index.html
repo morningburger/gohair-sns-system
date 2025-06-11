@@ -254,13 +254,13 @@
 function goToPage(pageId) {
     // index.html에서 pages 폴더로 이동
     const pages = {
-        'designers': 'pages/designers.html',
-        'branches': 'pages/branches.html', 
-        'history': 'pages/history.html',
-        'checklist': 'pages/checklist.html',
-        'statistics': 'pages/statistics.html',
-        'comparison': 'pages/comparison.html'
-    };
+    'designers': 'designers.html',
+    'branches': 'branches.html',
+    'history': 'history.html',          // 추가!
+    'checklist': 'checklist.html', 
+    'statistics': 'statistics.html',
+    'comparison': 'comparison.html'     // 추가!
+};
     
     if (pages[pageId]) {
         window.location.href = pages[pageId];
