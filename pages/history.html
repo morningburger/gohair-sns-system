@@ -89,58 +89,59 @@
     <!-- 페이지 네비게이션 함수 -->
 
     <script>
-        // 히스토리 로드 함수
-        function loadHistory() {
-            const designerId = document.getElementById('historyDesigner').value;
-            const period = document.getElementById('historyPeriod').value;
-            
-            if (!designerId) {
-                alert('디자이너를 선택해주세요.');
-                return;
-            }
-            
-            // 임시 히스토리 표시
-            document.getElementById('historyContent').innerHTML = `
-                <h3>📊 ${document.getElementById('historyDesigner').selectedOptions[0].text} 활동 히스토리</h3>
-                <p style="color: #6b7280; margin-top: 1rem;">
-                    🚧 히스토리 기능은 개발 중입니다. 곧 업데이트 예정입니다.
-                </p>
+    // 히스토리 로드 함수
+    function loadHistory() {
+        const designerId = document.getElementById('historyDesigner').value;
+        const period = document.getElementById('historyPeriod').value;
+        
+        if (!designerId) {
+            alert('디자이너를 선택해주세요.');
+            return;
+        }
+        
+        // 임시 히스토리 표시
+        document.getElementById('historyContent').innerHTML = `
+            <h3>📊 ${document.getElementById('historyDesigner').selectedOptions[0].text} 활동 히스토리</h3>
+            <p style="color: #6b7280; margin-top: 1rem;">
+                🚧 히스토리 기능은 개발 중입니다. 곧 업데이트 예정입니다.
+            </p>
+        `;
+    }
+
+    function goToMainSystem() {
+        window.location.href = '../index.html';
+    }
+    
+    function goToPage(pageId) {
+        const pages = {
+            'designers': 'designers.html',
+            'branches': 'branches.html',
+            'history': 'history.html',
+            'checklist': 'checklist.html', 
+            'statistics': 'statistics.html',
+            'comparison': 'comparison.html'
+        };
+        
+        if (pages[pageId]) {
+            window.location.href = pages[pageId];
+        }
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        // 디자이너 목록 로드
+        const designerSelect = document.getElementById('historyDesigner');
+        if (designerSelect) {
+            designerSelect.innerHTML = `
+                <option value="">디자이너를 선택하세요</option>
+                <option value="1">김수현</option>
+                <option value="2">이지민</option>
+                <option value="3">박준호</option>
+                <option value="4">최미영</option>
+                <option value="5">정태윤</option>
             `;
         }
-
-function goToMainSystem() {
-    window.location.href = '../index.html';  // 상위 폴더로 이동
-}
-        function goToPage(pageId) {
-            const pages = {
-    'designers': 'designers.html',
-    'branches': 'branches.html',
-    'history': 'history.html',          // 추가!
-    'checklist': 'checklist.html', 
-    'statistics': 'statistics.html',
-    'comparison': 'comparison.html'     // 추가!
-};
-            
-            if (pages[pageId]) {
-                window.location.href = pages[pageId];
-            }
-        }
-
-        // 페이지 로드 시 초기화
-                    // 디자이너 목록 로드 (임시)
-                    const designerSelect = document.getElementById('historyDesigner');
-                    designerSelect.innerHTML = `
-                        <option value="">디자이너를 선택하세요</option>
-                        <option value="1">김디자이너</option>
-                        <option value="2">이디자이너</option>
-                        <option value="3">박디자이너</option>
-                    `;
-                } else {
-                    window.location.href = '../index.html';
-                }
-            }, 500);
-    
-        });
-    </script>
+    });
+</script>
 </body>
 </html>
