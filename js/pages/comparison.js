@@ -1202,14 +1202,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-console.log('✅ 비교 페이지 스크립트 로딩 완료');Category === 'all' || this.currentCategory === 'reviews') {
-                    acc.reviews += parseInt(c.naverReviews) || 0;
-                }
-                if (this.currentCategory === 'all' || this.currentCategory === 'posts') {
-                    acc.posts += parseInt(c.naverPosts) || 0;
-                }
-                if (this.currentCategory === 'all' || this.currentCategory === 'experience') {
-                    acc.experience += parseInt(c.naverExperience) || 0;
-                }
-                if (this.current
+console.log('✅ 비교 페이지 스크립트 로딩 완료');
