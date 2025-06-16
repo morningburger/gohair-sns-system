@@ -163,52 +163,61 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('📈 히스토리 페이지 로드 시작');
-        
-        // Firebase 연결 상태 확인
-        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-            console.log('🔥 파이어베이스 연결됨');
+    console.log('📈 히스토리 페이지 로드 시작');
+    
+    // 사용자 권한에 따른 네비게이션 메뉴 제어
+    function setupNavigationByRole() {
+        try {
+            const userData = sessionStorage.getItem('currentUser');
+            const currentUser = userData ? JSON.parse(userData) : null;
             
-            const currentUser = document.getElementById('currentUser');
-            if (currentUser && !currentUser.textContent.trim()) {
-                currentUser.textContent = '파이어베이스 연결됨';
-                currentUser.style.color = '#10b981';
-            }
+            console.log('현재 사용자:', currentUser);
             
-            if (firebase.firestore) {
-                const db = firebase.firestore();
-                console.log('💾 Firestore 연결 확인됨');
+            if (currentUser && currentUser.role === '지점관리자') {
+                // 지점관리자는 지점 관리 메뉴 숨김
+                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
+                if (branchNavBtn) {
+                    branchNavBtn.style.display = 'none';
+                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
+                }
                 
-                db.collection('checklists').limit(1).get()
-                    .then((snapshot) => {
-                        if (snapshot.empty) {
-                            console.log('📂 checklists 컬렉션이 비어있음');
-                        } else {
-                            console.log(`✅ checklists 컬렉션에 ${snapshot.size}개 문서 존재`);
-                        }
-                    })
-                    .catch((error) => {
-                        console.log('⚠️ Firestore 읽기 테스트 실패:', error.message);
-                    });
+                // 사용자 정보 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
+                    userElement.style.color = '#3b82f6';
+                }
+            } else if (currentUser && currentUser.role === '전체관리자') {
+                // 전체관리자는 모든 메뉴 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    userElement.textContent = `${currentUser.name} (${currentUser.role})`;
+                    userElement.style.color = '#059669';
+                }
             }
-        } else {
-            console.log('❌ 파이어베이스 연결 실패');
-            
-            const currentUser = document.getElementById('currentUser');
-            if (currentUser && !currentUser.textContent.trim()) {
-                currentUser.textContent = '파이어베이스 연결 실패';
-                currentUser.style.color = '#ef4444';
-            }
+        } catch (error) {
+            console.error('네비게이션 권한 설정 오류:', error);
         }
-        
-        setTimeout(() => {
-            if (window.historyManager) {
-                console.log('✅ HistoryManager 초기화 완료');
-            } else {
-                console.log('⚠️ HistoryManager 초기화 대기 중...');
-            }
-        }, 1000);
-    });
+    }
+
+    // 네비게이션 설정 실행
+    setupNavigationByRole();
+    
+    // Firebase 연결 상태 확인
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        console.log('🔥 파이어베이스 연결됨');
+    } else {
+        console.log('❌ 파이어베이스 연결 실패');
+    }
+    
+    setTimeout(() => {
+        if (window.historyManager) {
+            console.log('✅ HistoryManager 초기화 완료');
+        } else {
+            console.log('⚠️ HistoryManager 초기화 대기 중...');
+        }
+    }, 1000);
+});
 
     window.addEventListener('error', function(e) {
         console.error('❌ JavaScript 에러:', e.message);
