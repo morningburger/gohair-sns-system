@@ -361,27 +361,24 @@ container.innerHTML = `
         }
     }
 
-    // 날짜 선택기 초기화
-    initializeDatePicker() {
-        const today = new Date();
-        this.customStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // 이번 달 1일
-        this.customEndDate = new Date(today); // 오늘
-        
-        // 날짜 입력 필드 초기화
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
-        
-        if (startDateInput && endDateInput) {
-            startDateInput.value = this.customStartDate.toISOString().split('T')[0];
-            endDateInput.value = this.customEndDate.toISOString().split('T')[0];
-        }
-    }
-
-    // 기간 변경 처리
 // 날짜 선택기 초기화
 initializeDatePicker() {
     // 초기 기간 설정 (이번 달)
     this.updateDateRangeByPeriod('month');
+}
+
+    // 기간 변경 처리
+handlePeriodChange() {
+    const period = document.getElementById('comparisonPeriod').value;
+    const dateInputGroup = document.getElementById('dateInputGroup');
+    
+    this.currentPeriod = period;
+    
+    // 모든 기간에서 캘린더 표시
+    dateInputGroup.style.display = 'flex';
+    
+    // 선택된 기간에 따라 날짜 자동 설정
+    this.updateDateRangeByPeriod(period);
 }
 
     // 기간별 날짜 범위 업데이트
