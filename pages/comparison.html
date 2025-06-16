@@ -242,12 +242,12 @@
                                             <option value="custom">사용자 지정</option>
                                         </select>
                                         
-                                        <div class="date-input-group" id="dateInputGroup" style="display: none;">
-                                            <input type="date" id="startDate" class="date-input" onchange="updateDateRange()">
-                                            <span>~</span>
-                                            <input type="date" id="endDate" class="date-input" onchange="updateDateRange()">
-                                            <button class="calendar-toggle" onclick="toggleCalendar()">📅</button>
-                                        </div>
+<div class="date-input-group" id="dateInputGroup" style="display: flex;">
+    <input type="date" id="startDate" class="date-input" onchange="updateDateRange()">
+    <span>~</span>
+    <input type="date" id="endDate" class="date-input" onchange="updateDateRange()">
+    <button class="calendar-toggle" onclick="toggleCalendar()">📅</button>
+</div>
                                         
                                         <div class="calendar-container" id="calendarContainer">
                                             <div class="quick-select">
