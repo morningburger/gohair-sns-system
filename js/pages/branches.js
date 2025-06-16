@@ -22,19 +22,46 @@ class BranchesManager {
         };
     }
 
+    // 사용자 권한에 따른 데이터 필터링
+    filterDataByUserRole(data, branchField = 'branch') {
+        try {
+            const userData = sessionStorage.getItem('currentUser');
+            const currentUser = userData ? JSON.parse(userData) : null;
+            
+            if (!currentUser || currentUser.role === '전체관리자') {
+                return data; // 전체관리자는 모든 데이터 접근
+            }
+            
+            if (currentUser.role === '지점관리자') {
+                const userBranch = currentUser.branch || currentUser.branchName;
+                const filteredData = data.filter(item => {
+                    const itemBranch = item[branchField] || item.branchName || item.selectedBranch || item.name;
+                    return itemBranch === userBranch;
+                });
+                
+                console.log(`🔒 지점관리자 필터링: ${userBranch} - ${data.length}개 → ${filteredData.length}개`);
+                return filteredData;
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('데이터 필터링 오류:', error);
+            return data;
+        }
+    }
+
     // 페이지 초기화
     async initialize() {
         try {
             // 사용자 정보 확인
             this.currentUser = this.getCurrentUser();
             this.updateUserDisplay();
-            /*
-            // 관리자 권한 확인
-            if (!this.isAdmin()) {
-                this.redirectToMain();
-                return;
+            
+            // 지점관리자 권한 확인
+            if (this.currentUser && this.currentUser.role === '지점관리자') {
+                console.log('🔒 지점관리자 접근 - 본인 지점만 표시');
             }
-            */
+            
             // 데이터 로드
             await this.loadAllData();
             
@@ -62,7 +89,7 @@ class BranchesManager {
 
     // 관리자 권한 확인
     isAdmin() {
-        return this.currentUser && this.currentUser.role === 'admin';
+        return this.currentUser && (this.currentUser.role === '전체관리자' || this.currentUser.role === '지점관리자');
     }
 
     // 메인으로 리다이렉트
@@ -72,261 +99,164 @@ class BranchesManager {
     }
 
     // 사용자 표시 업데이트
-updateUserDisplay() {
-    const userElement = document.getElementById('currentUser');
-    if (userElement) {
-        // 강제로 Firebase 연결 상태 표시
-        userElement.textContent = 'Firebase 연결됨';
-        userElement.style.color = '#10b981';
-        userElement.style.fontWeight = '500';
-        
-        console.log('✅ "Firebase 연결됨" 표시 완료');
+    updateUserDisplay() {
+        const userElement = document.getElementById('currentUser');
+        if (userElement) {
+            // 강제로 Firebase 연결 상태 표시
+            userElement.textContent = 'Firebase 연결됨';
+            userElement.style.color = '#10b981';
+            userElement.style.fontWeight = '500';
+            
+            console.log('✅ "Firebase 연결됨" 표시 완료');
+        }
     }
-}
 
     // 데이터 로드
     async loadAllData() {
-    try {
-        console.log('📊 실제 Firebase 데이터 로딩 시작...');
-        
-        // Firebase에서 실제 데이터 로딩
-        this.data.branches = await this.loadBranchesFromFirebase();
-        this.data.designers = await this.loadDesignersFromFirebase();
-        this.data.checklists = await this.loadChecklistsFromFirebase();
-        
-        console.log('✅ 모든 데이터 로딩 완료');
-        console.log('📊 로딩된 데이터 요약:');
-        console.log(`- 지점: ${this.data.branches.length}개`);
-        console.log(`- 디자이너: ${this.data.designers.length}개`);
-        console.log(`- 체크리스트: ${this.data.checklists.length}개`);
-        
-    } catch (error) {
-        console.error('❌ 데이터 로딩 중 오류:', error);
-        throw error;
-    }
-}
-
-    // 샘플 지점 데이터 생성
-    generateSampleBranches() {
-        const branches = [
-            {
-                id: 1, docId: 'branch_1', name: '송도센트럴점', code: 'SD01',
-                address: '인천시 연수구 송도과학로 32', phone: '032-850-1234',
-                manager: '김점장', hours: '09:00 - 21:00',
-                createdAt: '2024-01-15', notes: '신도시 중심가 위치, 접근성 우수'
-            },
-            {
-                id: 2, docId: 'branch_2', name: '검단테라스점', code: 'GD01',
-                address: '인천시 서구 검단신도시로 123', phone: '032-567-8901',
-                manager: '이점장', hours: '10:00 - 21:30',
-                createdAt: '2024-02-01', notes: '대형 쇼핑몰 내 위치'
-            },
-            {
-                id: 3, docId: 'branch_3', name: '부평점', code: 'BP01',
-                address: '인천시 부평구 부평대로 456', phone: '032-345-6789',
-                manager: '박점장', hours: '09:30 - 21:00',
-                createdAt: '2024-01-20', notes: '전통 상권, 고정 고객층 보유'
-            },
-            {
-                id: 4, docId: 'branch_4', name: '인천논현점', code: 'IC01',
-                address: '인천시 남동구 논현동 789', phone: '032-123-4567',
-                manager: '최점장', hours: '10:00 - 22:00',
-                createdAt: '2024-03-01', notes: '신규 오픈, 홍보 집중 필요'
-            },
-            {
-                id: 5, docId: 'branch_5', name: '청라국제점', code: 'CL01',
-                address: '인천시 서구 청라국제로 321', phone: '032-987-6543',
-                manager: '정점장', hours: '09:00 - 21:30',
-                createdAt: '2024-02-15', notes: '국제업무지구, 외국인 고객 다수'
-            }
-        ];
-        return branches;
-    }
-
-    // 샘플 디자이너 데이터 생성
-    generateSampleDesigners() {
-        const branches = ['송도센트럴점', '검단테라스점', '부평점', '인천논현점', '청라국제점'];
-        const positions = ['인턴', '디자이너', '팀장', '실장'];
-        const names = ['김수현', '이지민', '박준호', '최미영', '정태윤', '한소희', '오민석', '신예은', '윤서연', '장도현'];
-        
-        return names.map((name, index) => ({
-            id: index + 1,
-            name: name,
-            branch: branches[Math.floor(Math.random() * branches.length)],
-            position: positions[Math.floor(Math.random() * positions.length)],
-            phone: `010-${String(Math.floor(Math.random() * 9000) + 1000)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
-            createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        }));
-    }
-
-    // 샘플 체크리스트 데이터 생성
-    generateSampleChecklists() {
-        const data = [];
-        const designers = this.data.designers || this.generateSampleDesigners();
-        
-        designers.forEach(designer => {
-            const recordCount = Math.floor(Math.random() * 20) + 10; // 10-29개 기록
+        try {
+            console.log('📊 실제 Firebase 데이터 로딩 시작...');
             
-            for (let i = 0; i < recordCount; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() - Math.floor(Math.random() * 60)); // 최근 60일
-                
-                data.push({
-                    id: `checklist_${designer.id}_${i}`,
-                    designerId: designer.id,
-                    designer: designer.name,
-                    branch: designer.branch,
-                    date: date.toISOString().split('T')[0],
-                    naverReviews: Math.floor(Math.random() * 8),
-                    naverPosts: Math.floor(Math.random() * 4),
-                    naverExperience: Math.floor(Math.random() * 2),
-                    instaReels: Math.floor(Math.random() * 6),
-                    instaPhotos: Math.floor(Math.random() * 10)
-                });
+            // Firebase에서 실제 데이터 로딩
+            this.data.branches = await this.loadBranchesFromFirebase();
+            this.data.designers = await this.loadDesignersFromFirebase();
+            this.data.checklists = await this.loadChecklistsFromFirebase();
+            
+            // 사용자 권한에 따른 데이터 필터링 적용
+            this.data.branches = this.filterDataByUserRole(this.data.branches, 'name');
+            this.data.designers = this.filterDataByUserRole(this.data.designers, 'branch');
+            this.data.checklists = this.filterDataByUserRole(this.data.checklists, 'branch');
+
+            console.log('✅ 모든 데이터 로딩 완료');
+            console.log('🔒 권한별 필터링 후 데이터:');
+            console.log(`- 지점: ${this.data.branches.length}개`);
+            console.log(`- 디자이너: ${this.data.designers.length}개`);
+            console.log(`- 체크리스트: ${this.data.checklists.length}개`);
+            
+        } catch (error) {
+            console.error('❌ 데이터 로딩 중 오류:', error);
+            throw error;
+        }
+    }
+
+    // 🏢 실제 지점 데이터 로딩
+    async loadBranchesFromFirebase() {
+        try {
+            console.log('🏢 지점 데이터 로딩 중...');
+            
+            if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+                console.warn('⚠️ Firebase가 초기화되지 않음');
+                return [];
             }
-        });
-        
-        return data;
-    }
-// 🏢 실제 지점 데이터 로딩
-async loadBranchesFromFirebase() {
-    try {
-        console.log('🏢 지점 데이터 로딩 중...');
-        
-        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
-            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
-            return this.generateSampleBranches();
-        }
 
-        const db = firebase.firestore();
-        const snapshot = await db.collection('branches').get();
-        
-        const branches = [];
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            branches.push({
-                id: doc.id,
-                docId: doc.id,
-                name: data.name || '',
-                code: data.code || '',
-                address: data.address || '',
-                phone: data.phone || '',
-                manager: data.manager || '',
-                hours: data.hours || '',
-                notes: data.notes || '',
-                createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+            const db = firebase.firestore();
+            const snapshot = await db.collection('branches').get();
+            
+            const branches = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                branches.push({
+                    id: doc.id,
+                    docId: doc.id,
+                    name: data.name || '',
+                    code: data.code || '',
+                    address: data.address || '',
+                    phone: data.phone || '',
+                    manager: data.manager || '',
+                    hours: data.hours || '',
+                    notes: data.notes || '',
+                    createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+                });
             });
-        });
-        
-        console.log(`✅ 지점 데이터 로딩 완료: ${branches.length}개`);
-        
-        if (branches.length === 0) {
-            console.log('📝 Firebase에 지점 데이터가 없음 - 임시 데이터 사용');
-            return this.generateSampleBranches();
+            
+            console.log(`✅ 지점 데이터 로딩 완료: ${branches.length}개`);
+            return branches;
+        } catch (error) {
+            console.error('❌ 지점 데이터 로딩 실패:', error);
+            return [];
         }
-        
-        return branches;
-    } catch (error) {
-        console.error('❌ 지점 데이터 로딩 실패:', error);
-        console.log('📝 오류로 인해 임시 데이터 사용');
-        return this.generateSampleBranches();
     }
-}
 
-// 👥 실제 디자이너 데이터 로딩  
-async loadDesignersFromFirebase() {
-    try {
-        console.log('👥 디자이너 데이터 로딩 중...');
-        
-        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
-            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
-            return this.generateSampleDesigners();
-        }
+    // 👥 실제 디자이너 데이터 로딩  
+    async loadDesignersFromFirebase() {
+        try {
+            console.log('👥 디자이너 데이터 로딩 중...');
+            
+            if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+                console.warn('⚠️ Firebase가 초기화되지 않음');
+                return [];
+            }
 
-        const db = firebase.firestore();
-        const snapshot = await db.collection('designers').get();
-        
-        const designers = [];
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            designers.push({
-                id: doc.id,
-                docId: doc.id,
-                name: data.name || '',
-                branch: data.branch || '',
-                position: data.position || '',
-                phone: data.phone || '',
-                email: data.email || '',
-                notes: data.notes || '',
-                createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+            const db = firebase.firestore();
+            const snapshot = await db.collection('designers').get();
+            
+            const designers = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                designers.push({
+                    id: doc.id,
+                    docId: doc.id,
+                    name: data.name || '',
+                    branch: data.branch || '',
+                    position: data.position || '',
+                    phone: data.phone || '',
+                    email: data.email || '',
+                    notes: data.notes || '',
+                    createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+                });
             });
-        });
-        
-        console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
-        
-        if (designers.length === 0) {
-            console.log('📝 Firebase에 디자이너 데이터가 없음 - 임시 데이터 사용');
-            return this.generateSampleDesigners();
+            
+            console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
+            return designers;
+        } catch (error) {
+            console.error('❌ 디자이너 데이터 로딩 실패:', error);
+            return [];
         }
-        
-        return designers;
-    } catch (error) {
-        console.error('❌ 디자이너 데이터 로딩 실패:', error);
-        console.log('📝 오류로 인해 임시 데이터 사용');
-        return this.generateSampleDesigners();
     }
-}
 
-// 📋 실제 체크리스트 데이터 로딩
-async loadChecklistsFromFirebase() {
-    try {
-        console.log('📋 체크리스트 데이터 로딩 중...');
-        
-        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
-            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
-            return this.generateSampleChecklists();
-        }
+    // 📋 실제 체크리스트 데이터 로딩
+    async loadChecklistsFromFirebase() {
+        try {
+            console.log('📋 체크리스트 데이터 로딩 중...');
+            
+            if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+                console.warn('⚠️ Firebase가 초기화되지 않음');
+                return [];
+            }
 
-        const db = firebase.firestore();
-        const snapshot = await db.collection('checklists')
-            .orderBy('date', 'desc')
-            .limit(500)
-            .get();
-        
-        const checklists = [];
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            checklists.push({
-                id: doc.id,
-                docId: doc.id,
-                designerId: data.designerId || '',
-                designer: data.designer || '',
-                branch: data.branch || '',
-                date: data.date || '',
-                naverReviews: data.naverReviews || 0,
-                naverPosts: data.naverPosts || 0,
-                naverExperience: data.naverExperience || 0,
-                instaReels: data.instaReels || 0,
-                instaPhotos: data.instaPhotos || 0,
-                notes: data.notes || '',
-                createdAt: data.createdAt || new Date().toISOString()
+            const db = firebase.firestore();
+            const snapshot = await db.collection('checklists')
+                .orderBy('date', 'desc')
+                .limit(500)
+                .get();
+            
+            const checklists = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                checklists.push({
+                    id: doc.id,
+                    docId: doc.id,
+                    designerId: data.designerId || '',
+                    designer: data.designer || '',
+                    branch: data.branch || '',
+                    date: data.date || '',
+                    naverReviews: data.naverReviews || 0,
+                    naverPosts: data.naverPosts || 0,
+                    naverExperience: data.naverExperience || 0,
+                    instaReels: data.instaReels || 0,
+                    instaPhotos: data.instaPhotos || 0,
+                    notes: data.notes || '',
+                    createdAt: data.createdAt || new Date().toISOString()
+                });
             });
-        });
-        
-        console.log(`✅ 체크리스트 데이터 로딩 완료: ${checklists.length}개`);
-        
-        if (checklists.length === 0) {
-            console.log('📝 Firebase에 체크리스트 데이터가 없음 - 임시 데이터 사용');
-            return this.generateSampleChecklists();
+            
+            console.log(`✅ 체크리스트 데이터 로딩 완료: ${checklists.length}개`);
+            return checklists;
+        } catch (error) {
+            console.error('❌ 체크리스트 데이터 로딩 실패:', error);
+            return [];
         }
-        
-        return checklists;
-    } catch (error) {
-        console.error('❌ 체크리스트 데이터 로딩 실패:', error);
-        console.log('📝 오류로 인해 임시 데이터 사용');
-        return this.generateSampleChecklists();
     }
-}
+
     // 지점 목록 로드
     loadBranches() {
         let branches = [...this.data.branches];
@@ -770,15 +700,17 @@ async loadChecklistsFromFirebase() {
                 return;
             }
 
-            // 실제로는 Firebase에 저장
-            const newBranch = {
-                id: Date.now(),
-                docId: `branch_${Date.now()}`,
-                ...formData,
-                createdAt: new Date().toISOString().split('T')[0]
-            };
-
-            this.data.branches.push(newBranch);
+            // Firebase에 저장
+            if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                const db = firebase.firestore();
+                await db.collection('branches').add({
+                    ...formData,
+                    createdAt: new Date().toISOString().split('T')[0]
+                });
+                
+                // 데이터 다시 로드
+                await this.loadAllData();
+            }
             
             this.hideAddBranch();
             this.loadBranches();
@@ -812,13 +744,13 @@ async loadChecklistsFromFirebase() {
                 return;
             }
 
-            // 실제로는 Firebase에서 업데이트
-            const branchIndex = this.data.branches.findIndex(b => b.docId === docId);
-            if (branchIndex !== -1) {
-                this.data.branches[branchIndex] = {
-                    ...this.data.branches[branchIndex],
-                    ...formData
-                };
+            // Firebase에서 업데이트
+            if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                const db = firebase.firestore();
+                await db.collection('branches').doc(docId).update(formData);
+                
+                // 데이터 다시 로드
+                await this.loadAllData();
             }
 
             this.hideEditBranch();
@@ -983,8 +915,14 @@ async loadChecklistsFromFirebase() {
 
         if (confirm(confirmMessage)) {
             try {
-                // 실제로는 Firebase에서 삭제
-                this.data.branches = this.data.branches.filter(b => b.docId !== docId);
+                // Firebase에서 삭제
+                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                    const db = firebase.firestore();
+                    await db.collection('branches').doc(docId).delete();
+                    
+                    // 데이터 다시 로드
+                    await this.loadAllData();
+                }
                 
                 this.loadBranches();
                 this.showNotification('지점이 삭제되었습니다.', 'success');
@@ -999,7 +937,7 @@ async loadChecklistsFromFirebase() {
     exportBranches() {
         const branches = this.calculateBranchPerformance([...this.data.branches]);
         
-        let csvContent = "지점명,지점코드,주소,전화번호,점장,운영시간,디자이너수,월간성과,등록일\n";
+        let csvContent = "\ufeff지점명,지점코드,주소,전화번호,점장,운영시간,디자이너수,월간성과,등록일\n";
         
         branches.forEach(b => {
             csvContent += `${b.name},${b.code},"${b.address}",${b.phone || ''},${b.manager || ''},${b.hours || ''},${b.designerCount},${b.totalPerformance},${b.createdAt}\n`;
