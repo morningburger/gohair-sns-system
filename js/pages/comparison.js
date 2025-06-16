@@ -73,6 +73,8 @@ class ComparisonManager {
     // 데이터 로드
     async loadAllData() {
         try {
+            console.log('🔄 Firebase 데이터 로딩 시작...');
+            
             if (!firebase.firestore) {
                 throw new Error('Firestore가 초기화되지 않았습니다');
             }
@@ -80,25 +82,41 @@ class ComparisonManager {
             const db = firebase.firestore();
             
             // 지점 데이터 로드
+            console.log('📍 지점 데이터 로딩 중...');
             const branchesSnapshot = await db.collection('branches').get();
             this.data.branches = branchesSnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
+            console.log('✅ 지점 데이터 로드 완료:', this.data.branches.length, '개');
             
             // 디자이너 데이터 로드
+            console.log('👥 디자이너 데이터 로딩 중...');
             const designersSnapshot = await db.collection('designers').get();
             this.data.designers = designersSnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
+            console.log('✅ 디자이너 데이터 로드 완료:', this.data.designers.length, '명');
             
             // 체크리스트 데이터 로드
+            console.log('📋 체크리스트 데이터 로딩 중...');
             const checklistsSnapshot = await db.collection('checklists').get();
-            this.data.checklists = checklistsSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            this.data.checklists = checklistsSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    // 날짜 형식 통일 (Firestore timestamp를 문자열로 변환)
+                    date: data.date ? (data.date.toDate ? data.date.toDate().toISOString().split('T')[0] : data.date) : null
+                };
+            });
+            console.log('✅ 체크리스트 데이터 로드 완료:', this.data.checklists.length, '건');
+            
+            // 데이터 샘플 출력 (디버깅용)
+            if (this.data.checklists.length > 0) {
+                console.log('📋 체크리스트 샘플:', this.data.checklists[0]);
+            }
             
             console.log('⚖️ Firebase 데이터 로드 완료:', {
                 branches: this.data.branches.length,
@@ -109,7 +127,8 @@ class ComparisonManager {
         } catch (error) {
             console.error('❌ Firebase 데이터 로딩 오류:', error);
             
-            // 오류 시 임시 데이터 사용
+            // 오류 시 임시 데이터 사용 (개발용)
+            console.log('🔄 임시 데이터로 대체합니다...');
             this.data.branches = [
                 { id: '1', name: '송도1지점', location: '송도' },
                 { id: '2', name: '검단테라스점', location: '검단' },
@@ -118,8 +137,46 @@ class ComparisonManager {
                 { id: '5', name: '강남점', location: '강남' }
             ];
             
+            // 임시 체크리스트 데이터 생성
+            this.data.checklists = this.generateSampleChecklists();
+            this.data.designers = [];
+            
             console.log('🔄 임시 데이터로 진행합니다');
         }
+    }
+
+    // 샘플 체크리스트 데이터 생성 (Firebase 연결 실패 시)
+    generateSampleChecklists() {
+        const sampleData = [];
+        const branches = ['송도1지점', '검단테라스점', '부평점', '인천점', '강남점'];
+        const today = new Date();
+        
+        // 최근 30일간의 데이터 생성
+        for (let i = 0; i < 30; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() - i);
+            const dateString = date.toISOString().split('T')[0];
+            
+            branches.forEach(branch => {
+                // 일부 날짜는 건너뛰어서 실제적인 데이터 패턴 생성
+                if (Math.random() > 0.3) {
+                    sampleData.push({
+                        id: `sample_${branch}_${i}`,
+                        branch: branch,
+                        date: dateString,
+                        naverReviews: Math.floor(Math.random() * 5),
+                        naverPosts: Math.floor(Math.random() * 3),
+                        naverExperience: Math.floor(Math.random() * 2),
+                        instaReels: Math.floor(Math.random() * 4),
+                        instaPhotos: Math.floor(Math.random() * 6),
+                        designer: `디자이너${Math.floor(Math.random() * 3) + 1}`
+                    });
+                }
+            });
+        }
+        
+        console.log('📋 샘플 체크리스트 생성 완료:', sampleData.length, '건');
+        return sampleData;
     }
 
     // 지점 체크박스 설정
@@ -231,6 +288,8 @@ class ComparisonManager {
         this.selectedBranches = Array.from(document.querySelectorAll('#branchCheckboxes input[type="checkbox"]:checked'))
             .map(cb => cb.value);
         
+        console.log('📍 선택된 지점들:', this.selectedBranches);
+        
         if (this.selectedBranches.length === 0) {
             alert('비교할 지점을 선택해주세요.');
             return;
@@ -238,6 +297,13 @@ class ComparisonManager {
 
         this.currentPeriod = document.getElementById('comparisonPeriod').value;
         this.currentCategory = document.getElementById('comparisonCategory').value;
+        
+        console.log('⚙️ 설정된 옵션:', {
+            period: this.currentPeriod,
+            category: this.currentCategory,
+            startDate: this.customStartDate?.toISOString().split('T')[0],
+            endDate: this.customEndDate?.toISOString().split('T')[0]
+        });
         
         // 사용자 지정 기간인 경우 날짜 업데이트
         if (this.currentPeriod === 'custom') {
@@ -276,16 +342,37 @@ class ComparisonManager {
             </style>
         `;
 
-        // 약간의 지연 후 결과 표시
+        // 실제 데이터 분석 실행
         setTimeout(() => {
-            this.displayComparison();
-            
-            // 버튼 복구
-            if (updateBtn) {
-                updateBtn.disabled = false;
-                updateBtn.innerHTML = '🔄 비교 차트 업데이트';
+            try {
+                console.log('📊 데이터 분석 시작...');
+                this.displayComparison();
+                
+                // 버튼 복구
+                if (updateBtn) {
+                    updateBtn.disabled = false;
+                    updateBtn.innerHTML = '🔄 비교 차트 업데이트';
+                }
+                console.log('✅ 비교 분석 완료');
+            } catch (error) {
+                console.error('❌ 비교 분석 오류:', error);
+                
+                // 에러 표시
+                document.getElementById('comparisonResult').innerHTML = `
+                    <div class="text-center" style="padding: 3rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+                        <p style="color: #dc2626;">분석 중 오류가 발생했습니다: ${error.message}</p>
+                        <button onclick="window.comparisonManager.updateComparison()" class="btn" style="margin-top: 1rem;">다시 시도</button>
+                    </div>
+                `;
+                
+                // 버튼 복구
+                if (updateBtn) {
+                    updateBtn.disabled = false;
+                    updateBtn.innerHTML = '🔄 비교 차트 업데이트';
+                }
             }
-        }, 1500);
+        }, 800);
     }
 
     // 비교 결과 표시
@@ -419,31 +506,51 @@ class ComparisonManager {
         const branchData = this.selectedBranches.map(branchName => {
             const filteredChecklists = this.getFilteredChecklists(branchName);
             
+            console.log(`📊 ${branchName} 필터링된 체크리스트:`, filteredChecklists.length, '건');
+            
+            // 실제 Firebase 데이터 사용
             const stats = filteredChecklists.reduce((acc, c) => {
-                acc.reviews += c.naverReviews || 0;
-                acc.posts += c.naverPosts || 0;
-                acc.experience += c.naverExperience || 0;
-                acc.reels += c.instaReels || 0;
-                acc.photos += c.instaPhotos || 0;
+                // 카테고리 필터링 적용
+                if (this.currentCategory === 'all' || this.currentCategory === 'reviews') {
+                    acc.reviews += parseInt(c.naverReviews) || 0;
+                }
+                if (this.currentCategory === 'all' || this.currentCategory === 'posts') {
+                    acc.posts += parseInt(c.naverPosts) || 0;
+                }
+                if (this.currentCategory === 'all' || this.currentCategory === 'experience') {
+                    acc.experience += parseInt(c.naverExperience) || 0;
+                }
+                if (this.currentCategory === 'all' || this.currentCategory === 'reels') {
+                    acc.reels += parseInt(c.instaReels) || 0;
+                }
+                if (this.currentCategory === 'all' || this.currentCategory === 'photos') {
+                    acc.photos += parseInt(c.instaPhotos) || 0;
+                }
                 return acc;
             }, { reviews: 0, posts: 0, experience: 0, reels: 0, photos: 0 });
 
-            // 임시 데이터 생성 (실제 환경에서는 위의 stats 사용)
-            const mockStats = {
-                reviews: Math.floor(Math.random() * 50) + 10,
-                posts: Math.floor(Math.random() * 30) + 5,
-                experience: Math.floor(Math.random() * 20) + 3,
-                reels: Math.floor(Math.random() * 40) + 8,
-                photos: Math.floor(Math.random() * 60) + 15
-            };
+            // 데이터가 없는 경우 샘플 데이터 생성 (개발/테스트용)
+            if (this.data.checklists.length === 0) {
+                console.log('⚠️ 체크리스트 데이터가 없어 샘플 데이터를 생성합니다.');
+                const sampleStats = {
+                    reviews: Math.floor(Math.random() * 30) + 5,
+                    posts: Math.floor(Math.random() * 20) + 3,
+                    experience: Math.floor(Math.random() * 15) + 2,
+                    reels: Math.floor(Math.random() * 25) + 4,
+                    photos: Math.floor(Math.random() * 40) + 10
+                };
+                Object.assign(stats, sampleStats);
+            }
 
-            const total = mockStats.reviews + mockStats.posts + mockStats.experience + mockStats.reels + mockStats.photos;
+            const total = stats.reviews + stats.posts + stats.experience + stats.reels + stats.photos;
             const days = this.getDaysInPeriod();
             const dailyAverage = days > 0 ? Math.round((total / days) * 10) / 10 : 0;
 
+            console.log(`📈 ${branchName} 통계:`, stats, `총합: ${total}, 일평균: ${dailyAverage}`);
+
             return {
                 name: branchName,
-                ...mockStats,
+                ...stats,
                 total,
                 dailyAverage
             };
@@ -477,19 +584,49 @@ class ComparisonManager {
 
     // 필터링된 체크리스트 가져오기
     getFilteredChecklists(branchName) {
-        let checklists = this.data.checklists.filter(c => c.branch === branchName);
+        console.log(`🔍 ${branchName} 체크리스트 필터링 시작`);
+        console.log(`📊 전체 체크리스트 수:`, this.data.checklists.length);
+        
+        // 지점명으로 필터링
+        let checklists = this.data.checklists.filter(c => {
+            const branchMatch = c.branch === branchName;
+            if (!branchMatch && c.branch) {
+                // 디버깅: 매칭되지 않는 지점명 출력
+                console.log(`❌ 지점명 불일치: "${c.branch}" !== "${branchName}"`);
+            }
+            return branchMatch;
+        });
+        
+        console.log(`📍 ${branchName} 지점 체크리스트:`, checklists.length, '건');
         
         // 기간 필터링
         const startDate = this.customStartDate;
         const endDate = this.customEndDate;
 
         if (startDate && endDate) {
-            return checklists.filter(c => {
+            console.log(`📅 기간 필터링: ${startDate.toISOString().split('T')[0]} ~ ${endDate.toISOString().split('T')[0]}`);
+            
+            const filteredByDate = checklists.filter(c => {
+                if (!c.date) {
+                    console.log('⚠️ 날짜 정보가 없는 체크리스트:', c);
+                    return false;
+                }
+                
                 const checklistDate = new Date(c.date);
-                return checklistDate >= startDate && checklistDate <= endDate;
+                const isInRange = checklistDate >= startDate && checklistDate <= endDate;
+                
+                if (!isInRange) {
+                    console.log(`❌ 기간 외: ${c.date} (${checklistDate.toDateString()})`);
+                }
+                
+                return isInRange;
             });
+            
+            console.log(`📅 기간 필터링 후:`, filteredByDate.length, '건');
+            return filteredByDate;
         }
 
+        console.log(`📋 최종 필터링 결과:`, checklists.length, '건');
         return checklists;
     }
 
