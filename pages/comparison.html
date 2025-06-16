@@ -129,14 +129,6 @@
             color: white;
         }
         
-        .custom-range {
-            display: none;
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #f9fafb;
-            border-radius: 0.375rem;
-        }
-        
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -150,6 +142,11 @@
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+        
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
         .firebase-status {
@@ -225,7 +222,7 @@
                             
                             <div id="branchCheckboxes" style="display: grid; gap: 0.5rem;">
                                 <div style="padding: 2rem; text-align: center; color: #6b7280;">
-                                    <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                                    <div style="font-size: 2rem; margin-bottom: 1rem;" class="loading">⏳</div>
                                     <p>Firebase에서 지점 데이터를 로딩 중...</p>
                                 </div>
                             </div>
@@ -319,7 +316,7 @@
         </div>
     </div>
 
-    <!-- JavaScript Files - Firebase 설정을 먼저 로드 -->
+    <!-- JavaScript Files - 올바른 경로로 수정 -->
     <script src="../js/config/firebase.js"></script>
     <script src="../js/utils/data-manager.js"></script>
     <script src="../js/utils/auth.js"></script>
@@ -328,6 +325,9 @@
     <script src="comparison.js"></script>
 
     <script>
+        // 디버깅을 위한 전역 변수
+        window.debugMode = true;
+        
         // 페이지 로드 시 Firebase 연결 상태 체크
         document.addEventListener('DOMContentLoaded', function() {
             console.log('⚖️ 지점 비교 페이지 로드 시작');
@@ -337,25 +337,132 @@
             
             // 외부 클릭 시 캘린더 닫기
             setupGlobalEventListeners();
+            
+            // ComparisonManager 초기화 확인
+            checkComparisonManagerInit();
         });
+        
+        // ComparisonManager 초기화 확인
+        function checkComparisonManagerInit() {
+            let checkCount = 0;
+            const maxChecks = 10;
+            
+            const checkInterval = setInterval(() => {
+                checkCount++;
+                
+                if (window.comparisonManager && window.comparisonManager.isDataLoaded) {
+                    console.log('✅ ComparisonManager 초기화 완료 확인');
+                    clearInterval(checkInterval);
+                    return;
+                }
+                
+                if (checkCount >= maxChecks) {
+                    console.log('⚠️ ComparisonManager 초기화 타임아웃');
+                    clearInterval(checkInterval);
+                    
+                    // 수동으로 다시 시도
+                    if (typeof ComparisonManager !== 'undefined') {
+                        console.log('🔄 ComparisonManager 수동 초기화 시도');
+                        window.comparisonManager = new ComparisonManager();
+                        window.comparisonManager.initialize();
+                    } else {
+                        console.log('❌ ComparisonManager 클래스를 찾을 수 없음');
+                        document.getElementById('comparisonResult').innerHTML = `
+                            <div class="text-center" style="padding: 3rem;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+                                <h3 style="color: #dc2626; margin-bottom: 1rem;">초기화 실패</h3>
+                                <p style="color: #6b7280;">ComparisonManager를 로드할 수 없습니다.</p>
+                                <button onclick="location.reload()" class="btn" style="margin-top: 1rem;">🔄 페이지 새로고침</button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                console.log(`⏳ ComparisonManager 초기화 대기 중... (${checkCount}/${maxChecks})`);
+            }, 1000);
+        }
         
         // Firebase 연결 상태 업데이트
         function updateFirebaseStatus() {
             const currentUser = document.getElementById('currentUser');
             
-            if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-                console.log('🔥 Firebase 연결 확인됨');
+            // Firebase SDK 로드 확인
+            if (typeof firebase === 'undefined') {
+                console.log('❌ Firebase SDK 로드 실패');
                 if (currentUser) {
-                    currentUser.textContent = '🔥 Firebase 연결됨';
-                    currentUser.className = 'firebase-status firebase-connected';
+                    currentUser.textContent = '❌ Firebase SDK 없음';
+                    currentUser.className = 'firebase-status firebase-disconnected';
                 }
-            } else {
-                console.log('❌ Firebase 연결 실패');
+                return;
+            }
+            
+            // Firebase 앱 초기화 확인
+            if (firebase.apps.length === 0) {
+                console.log('❌ Firebase 앱이 초기화되지 않음');
                 if (currentUser) {
-                    currentUser.textContent = '❌ Firebase 연결 실패';
+                    currentUser.textContent = '❌ Firebase 앱 미초기화';
+                    currentUser.className = 'firebase-status firebase-disconnected';
+                }
+                return;
+            }
+            
+            // Firestore 연결 확인
+            try {
+                const db = firebase.firestore();
+                if (db) {
+                    console.log('✅ Firebase 완전 연결됨');
+                    if (currentUser) {
+                        currentUser.textContent = '🔥 Firebase 연결됨';
+                        currentUser.className = 'firebase-status firebase-connected';
+                    }
+                    
+                    // 간단한 연결 테스트
+                    testFirebaseConnection(db);
+                } else {
+                    throw new Error('Firestore 인스턴스 없음');
+                }
+            } catch (error) {
+                console.log('❌ Firestore 연결 실패:', error);
+                if (currentUser) {
+                    currentUser.textContent = '❌ Firestore 실패';
                     currentUser.className = 'firebase-status firebase-disconnected';
                 }
             }
+        }
+        
+        // Firebase 연결 테스트
+        function testFirebaseConnection(db) {
+            console.log('🔍 Firebase 연결 테스트 시작...');
+            
+            // branches 컬렉션 테스트
+            db.collection('branches').limit(1).get()
+                .then((snapshot) => {
+                    console.log('✅ branches 컬렉션 접근 성공');
+                    console.log('📊 branches 문서 수:', snapshot.size);
+                    
+                    if (snapshot.size > 0) {
+                        const doc = snapshot.docs[0];
+                        console.log('📄 첫 번째 지점 데이터:', doc.data());
+                    }
+                })
+                .catch((error) => {
+                    console.log('❌ branches 컬렉션 접근 실패:', error);
+                });
+            
+            // checklists 컬렉션 테스트
+            db.collection('checklists').limit(1).get()
+                .then((snapshot) => {
+                    console.log('✅ checklists 컬렉션 접근 성공');
+                    console.log('📊 checklists 문서 수:', snapshot.size);
+                    
+                    if (snapshot.size > 0) {
+                        const doc = snapshot.docs[0];
+                        console.log('📄 첫 번째 체크리스트 데이터:', doc.data());
+                    }
+                })
+                .catch((error) => {
+                    console.log('❌ checklists 컬렉션 접근 실패:', error);
+                });
         }
         
         // 전역 이벤트 리스너 설정
@@ -392,24 +499,60 @@
             }
         }
         
-        // CSS 애니메이션
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slide {
-                0% { transform: translateX(-100%); }
-                100% { transform: translateX(100%); }
+        // 전역 함수들 (comparison.js에서 사용)
+        function updateDateRange() {
+            if (window.comparisonManager) {
+                const startInput = document.getElementById('startDate');
+                const endInput = document.getElementById('endDate');
+                
+                if (startInput.value) {
+                    window.comparisonManager.customStartDate = new Date(startInput.value);
+                }
+                if (endInput.value) {
+                    window.comparisonManager.customEndDate = new Date(endInput.value);
+                }
             }
+        }
+        
+        // 캘린더 관련 전역 함수들
+        function toggleCalendar() {
+            const calendar = document.getElementById('calendarContainer');
+            const isVisible = calendar.style.display === 'block';
             
-            .loading-text {
-                animation: pulse 2s ease-in-out infinite;
+            if (isVisible) {
+                closeCalendar();
+            } else {
+                calendar.style.display = 'block';
+                generateCalendar();
             }
+        }
+        
+        function closeCalendar() {
+            document.getElementById('calendarContainer').style.display = 'none';
+        }
+        
+        function generateCalendar() {
+            // 기본 캘린더 생성 로직
+            const grid = document.getElementById('calendarGrid');
+            const monthSpan = document.getElementById('currentMonth');
             
-            @keyframes pulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
-            }
-        `;
-        document.head.appendChild(style);
+            if (!grid || !monthSpan) return;
+            
+            const currentDate = window.currentCalendarDate || new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            monthSpan.textContent = `${year}년 ${month + 1}월`;
+            
+            // 간단한 캘린더 생성
+            grid.innerHTML = '<div style="padding: 1rem; text-align: center;">캘린더 구현 중...</div>';
+        }
+        
+        // 전역 변수 초기화
+        window.currentCalendarDate = new Date();
+        window.selectedStartDate = null;
+        window.selectedEndDate = null;
+        window.isSelectingRange = false;
     </script>
 </body>
 </html>
