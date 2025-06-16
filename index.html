@@ -272,6 +272,82 @@ function goToPage(pageId) {
         console.error('알 수 없는 페이지:', pageId);
     }
 }
+
+    async function loadBranchesForSignup() {
+    try {
+        console.log('🏢 가입용 지점 목록 로드 시작');
+        
+        // Firebase 연결 확인
+        if (typeof firebase === 'undefined' || !firebase.apps.length) {
+            throw new Error('Firebase가 연결되지 않았습니다');
+        }
+        
+        const db = firebase.firestore();
+        const branchesSnapshot = await db.collection('branches').orderBy('name').get();
+        
+        const signupBranchSelect = document.getElementById('signupBranch');
+        const loadingStatus = document.getElementById('branchLoadingStatus');
+        
+        if (branchesSnapshot.empty) {
+            console.log('⚠️ 등록된 지점이 없습니다');
+            loadingStatus.innerHTML = '⚠️ 등록된 지점이 없습니다. 관리자에게 문의하세요.';
+            loadingStatus.style.color = '#dc2626';
+            return;
+        }
+        
+        // 기본 옵션 유지하고 Firebase 지점들 추가
+        let optionsHTML = '<option value="">지점을 선택하세요</option>';
+        
+        branchesSnapshot.docs.forEach(doc => {
+            const branchData = doc.data();
+            const branchName = branchData.name || branchData.branchName || doc.id;
+            optionsHTML += `<option value="${branchName}">${branchName}</option>`;
+        });
+        
+        signupBranchSelect.innerHTML = optionsHTML;
+        
+        loadingStatus.innerHTML = `✅ ${branchesSnapshot.size}개 지점 로드 완료`;
+        loadingStatus.style.color = '#059669';
+        
+        // 3초 후 로딩 메시지 숨김
+        setTimeout(() => {
+            loadingStatus.style.display = 'none';
+        }, 3000);
+        
+        console.log(`✅ ${branchesSnapshot.size}개 지점 로드 완료`);
+        
+    } catch (error) {
+        console.error('❌ 지점 목록 로드 실패:', error);
+        
+        const loadingStatus = document.getElementById('branchLoadingStatus');
+        if (loadingStatus) {
+            loadingStatus.innerHTML = '❌ 지점 목록 로드 실패. 새로고침 후 다시 시도하세요.';
+            loadingStatus.style.color = '#dc2626';
+        }
+    }
+}
+
+// 가입 페이지 표시 함수 수정
+function showSignup() {
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('signupPage').classList.remove('hidden');
+    
+    // 가입 페이지가 표시될 때 지점 목록 로드
+    setTimeout(() => {
+        loadBranchesForSignup();
+    }, 100);
+}
+
+// 로그인 페이지로 돌아가는 함수
+function showLogin() {
+    document.getElementById('signupPage').classList.add('hidden');
+    document.getElementById('loginPage').classList.remove('hidden');
+}
+
+// Firebase 연결 확인 후 지점 로드 준비
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Firebase 지점 연동 준비 완료');
+});
 </script>
 </body>
 </html>
