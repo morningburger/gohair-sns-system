@@ -270,15 +270,19 @@ class ComparisonManager {
             return;
         }
 
-        container.innerHTML = this.data.branches.map(branch => {
+container.innerHTML = `
+    <div style="max-height: 300px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.5rem;">
+        ${this.data.branches.map(branch => {
             const branchName = branch.name || branch.branchName || `지점 ${branch.id}`;
             return `
-                <label style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.375rem; cursor: pointer;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                <label style="display: flex; align-items: center; padding: 0.5rem; border-radius: 0.375rem; cursor: pointer; margin-bottom: 0.25rem;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
                     <input type="checkbox" value="${branchName}" style="margin-right: 0.5rem;" onchange="window.comparisonManager.updateSelectAllState()">
                     <span>${branchName}</span>
                 </label>
             `;
-        }).join('');
+        }).join('')}
+    </div>
+`;
         
         console.log('✅ 지점 체크박스 설정 완료:', this.data.branches.length, '개');
     }
