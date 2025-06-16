@@ -329,18 +329,59 @@
         window.debugMode = true;
         
         // 페이지 로드 시 Firebase 연결 상태 체크
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('⚖️ 지점 비교 페이지 로드 시작');
+// 페이지 로드 시 Firebase 연결 상태 체크
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('⚖️ 지점 비교 페이지 로드 시작');
+    
+    // 사용자 권한에 따른 네비게이션 메뉴 제어
+    function setupNavigationByRole() {
+        try {
+            const userData = sessionStorage.getItem('currentUser');
+            const currentUser = userData ? JSON.parse(userData) : null;
             
-            // Firebase 연결 상태 표시
-            updateFirebaseStatus();
+            console.log('현재 사용자:', currentUser);
             
-            // 외부 클릭 시 캘린더 닫기
-            setupGlobalEventListeners();
-            
-            // ComparisonManager 초기화 확인
-            checkComparisonManagerInit();
-        });
+            if (currentUser && currentUser.role === '지점관리자') {
+                // 지점관리자는 지점 관리 메뉴 숨김
+                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
+                if (branchNavBtn) {
+                    branchNavBtn.style.display = 'none';
+                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
+                }
+                
+                // 사용자 정보 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
+                    userElement.style.color = '#3b82f6';
+                    userElement.className = 'firebase-status firebase-connected';
+                }
+            } else if (currentUser && currentUser.role === '전체관리자') {
+                // 전체관리자는 모든 메뉴 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    userElement.textContent = `${currentUser.name} (${currentUser.role})`;
+                    userElement.style.color = '#059669';
+                    userElement.className = 'firebase-status firebase-connected';
+                }
+            }
+        } catch (error) {
+            console.error('네비게이션 권한 설정 오류:', error);
+        }
+    }
+
+    // 네비게이션 설정 실행
+    setupNavigationByRole();
+    
+    // Firebase 연결 상태 표시
+    updateFirebaseStatus();
+    
+    // 외부 클릭 시 캘린더 닫기
+    setupGlobalEventListeners();
+    
+    // ComparisonManager 초기화 확인
+    checkComparisonManagerInit();
+});
         
         // ComparisonManager 초기화 확인
         function checkComparisonManagerInit() {
