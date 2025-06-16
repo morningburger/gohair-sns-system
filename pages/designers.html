@@ -284,62 +284,52 @@ function goToMainSystem() {
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     console.log('👥 디자이너 관리 페이지 로드 시작');
+    
+    // 사용자 권한에 따른 네비게이션 메뉴 제어
+    function setupNavigationByRole() {
+        try {
+            const userData = sessionStorage.getItem('currentUser');
+            const currentUser = userData ? JSON.parse(userData) : null;
+            
+            console.log('현재 사용자:', currentUser);
+            
+            if (currentUser && currentUser.role === '지점관리자') {
+                // 지점관리자는 지점 관리 메뉴 숨김
+                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
+                if (branchNavBtn) {
+                    branchNavBtn.style.display = 'none';
+                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
+                }
+                
+                // 사용자 정보 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
+                    userElement.style.color = '#3b82f6';
+                }
+            } else if (currentUser && currentUser.role === '전체관리자') {
+                // 전체관리자는 모든 메뉴 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    userElement.textContent = `${currentUser.name} (${currentUser.role})`;
+                    userElement.style.color = '#059669';
+                }
+            }
+        } catch (error) {
+            console.error('네비게이션 권한 설정 오류:', error);
+        }
+    }
+
+    // 네비게이션 설정 실행
+    setupNavigationByRole();
     
     // Firebase 연결 상태 확인
     if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
         console.log('🔥 파이어베이스 연결됨');
-        
-        // 연결 상태를 화면에 표시
-        const currentUser = document.getElementById('currentUser');
-        if (currentUser && !currentUser.textContent.trim()) {
-            currentUser.textContent = '파이어베이스 연결됨';
-            currentUser.style.color = '#10b981'; // 초록색
-        }
-        
-        // Firestore 연결 테스트
-        if (firebase.firestore) {
-            const db = firebase.firestore();
-            console.log('💾 Firestore 연결 확인됨');
-            
-            // 간단한 연결 테스트
-            db.collection('designers').limit(1).get()
-                .then((snapshot) => {
-                    if (snapshot.empty) {
-                        console.log('📂 designers 컬렉션이 비어있음 - 테스트 데이터 추가 제안');
-                        console.log('💡 브라우저 콘솔에서 다음 명령을 실행하세요:');
-                        console.log(`
-// 테스트 디자이너 데이터 추가
-const db = firebase.firestore();
-db.collection('designers').add({
-    name: '김수현',
-    branch: '송도센트럴점',
-    position: '디자이너',
-    phone: '010-1234-5678',
-    email: 'kim@gohair.com',
-    createdAt: '2024-01-15'
-}).then(() => {
-    console.log('✅ 테스트 디자이너 추가됨');
-    location.reload();
-});
-                        `);
-                    } else {
-                        console.log(`✅ designers 컬렉션에 ${snapshot.size}개 문서 존재`);
-                    }
-                })
-                .catch((error) => {
-                    console.log('⚠️ Firestore 읽기 테스트 실패:', error.message);
-                });
-        }
     } else {
         console.log('❌ 파이어베이스 연결 실패');
-        
-        const currentUser = document.getElementById('currentUser');
-        if (currentUser && !currentUser.textContent.trim()) {
-            currentUser.textContent = '파이어베이스 연결 실패';
-            currentUser.style.color = '#ef4444'; // 빨간색
-        }
     }
     
     // 1초 후 DesignersManager 확인
