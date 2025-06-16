@@ -19,12 +19,26 @@ class ComparisonManager {
         };
         this.isDataLoaded = false;
         this.db = null;
+        this.initPromise = null;
     }
 
     // 페이지 초기화
     async initialize() {
+        // 중복 초기화 방지
+        if (this.initPromise) {
+            return this.initPromise;
+        }
+        
+        this.initPromise = this._doInitialize();
+        return this.initPromise;
+    }
+    
+    async _doInitialize() {
         try {
             console.log('🚀 ComparisonManager 초기화 시작');
+            
+            // Firebase 연결 대기
+            await this.waitForFirebase();
             
             // Firebase 연결 확인 및 초기화
             await this.initializeFirebase();
@@ -48,10 +62,43 @@ class ComparisonManager {
             this.isDataLoaded = true;
             
             console.log('✅ 비교 페이지 초기화 완료');
+            
+            // 초기화 완료 UI 업데이트
+            this.updateInitializationComplete();
+            
         } catch (error) {
             console.error('❌ 비교 페이지 초기화 오류:', error);
             this.showError('데이터 로드 중 오류가 발생했습니다: ' + error.message);
+            this.showInitializationError(error);
         }
+    }
+
+    // Firebase 로드 대기
+    async waitForFirebase() {
+        return new Promise((resolve, reject) => {
+            let attempts = 0;
+            const maxAttempts = 50; // 5초 대기
+            
+            const checkFirebase = () => {
+                attempts++;
+                
+                if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
+                    console.log('✅ Firebase 로드 완료 확인');
+                    resolve();
+                    return;
+                }
+                
+                if (attempts >= maxAttempts) {
+                    reject(new Error('Firebase 로드 타임아웃'));
+                    return;
+                }
+                
+                console.log(`⏳ Firebase 로드 대기 중... (${attempts}/${maxAttempts})`);
+                setTimeout(checkFirebase, 100);
+            };
+            
+            checkFirebase();
+        });
     }
 
     // Firebase 초기화
@@ -75,11 +122,26 @@ class ComparisonManager {
                 throw new Error('Firestore 인스턴스를 가져올 수 없습니다');
             }
             
+            // 연결 테스트
+            await this.testFirestoreConnection();
+            
             console.log('✅ Firebase 연결 성공');
             
         } catch (error) {
             console.error('❌ Firebase 초기화 실패:', error);
             throw new Error(`Firebase 연결 실패: ${error.message}`);
+        }
+    }
+    
+    // Firestore 연결 테스트
+    async testFirestoreConnection() {
+        try {
+            console.log('🔍 Firestore 연결 테스트...');
+            const testDoc = await this.db.collection('_test').limit(1).get();
+            console.log('✅ Firestore 연결 테스트 성공');
+        } catch (error) {
+            console.log('⚠️ Firestore 연결 테스트 실패 (정상적일 수 있음):', error.message);
+            // 연결 테스트 실패해도 계속 진행 (권한 문제일 수 있음)
         }
     }
 
@@ -99,10 +161,10 @@ class ComparisonManager {
         if (userElement) {
             if (this.currentUser) {
                 userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
-                userElement.style.color = '#10b981';
+                userElement.className = 'firebase-status firebase-connected';
             } else {
-                userElement.textContent = 'Firebase 연결됨';
-                userElement.style.color = '#10b981';
+                userElement.textContent = '🔥 Firebase 연결됨';
+                userElement.className = 'firebase-status firebase-connected';
             }
         }
     }
@@ -124,7 +186,10 @@ class ComparisonManager {
                 ...doc.data()
             }));
             console.log('✅ 지점 데이터 로드 완료:', this.data.branches.length, '개');
-            console.log('📍 로드된 지점들:', this.data.branches.map(b => b.name));
+            
+            if (this.data.branches.length > 0) {
+                console.log('📍 로드된 지점들:', this.data.branches.map(b => b.name || b.branchName || '이름없음'));
+            }
             
             // 디자이너 데이터 로드
             console.log('👥 디자이너 데이터 로딩 중...');
@@ -151,11 +216,11 @@ class ComparisonManager {
             
             // 실제 데이터 샘플 출력
             if (this.data.checklists.length > 0) {
-                console.log('📋 체크리스트 샘플 (최신 5건):');
-                this.data.checklists.slice(0, 5).forEach((item, index) => {
+                console.log('📋 체크리스트 샘플 (최신 3건):');
+                this.data.checklists.slice(0, 3).forEach((item, index) => {
                     console.log(`${index + 1}.`, {
                         id: item.id,
-                        branch: item.branch || item.branchName,
+                        branch: item.branch || item.branchName || item.selectedBranch,
                         date: item.date,
                         reviews: item.naverReviews,
                         posts: item.naverPosts,
@@ -169,7 +234,7 @@ class ComparisonManager {
             // 지점별 데이터 분포 확인
             if (this.data.checklists.length > 0) {
                 const branchDistribution = this.data.checklists.reduce((acc, item) => {
-                    const branchName = item.branch || item.branchName || '미지정';
+                    const branchName = item.branch || item.branchName || item.selectedBranch || '미지정';
                     acc[branchName] = (acc[branchName] || 0) + 1;
                     return acc;
                 }, {});
@@ -181,15 +246,6 @@ class ComparisonManager {
                 designers: this.data.designers.length,
                 checklists: this.data.checklists.length
             });
-            
-            // 데이터가 없을 경우 알림
-            if (this.data.branches.length === 0) {
-                this.showError('지점 데이터가 없습니다. Firebase에 지점 정보를 먼저 등록해주세요.');
-            }
-            
-            if (this.data.checklists.length === 0) {
-                this.showError('체크리스트 데이터가 없습니다. 체크리스트를 먼저 입력해주세요.');
-            }
             
         } catch (error) {
             console.error('❌ Firebase 데이터 로딩 오류:', error);
@@ -203,16 +259,90 @@ class ComparisonManager {
         if (!container) return;
 
         if (this.data.branches.length === 0) {
-            container.innerHTML = '<p style="color: #dc2626;">지점 데이터가 없습니다. Firebase에 지점을 먼저 등록해주세요.</p>';
+            container.innerHTML = `
+                <div style="padding: 1rem; text-align: center; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem; color: #dc2626;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📭</div>
+                    <p><strong>지점 데이터가 없습니다</strong></p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">Firebase에 지점을 먼저 등록해주세요.</p>
+                    <button onclick="goToPage('branches')" class="btn" style="margin-top: 0.5rem; font-size: 0.875rem;">🏢 지점 관리로 이동</button>
+                </div>
+            `;
             return;
         }
 
-        container.innerHTML = this.data.branches.map(branch => `
-            <label style="display: flex; align-items: center;">
-                <input type="checkbox" value="${branch.name}" style="margin-right: 0.5rem;" onchange="window.comparisonManager.updateSelectAllState()">
-                ${branch.name}
-            </label>
-        `).join('');
+        container.innerHTML = this.data.branches.map(branch => {
+            const branchName = branch.name || branch.branchName || `지점 ${branch.id}`;
+            return `
+                <label style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.375rem; cursor: pointer;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                    <input type="checkbox" value="${branchName}" style="margin-right: 0.5rem;" onchange="window.comparisonManager.updateSelectAllState()">
+                    <span>${branchName}</span>
+                </label>
+            `;
+        }).join('');
+        
+        console.log('✅ 지점 체크박스 설정 완료:', this.data.branches.length, '개');
+    }
+
+    // 초기화 완료 UI 업데이트
+    updateInitializationComplete() {
+        const resultContainer = document.getElementById('comparisonResult');
+        if (resultContainer) {
+            if (this.data.branches.length === 0) {
+                resultContainer.innerHTML = `
+                    <div class="text-center" style="padding: 3rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+                        <h3 style="color: #374151; margin-bottom: 1rem;">지점 데이터가 없습니다</h3>
+                        <p style="color: #6b7280; margin-bottom: 1rem;">Firebase에 지점 정보를 먼저 등록해주세요.</p>
+                        <button onclick="goToPage('branches')" class="btn" style="margin-top: 1rem;">🏢 지점 관리로 이동</button>
+                    </div>
+                `;
+            } else if (this.data.checklists.length === 0) {
+                resultContainer.innerHTML = `
+                    <div class="text-center" style="padding: 3rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                        <h3 style="color: #374151; margin-bottom: 1rem;">체크리스트 데이터가 없습니다</h3>
+                        <p style="color: #6b7280; margin-bottom: 1rem;">체크리스트를 먼저 입력해주세요.</p>
+                        <button onclick="goToPage('checklist')" class="btn" style="margin-top: 1rem;">📋 체크리스트 입력하기</button>
+                    </div>
+                `;
+            } else {
+                resultContainer.innerHTML = `
+                    <div class="text-center" style="padding: 3rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">⚖️</div>
+                        <h3 style="color: #374151; margin-bottom: 1rem;">지점 비교 준비 완료</h3>
+                        <p style="color: #6b7280; margin-bottom: 1rem;">
+                            <strong>${this.data.branches.length}개 지점</strong>과 <strong>${this.data.checklists.length}건</strong>의 체크리스트 데이터가 준비되었습니다.
+                        </p>
+                        <p style="color: #6b7280; font-size: 0.875rem;">
+                            지점을 선택하고 "비교 차트 업데이트" 버튼을 눌러주세요.
+                        </p>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // 초기화 오류 표시
+    showInitializationError(error) {
+        const resultContainer = document.getElementById('comparisonResult');
+        if (resultContainer) {
+            resultContainer.innerHTML = `
+                <div class="text-center" style="padding: 3rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+                    <h3 style="color: #dc2626; margin-bottom: 1rem;">초기화 실패</h3>
+                    <p style="color: #6b7280; margin-bottom: 1rem;">${error.message}</p>
+                    <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; text-align: left;">
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            <strong>해결 방법:</strong><br>
+                            1. 페이지를 새로고침해보세요<br>
+                            2. Firebase 설정을 확인해주세요<br>
+                            3. 브라우저 콘솔에서 자세한 오류를 확인해주세요
+                        </p>
+                    </div>
+                    <button onclick="location.reload()" class="btn" style="margin-top: 1rem;">🔄 페이지 새로고침</button>
+                </div>
+            `;
+        }
     }
 
     // 전체 선택 상태 업데이트
@@ -421,6 +551,7 @@ class ComparisonManager {
                     <p style="color: #6b7280; margin-bottom: 1rem;">선택한 기간과 지점에 해당하는 체크리스트 데이터가 없습니다.</p>
                     <div style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0;">
                         <p style="color: #374151; font-size: 0.875rem;">
+                            💡 <strong>해결 방법:</strong><br>
                             • 다른 기간을 선택해보세요<br>
                             • 체크리스트 입력 페이지에서 데이터를 먼저 입력해주세요<br>
                             • 지점명이 정확한지 확인해주세요
@@ -448,7 +579,6 @@ class ComparisonManager {
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                 ${comparisonData.branches.map((branch, index) => {
                     const isTop = index === 0;
-                    const isBottom = index === comparisonData.branches.length - 1;
                     let cardStyle, rankIcon, rankText;
                     
                     if (isTop) {
@@ -517,28 +647,6 @@ class ComparisonManager {
                 </div>
             </div>
             
-            <!-- 카테고리별 1위 -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-                <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e5e7eb;">
-                    <h4 style="font-weight: bold; margin-bottom: 1rem; color: #374151;">🏆 카테고리별 1위</h4>
-                    <div style="display: grid; gap: 0.75rem;">
-                        ${Object.entries(comparisonData.categoryWinners).map(([category, winner]) => `
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border-radius: 0.5rem;">
-                                <span style="font-weight: 600;">${this.getCategoryIcon(category)} ${this.getCategoryName(category)}</span>
-                                <span style="color: #3b82f6; font-weight: bold;">${winner.branch} (${winner.value})</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                
-                <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e5e7eb;">
-                    <h4 style="font-weight: bold; margin-bottom: 1rem; color: #374151;">💡 분석 인사이트</h4>
-                    <div style="color: #6b7280; line-height: 1.6; font-size: 0.9rem;">
-                        ${this.generateInsights(comparisonData)}
-                    </div>
-                </div>
-            </div>
-            
             <!-- 내보내기 버튼 -->
             <div style="text-align: center; margin-top: 2rem;">
                 <button onclick="window.comparisonManager.exportComparison()" class="btn" style="background: #059669; color: white; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: bold;">
@@ -571,15 +679,6 @@ class ComparisonManager {
             // 실제 Firebase 데이터만 집계 (절대 임의 값 사용 안함)
             const stats = filteredChecklists.reduce((acc, c) => {
                 // 카테고리 필터링 적용
-                if (this.currentCategory === 'all' || this.currentCategory === 'reviews') {
-                    acc.reviews += parseInt(c.naverReviews) || 0;
-                }
-                if (this.currentCategory === 'all' || this.currentCategory === 'posts') {
-                    acc.posts += parseInt(c.naverPosts) || 0;
-                }
-                if (this.currentCategory === 'all' || this.currentCategory === 'experience') {
-                    acc.experience += parseInt(c.naverExperience) || 0;
-                }
                 if (this.currentCategory === 'all' || this.currentCategory === 'reels') {
                     acc.reels += parseInt(c.instaReels) || 0;
                 }
@@ -728,24 +827,28 @@ class ComparisonManager {
     // 캔버스 요소 재생성 (차트 중복 방지)
     recreateChartCanvases() {
         // 비교 차트 캔버스 재생성
-        const comparisonContainer = document.querySelector('#comparisonChart').parentNode;
-        const oldComparisonCanvas = document.getElementById('comparisonChart');
-        if (oldComparisonCanvas) {
-            oldComparisonCanvas.remove();
+        const comparisonContainer = document.querySelector('#comparisonChart')?.parentNode;
+        if (comparisonContainer) {
+            const oldComparisonCanvas = document.getElementById('comparisonChart');
+            if (oldComparisonCanvas) {
+                oldComparisonCanvas.remove();
+            }
+            const newComparisonCanvas = document.createElement('canvas');
+            newComparisonCanvas.id = 'comparisonChart';
+            comparisonContainer.appendChild(newComparisonCanvas);
         }
-        const newComparisonCanvas = document.createElement('canvas');
-        newComparisonCanvas.id = 'comparisonChart';
-        comparisonContainer.appendChild(newComparisonCanvas);
 
         // 카테고리 차트 캔버스 재생성
-        const categoryContainer = document.querySelector('#categoryChart').parentNode;
-        const oldCategoryCanvas = document.getElementById('categoryChart');
-        if (oldCategoryCanvas) {
-            oldCategoryCanvas.remove();
+        const categoryContainer = document.querySelector('#categoryChart')?.parentNode;
+        if (categoryContainer) {
+            const oldCategoryCanvas = document.getElementById('categoryChart');
+            if (oldCategoryCanvas) {
+                oldCategoryCanvas.remove();
+            }
+            const newCategoryCanvas = document.createElement('canvas');
+            newCategoryCanvas.id = 'categoryChart';
+            categoryContainer.appendChild(newCategoryCanvas);
         }
-        const newCategoryCanvas = document.createElement('canvas');
-        newCategoryCanvas.id = 'categoryChart';
-        categoryContainer.appendChild(newCategoryCanvas);
     }
 
     // 비교 차트 그리기
@@ -909,72 +1012,6 @@ class ComparisonManager {
         } catch (error) {
             console.error('❌ 카테고리 차트 생성 실패:', error);
         }
-    }
-
-    // 인사이트 생성
-    generateInsights(data) {
-        const insights = [];
-        const branches = data.branches;
-        
-        if (branches.length >= 2) {
-            const top = branches[0];
-            const bottom = branches[branches.length - 1];
-            const gap = top.total - bottom.total;
-            
-            insights.push(`• <strong>${top.name}</strong>이 총 <strong>${top.total}건</strong>으로 1위를 차지했습니다.`);
-            
-            if (branches.length > 1) {
-                insights.push(`• 최고 성과 지점과 최하위 지점 간 활동량 차이는 <strong>${gap}건</strong>입니다.`);
-            }
-            
-            if (top.dailyAverage > 0) {
-                insights.push(`• ${top.name}의 일평균 활동량은 <strong>${top.dailyAverage}건</strong>으로 가장 높습니다.`);
-            }
-        }
-
-        // 실제 데이터 기반 인사이트
-        if (data.totalRecords === 0) {
-            insights.push(`• 선택한 기간에 해당하는 데이터가 없습니다. 기간을 조정해보세요.`);
-        } else {
-            insights.push(`• 총 <strong>${data.totalRecords}건</strong>의 실제 Firebase 데이터를 분석했습니다.`);
-        }
-
-        // 카테고리별 분석
-        const winners = data.categoryWinners;
-        const dominantBranch = Object.values(winners).reduce((acc, curr) => {
-            acc[curr.branch] = (acc[curr.branch] || 0) + 1;
-            return acc;
-        }, {});
-
-        const maxWins = Math.max(...Object.values(dominantBranch));
-        const dominantBranches = Object.entries(dominantBranch)
-            .filter(([_, wins]) => wins === maxWins)
-            .map(([branch, _]) => branch);
-
-        if (dominantBranches.length === 1 && maxWins >= 3) {
-            insights.push(`• <strong>${dominantBranches[0]}</strong>이 ${maxWins}개 카테고리에서 1위를 차지하며 전체적으로 우수한 성과를 보입니다.`);
-        }
-
-        // 카테고리별 최고 성과 분석
-        const topCategory = Object.entries(data.branches.reduce((acc, branch) => {
-            acc.reviews += branch.reviews;
-            acc.posts += branch.posts;
-            acc.experience += branch.experience;
-            acc.reels += branch.reels;
-            acc.photos += branch.photos;
-            return acc;
-        }, { reviews: 0, posts: 0, experience: 0, reels: 0, photos: 0 }))
-        .sort(([,a], [,b]) => b - a)[0];
-
-        if (topCategory && topCategory[1] > 0) {
-            insights.push(`• 전체적으로 <strong>${this.getCategoryName(topCategory[0])}</strong> 활동이 가장 활발합니다. (${topCategory[1]}건)`);
-        }
-
-        if (insights.length === 0) {
-            insights.push('• 선택된 지점들이 고른 성과를 보이고 있습니다.');
-        }
-
-        return insights.map(insight => `<div style="margin-bottom: 0.5rem;">${insight}</div>`).join('');
     }
 
     // 유틸리티 함수들
@@ -1147,159 +1184,6 @@ function handlePeriodChange() {
     window.comparisonManager?.handlePeriodChange();
 }
 
-function toggleCalendar() {
-    const calendar = document.getElementById('calendarContainer');
-    const isVisible = calendar.style.display === 'block';
-    
-    if (isVisible) {
-        closeCalendar();
-    } else {
-        calendar.style.display = 'block';
-        generateCalendar();
-    }
-}
-
-function closeCalendar() {
-    document.getElementById('calendarContainer').style.display = 'none';
-}
-
-function selectQuickRange(period) {
-    // 활성 버튼 표시
-    document.querySelectorAll('.quick-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    // 기간 업데이트
-    document.getElementById('comparisonPeriod').value = period;
-    window.comparisonManager?.handlePeriodChange();
-    generateCalendar();
-}
-
-function generateCalendar() {
-    if (!window.comparisonManager) return;
-    
-    const grid = document.getElementById('calendarGrid');
-    const monthSpan = document.getElementById('currentMonth');
-    
-    if (!grid || !monthSpan) return;
-    
-    const currentDate = window.currentCalendarDate || new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    
-    monthSpan.textContent = `${year}년 ${month + 1}월`;
-    
-    // 요일 헤더
-    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
-    let html = weekdays.map(day => `<div style="font-weight: bold; padding: 0.5rem; color: #6b7280;">${day}</div>`).join('');
-    
-    // 첫 번째 날의 요일
-    const firstDay = new Date(year, month, 1).getDay();
-    
-    // 이전 달 마지막 날들
-    const prevMonth = new Date(year, month, 0);
-    for (let i = firstDay - 1; i >= 0; i--) {
-        const day = prevMonth.getDate() - i;
-        html += `<button class="calendar-day other-month" onclick="selectDate(${year}, ${month - 1}, ${day})">${day}</button>`;
-    }
-    
-    // 현재 달
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
-        const isToday = date.toDateString() === today.toDateString();
-        const isSelected = (window.selectedStartDate && date.toDateString() === window.selectedStartDate.toDateString()) ||
-                         (window.selectedEndDate && date.toDateString() === window.selectedEndDate.toDateString());
-        
-        let classes = 'calendar-day';
-        if (isToday) classes += ' today';
-        if (isSelected) classes += ' selected';
-        
-        html += `<button class="${classes}" onclick="selectDate(${year}, ${month}, ${day})">${day}</button>`;
-    }
-    
-    // 다음 달 첫 날들
-    const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
-    const remainingCells = totalCells - (firstDay + daysInMonth);
-    
-    for (let day = 1; day <= remainingCells; day++) {
-        html += `<button class="calendar-day other-month" onclick="selectDate(${year}, ${month + 1}, ${day})">${day}</button>`;
-    }
-    
-    grid.innerHTML = html;
-}
-
-function selectDate(year, month, day) {
-    const date = new Date(year, month, day);
-    
-    if (!window.isSelectingRange) {
-        window.selectedStartDate = date;
-        window.selectedEndDate = null;
-        window.isSelectingRange = true;
-    } else {
-        if (date < window.selectedStartDate) {
-            window.selectedEndDate = window.selectedStartDate;
-            window.selectedStartDate = date;
-        } else {
-            window.selectedEndDate = date;
-        }
-        window.isSelectingRange = false;
-    }
-    
-    generateCalendar();
-}
-
-function previousMonth() {
-    if (!window.currentCalendarDate) {
-        window.currentCalendarDate = new Date();
-    }
-    window.currentCalendarDate.setMonth(window.currentCalendarDate.getMonth() - 1);
-    generateCalendar();
-}
-
-function nextMonth() {
-    if (!window.currentCalendarDate) {
-        window.currentCalendarDate = new Date();
-    }
-    window.currentCalendarDate.setMonth(window.currentCalendarDate.getMonth() + 1);
-    generateCalendar();
-}
-
-function applyDateRange() {
-    if (window.selectedStartDate && window.selectedEndDate) {
-        document.getElementById('startDate').value = window.selectedStartDate.toISOString().split('T')[0];
-        document.getElementById('endDate').value = window.selectedEndDate.toISOString().split('T')[0];
-        document.getElementById('comparisonPeriod').value = 'custom';
-        
-        // ComparisonManager 인스턴스 업데이트
-        if (window.comparisonManager) {
-            window.comparisonManager.customStartDate = window.selectedStartDate;
-            window.comparisonManager.customEndDate = window.selectedEndDate;
-            window.comparisonManager.handlePeriodChange();
-        }
-    }
-    closeCalendar();
-}
-
-function goToMainSystem() {
-    window.location.href = '../index.html';
-}
-
-function goToPage(pageId) {
-    const pages = {
-        'designers': 'designers.html',
-        'branches': 'branches.html',
-        'history': 'history.html',
-        'checklist': 'checklist.html',
-        'statistics': 'statistics.html'
-    };
-    
-    if (pages[pageId]) {
-        window.location.href = pages[pageId];
-    }
-}
-
 // 전역 변수 초기화
 window.currentCalendarDate = new Date();
 window.selectedStartDate = null;
@@ -1309,8 +1193,23 @@ window.isSelectingRange = false;
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 지점 비교 페이지 초기화 시작');
-    window.comparisonManager = new ComparisonManager();
-    window.comparisonManager.initialize();
+    
+    // ComparisonManager 생성 및 초기화
+    if (!window.comparisonManager) {
+        window.comparisonManager = new ComparisonManager();
+        window.comparisonManager.initialize().catch(error => {
+            console.error('❌ ComparisonManager 초기화 실패:', error);
+        });
+    }
 });
 
-console.log('✅ 비교 페이지 스크립트 로딩 완료');
+console.log('✅ 비교 페이지 스크립트 로딩 완료');Category === 'all' || this.currentCategory === 'reviews') {
+                    acc.reviews += parseInt(c.naverReviews) || 0;
+                }
+                if (this.currentCategory === 'all' || this.currentCategory === 'posts') {
+                    acc.posts += parseInt(c.naverPosts) || 0;
+                }
+                if (this.currentCategory === 'all' || this.currentCategory === 'experience') {
+                    acc.experience += parseInt(c.naverExperience) || 0;
+                }
+                if (this.current
