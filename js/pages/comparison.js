@@ -378,19 +378,11 @@ container.innerHTML = `
     }
 
     // 기간 변경 처리
-    handlePeriodChange() {
-        const period = document.getElementById('comparisonPeriod').value;
-        const dateInputGroup = document.getElementById('dateInputGroup');
-        
-        this.currentPeriod = period;
-        
-        if (period === 'custom') {
-            dateInputGroup.style.display = 'flex';
-        } else {
-            dateInputGroup.style.display = 'none';
-            this.updateDateRangeByPeriod(period);
-        }
-    }
+// 날짜 선택기 초기화
+initializeDatePicker() {
+    // 초기 기간 설정 (이번 달)
+    this.updateDateRangeByPeriod('month');
+}
 
     // 기간별 날짜 범위 업데이트
     updateDateRangeByPeriod(period) {
