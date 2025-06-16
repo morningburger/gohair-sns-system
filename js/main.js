@@ -10,6 +10,47 @@ let cachedData = {
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🏠 메인 시스템 로드 시작');
+    
+    // 사용자 권한에 따른 네비게이션 메뉴 제어
+    function setupNavigationByRole() {
+        try {
+            const userData = sessionStorage.getItem('currentUser');
+            const currentUser = userData ? JSON.parse(userData) : null;
+            
+            console.log('현재 사용자:', currentUser);
+            
+            if (currentUser && currentUser.role === '지점관리자') {
+                // 지점관리자는 지점 관리 메뉴 숨김
+                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
+                if (branchNavBtn) {
+                    branchNavBtn.style.display = 'none';
+                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
+                }
+                
+                // 사용자 정보 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
+                    userElement.style.color = '#3b82f6';
+                }
+            } else if (currentUser && currentUser.role === '전체관리자') {
+                // 전체관리자는 모든 메뉴 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    userElement.textContent = `${currentUser.name} (${currentUser.role})`;
+                    userElement.style.color = '#059669';
+                }
+            }
+        } catch (error) {
+            console.error('네비게이션 권한 설정 오류:', error);
+        }
+    }
+
+    // 네비게이션 설정 실행
+    setupNavigationByRole();
+    
+    // 앱 초기화
     initializeApp();
 });
 
@@ -313,11 +354,22 @@ function loadDashboard() {
     
     let checklists = cachedData.checklists;
     
-    // 사용자 권한에 따른 데이터 필터링
-    const currentUser = window.authManager?.getCurrentUser();
-    if (currentUser && currentUser.role === 'leader') {
-        checklists = checklists.filter(c => c.branch === currentUser.branch);
+// 사용자 권한에 따른 데이터 필터링
+try {
+    const userData = sessionStorage.getItem('currentUser');
+    const currentUser = userData ? JSON.parse(userData) : null;
+    
+    if (currentUser && currentUser.role === '지점관리자') {
+        const userBranch = currentUser.branch || currentUser.branchName;
+        checklists = checklists.filter(c => {
+            const itemBranch = c.branch || c.branchName || c.selectedBranch;
+            return itemBranch === userBranch;
+        });
+        console.log(`지점관리자 데이터 필터링: ${userBranch}, 필터링된 데이터: ${checklists.length}건`);
     }
+} catch (error) {
+    console.error('대시보드 데이터 필터링 오류:', error);
+}
     
     // 기간 필터링
     checklists = window.filterDataByPeriod(checklists, period, startDate, endDate);
@@ -353,10 +405,22 @@ function loadBranchRankings(checklists) {
     const branches = cachedData.branches;
     const currentUser = window.authManager?.getCurrentUser();
     
-    // 사용자 권한에 따른 지점 필터링
-    const userBranches = currentUser && currentUser.role === 'leader' 
-        ? branches.filter(b => b.name === currentUser.branch)
-        : branches;
+// 사용자 권한에 따른 지점 필터링
+let userBranches = branches;
+try {
+    const userData = sessionStorage.getItem('currentUser');
+    const currentUser = userData ? JSON.parse(userData) : null;
+    
+    if (currentUser && currentUser.role === '지점관리자') {
+        const userBranch = currentUser.branch || currentUser.branchName;
+        userBranches = branches.filter(b => {
+            const branchName = b.name || b.branchName;
+            return branchName === userBranch;
+        });
+    }
+} catch (error) {
+    console.error('지점 순위 필터링 오류:', error);
+}
     
     const branchStats = userBranches.map(branch => {
         const branchChecklists = checklists.filter(c => c.branch === branch.name);
