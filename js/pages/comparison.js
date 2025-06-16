@@ -1202,4 +1202,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-console.log('✅ 비교 페이지 스크립트 로딩 완료');
