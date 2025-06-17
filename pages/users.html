@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>계정 관리 - GOHAIR SNS 마케팅 관리 시스템</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/branches.css">
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        .user-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .status-active { background-color: #dcfce7; color: #166534; }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-suspended { background-color: #fee2e2; color: #991b1b; }
+        
+        .user-role {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .role-admin { background-color: #dbeafe; color: #1e40af; }
+        .role-manager { background-color: #e0e7ff; color: #3730a3; }
+        
+        .pending-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .stats-pending {
+            background-color: #fef3c7;
+            border: 2px solid #f59e0b;
+        }
+        
+        .user-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-section {
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .detail-section h4 {
+            margin: 0 0 0.75rem 0;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: #6b7280;
+        }
+        
+        .detail-value {
+            color: #111827;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
+                <div class="header-actions">
+                    <span id="currentUser"></span>
+                    <button class="btn btn-green" onclick="exportUsers()">📥 계정 내보내기</button>
+                    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
+                <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
+                <button class="nav-btn" onclick="goToPage('branches')">🏢 지점 관리</button>
+                <button class="nav-btn active">👤 계정 관리</button>
+                <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
+                <button class="nav-btn" onclick="goToPage('checklist')">📋 체크리스트 입력</button>
+                <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
+                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 계정 관리 페이지 -->
+        <div id="usersPage">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-4">👤 계정 관리</h2>
+                
+                <!-- 계정 통계 요약 -->
+                <div class="branch-stats-summary">
+                    <div class="stats-item">
+                        <div class="stats-icon">👥</div>
+                        <div class="stats-content">
+                            <div class="stats-value" id="totalUsers">0</div>
+                            <div class="stats-label">전체 계정</div>
+                        </div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-icon">✅</div>
+                        <div class="stats-content">
+                            <div class="stats-value" id="activeUsers">0</div>
+                            <div class="stats-label">활성 계정</div>
+                        </div>
+                    </div>
+                    <div class="stats-item stats-pending">
+                        <div class="stats-icon">⏳</div>
+                        <div class="stats-content">
+                            <div class="stats-value" id="pendingUsers">0</div>
+                            <div class="stats-label">승인 대기</div>
+                        </div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-icon">🏢</div>
+                        <div class="stats-content">
+                            <div class="stats-value" id="branchManagers">0</div>
+                            <div class="stats-label">지점관리자</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 필터 및 검색 -->
+                <div class="filter-controls">
+                    <div class="search-filters">
+                        <div class="search-group">
+                            <label>🔍 계정 검색</label>
+                            <input type="text" id="userSearch" class="search-input" 
+                                   placeholder="이름, 이메일, 지점명으로 검색...">
+                        </div>
+                        <div class="filter-group">
+                            <label>👤 역할</label>
+                            <select id="roleFilter">
+                                <option value="">전체</option>
+                                <option value="전체관리자">전체관리자</option>
+                                <option value="지점관리자">지점관리자</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>📊 상태</label>
+                            <select id="statusFilter">
+                                <option value="">전체</option>
+                                <option value="active">활성</option>
+                                <option value="pending">승인 대기</option>
+                                <option value="suspended">정지</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>🏢 지점</label>
+                            <select id="branchFilter">
+                                <option value="">전체</option>
+                                <!-- 동적으로 생성 -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 계정 목록 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold">등록된 계정</h3>
+                    <div class="header-actions">
+                        <button onclick="showAddUser()" class="btn">
+                            ➕ 새 계정 추가
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>이메일</th>
+                                <th>역할</th>
+                                <th>지점</th>
+                                <th>상태</th>
+                                <th>가입일</th>
+                                <th>최근 로그인</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersList">
+                            <!-- 동적으로 생성됨 -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination" id="usersPagination">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달들 -->
+    <!-- 계정 추가 모달 -->
+    <div id="addUserModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">👤 새 계정 추가</h3>
+                <button onclick="hideAddUser()" class="modal-close">❌</button>
+            </div>
+            <form id="addUserForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>👤 이름 <span class="required">*</span></label>
+                        <input type="text" id="userName" required placeholder="홍길동">
+                    </div>
+                    <div class="form-group">
+                        <label>📧 이메일 <span class="required">*</span></label>
+                        <input type="email" id="userEmail" required placeholder="user@example.com">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>👑 역할 <span class="required">*</span></label>
+                        <select id="userRole" required>
+                            <option value="">선택하세요</option>
+                            <option value="전체관리자">전체관리자</option>
+                            <option value="지점관리자">지점관리자</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📞 전화번호</label>
+                        <input type="tel" id="userPhone" placeholder="010-1234-5678">
+                    </div>
+                </div>
+                <div class="form-group" id="branchSelectGroup" style="display: none;">
+                    <label>🏢 담당 지점 <span class="required">*</span></label>
+                    <select id="userBranch">
+                        <option value="">선택하세요</option>
+                        <!-- 동적으로 생성 -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📝 메모</label>
+                    <textarea id="userNotes" rows="3" placeholder="계정 관련 메모"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideAddUser()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">➕ 추가</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 계정 상세 보기 모달 -->
+    <div id="viewUserModal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">👤 계정 상세 정보</h3>
+                <button onclick="hideViewUser()" class="modal-close">❌</button>
+            </div>
+            <div id="userDetailContent">
+                <!-- 동적으로 생성됨 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 계정 편집 모달 -->
+    <div id="editUserModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">✏️ 계정 정보 수정</h3>
+                <button onclick="hideEditUser()" class="modal-close">❌</button>
+            </div>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>👤 이름 <span class="required">*</span></label>
+                        <input type="text" id="editUserName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📧 이메일 <span class="required">*</span></label>
+                        <input type="email" id="editUserEmail" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>👑 역할 <span class="required">*</span></label>
+                        <select id="editUserRole" required>
+                            <option value="전체관리자">전체관리자</option>
+                            <option value="지점관리자">지점관리자</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📞 전화번호</label>
+                        <input type="tel" id="editUserPhone">
+                    </div>
+                </div>
+                <div class="form-group" id="editBranchSelectGroup">
+                    <label>🏢 담당 지점 <span class="required">*</span></label>
+                    <select id="editUserBranch">
+                        <option value="">선택하세요</option>
+                        <!-- 동적으로 생성 -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📊 상태 <span class="required">*</span></label>
+                    <select id="editUserStatus" required>
+                        <option value="active">활성</option>
+                        <option value="suspended">정지</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📝 메모</label>
+                    <textarea id="editUserNotes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideEditUser()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">💾 저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/config/firebase.js"></script>
+    <script>
+        // 사용자 관리 클래스
+        class UsersManager {
+            constructor() {
+                this.data = {
+                    users: [],
+                    branches: []
+                };
+                this.currentUser = null;
+                this.pagination = {
+                    currentPage: 1,
+                    itemsPerPage: 10,
+                    totalItems: 0,
+                    totalPages: 0
+                };
+                this.filters = {
+                    search: '',
+                    role: '',
+                    status: '',
+                    branch: ''
+                };
+            }
+
+            async initialize() {
+                try {
+                    this.currentUser = this.getCurrentUser();
+                    this.updateUserDisplay();
+                    
+                    if (!this.currentUser || this.currentUser.role !== '전체관리자') {
+                        alert('이 페이지는 전체관리자만 접근할 수 있습니다.');
+                        window.location.href = '../index.html';
+                        return;
+                    }
+
+                    await this.loadAllData();
+                    this.setupEventListeners();
+                    this.loadUsers();
+                    
+                    console.log('계정 관리 페이지 초기화 완료');
+                } catch (error) {
+                    console.error('계정 관리 페이지 초기화 오류:', error);
+                }
+            }
+
+            getCurrentUser() {
+                try {
+                    const userData = sessionStorage.getItem('currentUser');
+                    return userData ? JSON.parse(userData) : null;
+                } catch {
+                    return null;
+                }
+            }
+
+            updateUserDisplay() {
+                const userElement = document.getElementById('currentUser');
+                if (userElement && this.currentUser) {
+                    userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
+                    userElement.style.color = '#059669';
+                    userElement.style.fontWeight = '500';
+                }
+            }
+
+            async loadAllData() {
+                try {
+                    // 사용자 데이터 로드
+                    this.data.users = await this.loadUsersFromFirebase();
+                    
+                    // 지점 데이터 로드
+                    this.data.branches = await this.loadBranchesFromFirebase();
+                    
+                    // 지점 필터 옵션 업데이트
+                    this.updateBranchFilterOptions();
+                    
+                    console.log('✅ 모든 데이터 로딩 완료');
+                    console.log(`- 사용자: ${this.data.users.length}개`);
+                    console.log(`- 지점: ${this.data.branches.length}개`);
+                } catch (error) {
+                    console.error('❌ 데이터 로딩 중 오류:', error);
+                    throw error;
+                }
+            }
+
+            async loadUsersFromFirebase() {
+                try {
+                    if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+                        return [];
+                    }
+
+                    const db = firebase.firestore();
+                    const snapshot = await db.collection('users').get();
+                    
+                    const users = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        users.push({
+                            id: doc.id,
+                            docId: doc.id,
+                            name: data.name || '',
+                            email: data.email || '',
+                            role: data.role || '',
+                            branch: data.branch || '',
+                            branchCode: data.branchCode || '',
+                            phone: data.phone || '',
+                            status: data.status || 'active',
+                            notes: data.notes || '',
+                            createdAt: data.createdAt || new Date().toISOString().split('T')[0],
+                            lastLogin: data.lastLogin || '',
+                            approvedBy: data.approvedBy || '',
+                            approvedAt: data.approvedAt || ''
+                        });
+                    });
+                    
+                    return users;
+                } catch (error) {
+                    console.error('❌ 사용자 데이터 로딩 실패:', error);
+                    return [];
+                }
+            }
+
+            async loadBranchesFromFirebase() {
+                try {
+                    if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+                        return [];
+                    }
+
+                    const db = firebase.firestore();
+                    const snapshot = await db.collection('branches').get();
+                    
+                    const branches = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        branches.push({
+                            id: doc.id,
+                            name: data.name || '',
+                            code: data.code || ''
+                        });
+                    });
+                    
+                    return branches;
+                } catch (error) {
+                    console.error('❌ 지점 데이터 로딩 실패:', error);
+                    return [];
+                }
+            }
+
+            updateBranchFilterOptions() {
+                const branchFilter = document.getElementById('branchFilter');
+                const userBranch = document.getElementById('userBranch');
+                const editUserBranch = document.getElementById('editUserBranch');
+                
+                const options = this.data.branches.map(branch => 
+                    `<option value="${branch.name}">${branch.name} (${branch.code})</option>`
+                ).join('');
+                
+                if (branchFilter) {
+                    branchFilter.innerHTML = '<option value="">전체</option>' + options;
+                }
+                
+                if (userBranch) {
+                    userBranch.innerHTML = '<option value="">선택하세요</option>' + options;
+                }
+                
+                if (editUserBranch) {
+                    editUserBranch.innerHTML = '<option value="">선택하세요</option>' + options;
+                }
+            }
+
+            loadUsers() {
+                let users = [...this.data.users];
+                
+                // 검색 필터 적용
+                if (this.filters.search) {
+                    const searchTerm = this.filters.search.toLowerCase();
+                    users = users.filter(user => 
+                        user.name.toLowerCase().includes(searchTerm) ||
+                        user.email.toLowerCase().includes(searchTerm) ||
+                        (user.branch && user.branch.toLowerCase().includes(searchTerm))
+                    );
+                }
+
+                // 역할 필터 적용
+                if (this.filters.role) {
+                    users = users.filter(user => user.role === this.filters.role);
+                }
+
+                // 상태 필터 적용
+                if (this.filters.status) {
+                    users = users.filter(user => user.status === this.filters.status);
+                }
+
+                // 지점 필터 적용
+                if (this.filters.branch) {
+                    users = users.filter(user => user.branch === this.filters.branch);
+                }
+
+                // 정렬 (이름순)
+                users.sort((a, b) => a.name.localeCompare(b.name));
+
+                // 페이지네이션 적용
+                this.pagination.totalItems = users.length;
+                this.pagination.totalPages = Math.ceil(users.length / this.pagination.itemsPerPage);
+                
+                const startIndex = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
+                const endIndex = startIndex + this.pagination.itemsPerPage;
+                const paginatedUsers = users.slice(startIndex, endIndex);
+
+                // 통계 업데이트
+                this.updateUserStats(this.data.users);
+
+                // 테이블 렌더링
+                this.renderUsersTable(paginatedUsers);
+
+                // 페이지네이션 업데이트
+                this.renderPagination();
+            }
+
+            updateUserStats(users) {
+                const totalUsers = users.length;
+                const activeUsers = users.filter(u => u.status === 'active').length;
+                const pendingUsers = users.filter(u => u.status === 'pending').length;
+                const branchManagers = users.filter(u => u.role === '지점관리자').length;
+
+                document.getElementById('totalUsers').textContent = totalUsers;
+                document.getElementById('activeUsers').textContent = activeUsers;
+                document.getElementById('pendingUsers').textContent = pendingUsers;
+                document.getElementById('branchManagers').textContent = branchManagers;
+            }
+
+            renderUsersTable(users) {
+                const tbody = document.getElementById('usersList');
+                if (!tbody) return;
+
+                if (users.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-8">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">👤</div>
+                                    <p>등록된 계정이 없습니다.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = users.map(user => `
+                    <tr class="user-row" data-user-id="${user.id}">
+                        <td class="font-medium">${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <span class="user-role role-${user.role === '전체관리자' ? 'admin' : 'manager'}">
+                                ${user.role}
+                            </span>
+                        </td>
+                        <td>${user.branch || '-'}</td>
+                        <td>
+                            <span class="user-status status-${user.status}">
+                                ${this.getStatusLabel(user.status)}
+                            </span>
+                        </td>
+                        <td>${user.createdAt}</td>
+                        <td>${user.lastLogin || '-'}</td>
+                        <td>
+                            <div class="flex gap-1">
+                                ${user.status === 'pending' ? `
+                                    <div class="pending-actions">
+                                        <button onclick="approveUser('${user.docId}')" 
+                                                class="btn btn-green btn-sm" 
+                                                title="승인">✅</button>
+                                        <button onclick="rejectUser('${user.docId}')" 
+                                                class="btn btn-red btn-sm" 
+                                                title="거부">❌</button>
+                                    </div>
+                                ` : `
+                                    <button onclick="viewUser('${user.docId}')" 
+                                            class="btn btn-sm" title="상세보기">👁️</button>
+                                    <button onclick="editUser('${user.docId}')" 
+                                            class="btn btn-sm" title="수정">✏️</button>
+                                    <button onclick="deleteUser('${user.docId}')" 
+                                            class="btn btn-red btn-sm" title="삭제">🗑️</button>
+                                `}
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            getStatusLabel(status) {
+                const labels = {
+                    active: '활성',
+                    pending: '승인대기',
+                    suspended: '정지'
+                };
+                return labels[status] || status;
+            }
+
+            renderPagination() {
+                const pagination = document.getElementById('usersPagination');
+                if (!pagination) return;
+
+                const { currentPage, totalPages, totalItems, itemsPerPage } = this.pagination;
+                
+                if (totalPages <= 1) {
+                    pagination.innerHTML = '';
+                    return;
+                }
+
+                const startItem = (currentPage - 1) * itemsPerPage + 1;
+                const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+                let paginationHTML = `
+                    <button class="pagination-btn" 
+                            onclick="window.usersManager.goToPage(${currentPage - 1})"
+                            ${currentPage === 1 ? 'disabled' : ''}>
+                        ◀ 이전
+                    </button>
+                `;
+
+                // 페이지 번호들
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHTML += `
+                        <button class="pagination-btn ${i === currentPage ? 'active' : ''}"
+                                onclick="window.usersManager.goToPage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                }
+
+                paginationHTML += `
+                    <button class="pagination-btn" 
+                            onclick="window.usersManager.goToPage(${currentPage + 1})"
+                            ${currentPage === totalPages ? 'disabled' : ''}>
+                        다음 ▶
+                    </button>
+                    <div class="pagination-info" style="margin-left: 1rem; color: #6b7280;">
+                        ${startItem}-${endItem} / ${totalItems}개
+                    </div>
+                `;
+
+                pagination.innerHTML = paginationHTML;
+            }
+
+            goToPage(page) {
+                if (page < 1 || page > this.pagination.totalPages) return;
+                this.pagination.currentPage = page;
+                this.loadUsers();
+            }
+
+            setupEventListeners() {
+                // 검색 및 필터
+                document.getElementById('userSearch')?.addEventListener('input', (e) => {
+                    this.filters.search = e.target.value;
+                    this.pagination.currentPage = 1;
+                    this.loadUsers();
+                });
+
+                document.getElementById('roleFilter')?.addEventListener('change', (e) => {
+                    this.filters.role = e.target.value;
+                    this.pagination.currentPage = 1;
+                    this.loadUsers();
+                });
+
+                document.getElementById('statusFilter')?.addEventListener('change', (e) => {
+                    this.filters.status = e.target.value;
+                    this.pagination.currentPage = 1;
+                    this.loadUsers();
+                });
+
+                document.getElementById('branchFilter')?.addEventListener('change', (e) => {
+                    this.filters.branch = e.target.value;
+                    this.pagination.currentPage = 1;
+                    this.loadUsers();
+                });
+
+                // 역할 선택에 따른 지점 선택 표시/숨김
+                document.getElementById('userRole')?.addEventListener('change', (e) => {
+                    const branchGroup = document.getElementById('branchSelectGroup');
+                    if (e.target.value === '지점관리자') {
+                        branchGroup.style.display = 'block';
+                        document.getElementById('userBranch').required = true;
+                    } else {
+                        branchGroup.style.display = 'none';
+                        document.getElementById('userBranch').required = false;
+                    }
+                });
+
+                document.getElementById('editUserRole')?.addEventListener('change', (e) => {
+                    const branchGroup = document.getElementById('editBranchSelectGroup');
+                    if (e.target.value === '지점관리자') {
+                        branchGroup.style.display = 'block';
+                        document.getElementById('editUserBranch').required = true;
+                    } else {
+                        branchGroup.style.display = 'none';
+                        document.getElementById('editUserBranch').required = false;
+                    }
+                });
+
+                // 폼 제출
+                document.getElementById('addUserForm')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleAddUser();
+                });
+
+                document.getElementById('editUserForm')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleEditUser();
+                });
+            }
+
+            async handleAddUser() {
+                try {
+                    const formData = {
+                        name: document.getElementById('userName').value,
+                        email: document.getElementById('userEmail').value,
+                        role: document.getElementById('userRole').value,
+                        phone: document.getElementById('userPhone').value || null,
+                        notes: document.getElementById('userNotes').value || null,
+                        status: 'active',
+                        createdAt: new Date().toISOString().split('T')[0]
+                    };
+
+                    // 지점관리자인 경우 지점 정보 추가
+                    if (formData.role === '지점관리자') {
+                        const selectedBranch = document.getElementById('userBranch').value;
+                        if (!selectedBranch) {
+                            alert('지점관리자는 담당 지점을 선택해야 합니다.');
+                            return;
+                        }
+                        formData.branch = selectedBranch;
+                        
+                        // 지점 코드 찾기
+                        const branch = this.data.branches.find(b => b.name === selectedBranch);
+                        if (branch) {
+                            formData.branchCode = branch.code;
+                        }
+                    }
+
+                    // 이메일 중복 확인
+                    const existingUser = this.data.users.find(u => u.email === formData.email);
+                    if (existingUser) {
+                        alert('이미 사용 중인 이메일입니다.');
+                        return;
+                    }
+
+                    // Firebase에 저장
+                    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                        const db = firebase.firestore();
+                        await db.collection('users').add(formData);
+                        
+                        // 데이터 다시 로드
+                        await this.loadAllData();
+                    }
+                    
+                    this.hideAddUser();
+                    this.loadUsers();
+                    
+                    this.showNotification('계정이 성공적으로 추가되었습니다.', 'success');
+                } catch (error) {
+                    console.error('계정 추가 오류:', error);
+                    this.showNotification('계정 추가 중 오류가 발생했습니다.', 'error');
+                }
+            }
+
+            async handleEditUser() {
+                try {
+                    const docId = document.getElementById('editUserId').value;
+                    const formData = {
+                        name: document.getElementById('editUserName').value,
+                        email: document.getElementById('editUserEmail').value,
+                        role: document.getElementById('editUserRole').value,
+                        phone: document.getElementById('editUserPhone').value || null,
+                        status: document.getElementById('editUserStatus').value,
+                        notes: document.getElementById('editUserNotes').value || null
+                    };
+
+                    // 지점관리자인 경우 지점 정보 추가
+                    if (formData.role === '지점관리자') {
+                        const selectedBranch = document.getElementById('editUserBranch').value;
+                        if (!selectedBranch) {
+                            alert('지점관리자는 담당 지점을 선택해야 합니다.');
+                            return;
+                        }
+                        formData.branch = selectedBranch;
+                        
+                        // 지점 코드 찾기
+                        const branch = this.data.branches.find(b => b.name === selectedBranch);
+                        if (branch) {
+                            formData.branchCode = branch.code;
+                        }
+                    } else {
+                        formData.branch = null;
+                        formData.branchCode = null;
+                    }
+
+                    // 이메일 중복 확인 (자신 제외)
+                    const existingUser = this.data.users.find(u => 
+                        u.email === formData.email && u.docId !== docId);
+                    if (existingUser) {
+                        alert('이미 사용 중인 이메일입니다.');
+                        return;
+                    }
+
+                    // Firebase에서 업데이트
+                    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                        const db = firebase.firestore();
+                        await db.collection('users').doc(docId).update(formData);
+                        
+                        // 데이터 다시 로드
+                        await this.loadAllData();
+                    }
+
+                    this.hideEditUser();
+                    this.loadUsers();
+                    
+                    this.showNotification('계정 정보가 성공적으로 수정되었습니다.', 'success');
+                } catch (error) {
+                    console.error('계정 수정 오류:', error);
+                    this.showNotification('계정 수정 중 오류가 발생했습니다.', 'error');
+                }
+            }
+
+            async approveUser(docId) {
+                try {
+                    const user = this.data.users.find(u => u.docId === docId);
+                    if (!user) return;
+
+                    if (confirm(`"${user.name}" 계정을 승인하시겠습니까?`)) {
+                        const updateData = {
+                            status: 'active',
+                            approvedBy: this.currentUser.id || this.currentUser.email,
+                            approvedAt: new Date().toISOString()
+                        };
+
+                        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                            const db = firebase.firestore();
+                            await db.collection('users').doc(docId).update(updateData);
+                            
+                            await this.loadAllData();
+                        }
+                        
+                        this.loadUsers();
+                        this.showNotification('계정이 승인되었습니다.', 'success');
+                    }
+                } catch (error) {
+                    console.error('계정 승인 오류:', error);
+                    this.showNotification('계정 승인 중 오류가 발생했습니다.', 'error');
+                }
+            }
+
+            async rejectUser(docId) {
+                try {
+                    const user = this.data.users.find(u => u.docId === docId);
+                    if (!user) return;
+
+                    if (confirm(`"${user.name}" 계정을 거부하시겠습니까? 계정이 삭제됩니다.`)) {
+                        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                            const db = firebase.firestore();
+                            await db.collection('users').doc(docId).delete();
+                            
+                            await this.loadAllData();
+                        }
+                        
+                        this.loadUsers();
+                        this.showNotification('계정이 거부되었습니다.', 'success');
+                    }
+                } catch (error) {
+                    console.error('계정 거부 오류:', error);
+                    this.showNotification('계정 거부 중 오류가 발생했습니다.', 'error');
+                }
+            }
+
+            async deleteUser(docId) {
+                try {
+                    const user = this.data.users.find(u => u.docId === docId);
+                    if (!user) return;
+
+                    if (confirm(`정말로 "${user.name}" 계정을 삭제하시겠습니까?`)) {
+                        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                            const db = firebase.firestore();
+                            await db.collection('users').doc(docId).delete();
+                            
+                            await this.loadAllData();
+                        }
+                        
+                        this.loadUsers();
+                        this.showNotification('계정이 삭제되었습니다.', 'success');
+                    }
+                } catch (error) {
+                    console.error('계정 삭제 오류:', error);
+                    this.showNotification('계정 삭제 중 오류가 발생했습니다.', 'error');
+                }
+            }
+
+            showAddUser() {
+                document.getElementById('addUserModal').classList.remove('hidden');
+            }
+
+            hideAddUser() {
+                document.getElementById('addUserModal').classList.add('hidden');
+                document.getElementById('addUserForm').reset();
+                document.getElementById('branchSelectGroup').style.display = 'none';
+            }
+
+            showEditUser(docId) {
+                const user = this.data.users.find(u => u.docId === docId);
+                if (!user) return;
+
+                document.getElementById('editUserId').value = user.docId;
+                document.getElementById('editUserName').value = user.name;
+                document.getElementById('editUserEmail').value = user.email;
+                document.getElementById('editUserRole').value = user.role;
+                document.getElementById('editUserPhone').value = user.phone || '';
+                document.getElementById('editUserStatus').value = user.status;
+                document.getElementById('editUserNotes').value = user.notes || '';
+
+                // 지점 선택 표시/숨김
+                const branchGroup = document.getElementById('editBranchSelectGroup');
+                if (user.role === '지점관리자') {
+                    branchGroup.style.display = 'block';
+                    document.getElementById('editUserBranch').value = user.branch || '';
+                } else {
+                    branchGroup.style.display = 'none';
+                }
+                
+                document.getElementById('editUserModal').classList.remove('hidden');
+            }
+
+            hideEditUser() {
+                document.getElementById('editUserModal').classList.add('hidden');
+                document.getElementById('editUserForm').reset();
+            }
+
+            showViewUser(docId) {
+                const user = this.data.users.find(u => u.docId === docId);
+                if (!user) return;
+
+                const detailHTML = `
+                    <div class="user-detail-grid">
+                        <div class="detail-section">
+                            <h4>👤 기본 정보</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">이름</span>
+                                <span class="detail-value">${user.name}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">이메일</span>
+                                <span class="detail-value">${user.email}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">전화번호</span>
+                                <span class="detail-value">${user.phone || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">역할</span>
+                                <span class="detail-value">
+                                    <span class="user-role role-${user.role === '전체관리자' ? 'admin' : 'manager'}">
+                                        ${user.role}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4>🏢 지점 정보</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">담당 지점</span>
+                                <span class="detail-value">${user.branch || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">지점 코드</span>
+                                <span class="detail-value">${user.branchCode || '-'}</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4>📊 계정 상태</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">상태</span>
+                                <span class="detail-value">
+                                    <span class="user-status status-${user.status}">
+                                        ${this.getStatusLabel(user.status)}
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">가입일</span>
+                                <span class="detail-value">${user.createdAt}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">최근 로그인</span>
+                                <span class="detail-value">${user.lastLogin || '-'}</span>
+                            </div>
+                            ${user.approvedBy ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">승인자</span>
+                                    <span class="detail-value">${user.approvedBy}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">승인일</span>
+                                    <span class="detail-value">${user.approvedAt}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        ${user.notes ? `
+                            <div class="detail-section">
+                                <h4>📝 메모</h4>
+                                <p>${user.notes}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                document.getElementById('userDetailContent').innerHTML = detailHTML;
+                document.getElementById('viewUserModal').classList.remove('hidden');
+            }
+
+            hideViewUser() {
+                document.getElementById('viewUserModal').classList.add('hidden');
+            }
+
+            exportUsers() {
+                const users = [...this.data.users];
+                
+                let csvContent = "\ufeff이름,이메일,역할,담당지점,상태,전화번호,가입일,최근로그인\n";
+                
+                users.forEach(u => {
+                    csvContent += `${u.name},${u.email},${u.role},"${u.branch || ''}",${this.getStatusLabel(u.status)},${u.phone || ''},${u.createdAt},${u.lastLogin || ''}\n`;
+                });
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `GOHAIR_계정목록_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            showNotification(message, type = 'info') {
+                if (window.showNotification) {
+                    window.showNotification(message, type);
+                } else {
+                    alert(message);
+                }
+            }
+        }
+
+        // 전역 함수들
+        function showAddUser() { window.usersManager?.showAddUser(); }
+        function hideAddUser() { window.usersManager?.hideAddUser(); }
+        function editUser(docId) { window.usersManager?.showEditUser(docId); }
+        function hideEditUser() { window.usersManager?.hideEditUser(); }
+        function viewUser(docId) { window.usersManager?.showViewUser(docId); }
+        function hideViewUser() { window.usersManager?.hideViewUser(); }
+        function deleteUser(docId) { window.usersManager?.deleteUser(docId); }
+        function approveUser(docId) { window.usersManager?.approveUser(docId); }
+        function rejectUser(docId) { window.usersManager?.rejectUser(docId); }
+        function exportUsers() { window.usersManager?.exportUsers(); }
+
+        function goToMainSystem() { window.location.href = '../index.html'; }
+        function goToPage(pageId) {
+            const pages = {
+                'designers': 'designers.html',
+                'branches': 'branches.html',
+                'users': 'users.html',
+                'history': 'history.html',
+                'checklist': 'checklist.html', 
+                'statistics': 'statistics.html',
+                'comparison': 'comparison.html'
+            };
+            if (pages[pageId]) {
+                window.location.href = pages[pageId];
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            window.usersManager = new UsersManager();
+            window.usersManager.initialize();
+        });
+    </script>
+</body>
+</html>
