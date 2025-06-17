@@ -40,7 +40,8 @@ class DesignersManager {
             
             // 이벤트 리스너 설정
             this.setupEventListeners();
-            
+            // 초기 날짜 설정 (이번 달로 기본 설정)
+            this.setAutomaticDateRange('month');
             // 디자이너 목록 로드
             this.loadDesigners();
             
@@ -311,30 +312,94 @@ updateUserDisplay() {
     }
 
     // 지점 옵션 로드
-    loadBranchOptions() {
-        let branches = this.data.branches;
-        
-// 현재 사용자가 지점관리자인 경우 해당 지점만
-if (this.currentUser && this.currentUser.role === '지점관리자') {
-    branches = branches.filter(b => b === this.currentUser.branch);
-}
+loadBranchOptions() {
+    let branches = this.data.branches;
+    
+    // 지점관리자인 경우 해당 지점만 필터링
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        branches = branches.filter(b => b === this.currentUser.branch);
+        console.log(`🔒 지점관리자 지점 필터링: ${this.currentUser.branch}`);
+    }
 
-        // 지점 필터 옵션
-        const branchFilter = document.getElementById('designerBranchFilter');
-        if (branchFilter) {
+    // 지점 필터 옵션 (전체관리자만 보임)
+    const branchFilter = document.getElementById('designerBranchFilter');
+    if (branchFilter) {
+        if (this.currentUser && this.currentUser.role === '전체관리자') {
             branchFilter.innerHTML = '<option value="">전체 지점</option>' +
                 branches.map(b => `<option value="${b}">${b}</option>`).join('');
         }
+    }
 
-        // 모달의 지점 선택 옵션
-        const modalSelects = ['designerBranch', 'editDesignerBranch'];
-        modalSelects.forEach(selectId => {
-            const select = document.getElementById(selectId);
-            if (select) {
+    // 모달의 지점 선택 옵션
+    const modalSelects = ['designerBranch', 'editDesignerBranch'];
+    modalSelects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (select) {
+            if (this.currentUser && this.currentUser.role === '지점관리자') {
+                // 지점관리자는 자신의 지점만 선택 가능
+                select.innerHTML = `<option value="${this.currentUser.branch}">${this.currentUser.branch}</option>`;
+                select.disabled = true;
+                select.style.backgroundColor = '#f3f4f6';
+            } else {
+                // 전체관리자는 모든 지점 선택 가능
                 select.innerHTML = '<option value="">지점을 선택하세요</option>' +
                     branches.map(b => `<option value="${b}">${b}</option>`).join('');
+                select.disabled = false;
+                select.style.backgroundColor = '';
             }
-        });
+        }
+    });
+}
+
+    // 기간에 따른 자동 날짜 설정
+    setAutomaticDateRange(period) {
+        const startDateInput = document.getElementById('designersStartDate');
+        const endDateInput = document.getElementById('designersEndDate');
+        
+        if (!startDateInput || !endDateInput) return;
+        
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        let startDate = '';
+        
+        switch(period) {
+            case 'week':
+                // 이번 주 (월요일부터)
+                const dayOfWeek = now.getDay();
+                const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                const monday = new Date(now);
+                monday.setDate(now.getDate() + mondayOffset);
+                startDate = monday.toISOString().split('T')[0];
+                break;
+                
+            case 'month':
+                // 이번 달 첫째 날
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                break;
+                
+            case 'quarter':
+                // 이번 분기 첫째 날
+                const quarter = Math.floor(now.getMonth() / 3);
+                startDate = new Date(now.getFullYear(), quarter * 3, 1).toISOString().split('T')[0];
+                break;
+                
+            case 'all':
+                // 전체 기간 (1년 전부터)
+                const oneYearAgo = new Date(now);
+                oneYearAgo.setFullYear(now.getFullYear() - 1);
+                startDate = oneYearAgo.toISOString().split('T')[0];
+                break;
+                
+            case 'custom':
+            default:
+                // 사용자 정의인 경우 자동 설정하지 않음
+                return;
+        }
+        
+        startDateInput.value = startDate;
+        endDateInput.value = today;
+        
+        console.log(`📅 자동 날짜 설정: ${period} - ${startDate} ~ ${today}`);
     }
 
     // 디자이너 목록 로드
@@ -608,21 +673,25 @@ if (this.currentUser && this.currentUser.role === '지점관리자') {
     // 이벤트 리스너 설정
     setupEventListeners() {
         // 기간 선택 변경
-        const periodSelect = document.getElementById('designersPeriod');
-        if (periodSelect) {
-            periodSelect.addEventListener('change', (e) => {
-                this.filters.period = e.target.value;
-                const customRange = document.getElementById('designersCustomRange');
-                if (customRange) {
-                    if (e.target.value === 'custom') {
-                        customRange.classList.remove('hidden');
-                    } else {
-                        customRange.classList.add('hidden');
-                    }
-                }
-                this.loadDesigners();
-            });
+const periodSelect = document.getElementById('designersPeriod');
+if (periodSelect) {
+    periodSelect.addEventListener('change', (e) => {
+        this.filters.period = e.target.value;
+        const customRange = document.getElementById('designersCustomRange');
+        
+        // 자동 날짜 설정
+        this.setAutomaticDateRange(e.target.value);
+        
+        if (customRange) {
+            if (e.target.value === 'custom') {
+                customRange.classList.remove('hidden');
+            } else {
+                customRange.classList.add('hidden');
+            }
         }
+        this.loadDesigners();
+    });
+}
 
         // 지점 필터 변경
         const branchFilter = document.getElementById('designerBranchFilter');
