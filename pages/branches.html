@@ -9,9 +9,88 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/responsive.css">
     <link rel="stylesheet" href="../css/branches.css">
-     <!-- 🔥 Firebase CDN 추가 -->
+    
+    <!-- 🔥 Firebase CDN 추가 -->
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* 관리자 관련 스타일 추가 */
+        .managers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .manager-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+        
+        .manager-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .manager-name {
+            font-weight: 600;
+            color: #111827;
+        }
+        
+        .manager-email {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .manager-phone, .manager-status {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .branch-managers-management {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .current-managers, .available-managers {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: #fafafa;
+        }
+        
+        .current-managers h4, .available-managers h4 {
+            margin: 0 0 1rem 0;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .badge-green {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .badge-red {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .btn-green {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .btn-green:hover {
+            background-color: #059669;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -30,6 +109,7 @@
                 <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
                 <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
                 <button class="nav-btn active">🏢 지점 관리</button>
+                <button class="nav-btn" onclick="goToPage('users')">👤 계정 관리</button>
                 <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
                 <button class="nav-btn" onclick="goToPage('checklist')">📋 체크리스트 입력</button>
                 <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
@@ -91,6 +171,7 @@
                                 <option value="name">지점명</option>
                                 <option value="code">지점코드</option>
                                 <option value="designerCount">디자이너 수</option>
+                                <option value="managerCount">관리자 수</option>
                                 <option value="performance">성과</option>
                                 <option value="createdAt">등록일</option>
                             </select>
@@ -135,6 +216,7 @@
                                     <th>지점코드</th>
                                     <th>주소</th>
                                     <th>디자이너 수</th>
+                                    <th>시스템 관리자</th>
                                     <th>월간 성과</th>
                                     <th>등록일</th>
                                     <th>관리</th>
@@ -282,93 +364,93 @@
     <script src="../js/pages/branches.js"></script>
 
     <!-- 페이지 네비게이션 함수 -->
-<script>
-function goToMainSystem() {
-    window.location.href = '../index.html';  // 상위 폴더로 이동
-}
+    <script>
+        function goToMainSystem() {
+            window.location.href = '../index.html';  // 상위 폴더로 이동
+        }
+        
         function goToPage(pageId) {
             const pages = {
-    'designers': 'designers.html',
-    'branches': 'branches.html',
-    'history': 'history.html',          // 추가!
-    'checklist': 'checklist.html', 
-    'statistics': 'statistics.html',
-    'comparison': 'comparison.html'     // 추가!
-};
+                'designers': 'designers.html',
+                'branches': 'branches.html',
+                'users': 'users.html',          // 🆕 추가!
+                'history': 'history.html',
+                'checklist': 'checklist.html', 
+                'statistics': 'statistics.html',
+                'comparison': 'comparison.html'
+            };
             if (pages[pageId]) {
                 window.location.href = pages[pageId];
             }
         }
-</script>
+    </script>
 
-<!-- 🔥 Firebase 연결 상태 확인 및 표시 -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🏠 메인 시스템 로드 시작');
-    
-    // 사용자 권한에 따른 네비게이션 메뉴 제어
-    function setupNavigationByRole() {
-        try {
-            const userData = sessionStorage.getItem('currentUser');
-            const currentUser = userData ? JSON.parse(userData) : null;
+    <!-- 🔥 Firebase 연결 상태 확인 및 표시 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏠 메인 시스템 로드 시작');
             
-            console.log('현재 사용자:', currentUser);
-            
-            if (currentUser && currentUser.role === '지점관리자') {
-                // 지점관리자는 지점 관리 메뉴 숨김
-                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
-                if (branchNavBtn) {
-                    branchNavBtn.style.display = 'none';
-                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
-                }
-                
-                // 사용자 정보 표시
-                const userElement = document.getElementById('currentUser');
-                if (userElement) {
-                    userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
-                    userElement.style.color = '#3b82f6';
-                }
-            } else if (currentUser && currentUser.role === '전체관리자') {
-                // 전체관리자는 모든 메뉴 표시
-                const userElement = document.getElementById('currentUser');
-                if (userElement) {
-                    userElement.textContent = `${currentUser.name} (${currentUser.role})`;
-                    userElement.style.color = '#059669';
+            // 사용자 권한에 따른 네비게이션 메뉴 제어
+            function setupNavigationByRole() {
+                try {
+                    const userData = sessionStorage.getItem('currentUser');
+                    const currentUser = userData ? JSON.parse(userData) : null;
+                    
+                    console.log('현재 사용자:', currentUser);
+                    
+                    if (currentUser && currentUser.role === '지점관리자') {
+                        // 지점관리자는 계정 관리 메뉴 숨김
+                        const userNavBtn = document.querySelector('.nav-btn[onclick*="users"]');
+                        if (userNavBtn) {
+                            userNavBtn.style.display = 'none';
+                            console.log('지점관리자 - 계정 관리 메뉴 숨김');
+                        }
+                        
+                        // 사용자 정보 표시
+                        const userElement = document.getElementById('currentUser');
+                        if (userElement) {
+                            userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
+                            userElement.style.color = '#3b82f6';
+                        }
+                    } else if (currentUser && currentUser.role === '전체관리자') {
+                        // 전체관리자는 모든 메뉴 표시
+                        const userElement = document.getElementById('currentUser');
+                        if (userElement) {
+                            userElement.textContent = `${currentUser.name} (${currentUser.role})`;
+                            userElement.style.color = '#059669';
+                        }
+                    }
+                } catch (error) {
+                    console.error('네비게이션 권한 설정 오류:', error);
                 }
             }
-        } catch (error) {
-            console.error('네비게이션 권한 설정 오류:', error);
-        }
-    }
 
-    // 네비게이션 설정 실행
-    setupNavigationByRole();
-    
-    // Firebase 연결 상태 확인
-    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-        console.log('🔥 파이어베이스 연결됨');
-    } else {
-        console.log('❌ 파이어베이스 연결 실패');
-    }
-    
-    // 1초 후 BranchesManager 확인
-    setTimeout(() => {
-        if (window.branchesManager) {
-            console.log('✅ BranchesManager 초기화 완료');
-        } else {
-            console.log('⚠️ BranchesManager 초기화 대기 중...');
-        }
-    }, 1000);
-});
+            // 네비게이션 설정 실행
+            setupNavigationByRole();
+            
+            // Firebase 연결 상태 확인
+            if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                console.log('🔥 파이어베이스 연결됨');
+            } else {
+                console.log('❌ 파이어베이스 연결 실패');
+            }
+            
+            // 1초 후 BranchesManager 확인
+            setTimeout(() => {
+                if (window.branchesManager) {
+                    console.log('✅ BranchesManager 초기화 완료');
+                } else {
+                    console.log('⚠️ BranchesManager 초기화 대기 중...');
+                }
+            }, 1000);
+        });
 
-// 에러 발생 시 로그
-window.addEventListener('error', function(e) {
-    console.error('❌ JavaScript 에러:', e.message);
-    console.error('📁 파일:', e.filename);
-    console.error('📍 라인:', e.lineno);
-});
-</script>
-
-    
+        // 에러 발생 시 로그
+        window.addEventListener('error', function(e) {
+            console.error('❌ JavaScript 에러:', e.message);
+            console.error('📁 파일:', e.filename);
+            console.error('📍 라인:', e.lineno);
+        });
+    </script>
 </body>
 </html>
