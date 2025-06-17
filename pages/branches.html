@@ -343,95 +343,16 @@
     <script src="../js/utils/ui-utils.js"></script>
     <script src="../js/utils/navigation.js"></script>
     <script src="../js/pages/branches.js"></script>
-
-    <!-- 페이지 네비게이션 함수 -->
-    <script>
-        function goToMainSystem() {
-            window.location.href = '../index.html';  // 상위 폴더로 이동
-        }
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 🆕 필터 매니저 초기화
+        initializePageFilters();
         
-        function goToPage(pageId) {
-            const pages = {
-                'designers': 'designers.html',
-                'branches': 'branches.html',
-                'users': 'users.html',          // 🆕 추가!
-                'history': 'history.html',
-                'checklist': 'checklist.html', 
-                'statistics': 'statistics.html',
-                'comparison': 'comparison.html'
-            };
-            if (pages[pageId]) {
-                window.location.href = pages[pageId];
-            }
-        }
-    </script>
+        // 기존 페이지 매니저 초기화
+        window.branchesManager = new BranchesManager();
+        window.branchesManager.initialize();
+    });
+</script>
 
-    <!-- 🔥 Firebase 연결 상태 확인 및 표시 -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏠 메인 시스템 로드 시작');
-            
-            // 사용자 권한에 따른 네비게이션 메뉴 제어
-            function setupNavigationByRole() {
-                try {
-                    const userData = sessionStorage.getItem('currentUser');
-                    const currentUser = userData ? JSON.parse(userData) : null;
-                    
-                    console.log('현재 사용자:', currentUser);
-                    
-                    if (currentUser && currentUser.role === '지점관리자') {
-                        // 지점관리자는 계정 관리 메뉴 숨김
-                        const userNavBtn = document.querySelector('.nav-btn[onclick*="users"]');
-                        if (userNavBtn) {
-                            userNavBtn.style.display = 'none';
-                            console.log('지점관리자 - 계정 관리 메뉴 숨김');
-                        }
-                        
-                        // 사용자 정보 표시
-                        const userElement = document.getElementById('currentUser');
-                        if (userElement) {
-                            userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
-                            userElement.style.color = '#3b82f6';
-                        }
-                    } else if (currentUser && currentUser.role === '전체관리자') {
-                        // 전체관리자는 모든 메뉴 표시
-                        const userElement = document.getElementById('currentUser');
-                        if (userElement) {
-                            userElement.textContent = `${currentUser.name} (${currentUser.role})`;
-                            userElement.style.color = '#059669';
-                        }
-                    }
-                } catch (error) {
-                    console.error('네비게이션 권한 설정 오류:', error);
-                }
-            }
-
-            // 네비게이션 설정 실행
-            setupNavigationByRole();
-            
-            // Firebase 연결 상태 확인
-            if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-                console.log('🔥 파이어베이스 연결됨');
-            } else {
-                console.log('❌ 파이어베이스 연결 실패');
-            }
-            
-            // 1초 후 BranchesManager 확인
-            setTimeout(() => {
-                if (window.branchesManager) {
-                    console.log('✅ BranchesManager 초기화 완료');
-                } else {
-                    console.log('⚠️ BranchesManager 초기화 대기 중...');
-                }
-            }, 1000);
-        });
-
-        // 에러 발생 시 로그
-        window.addEventListener('error', function(e) {
-            console.error('❌ JavaScript 에러:', e.message);
-            console.error('📁 파일:', e.filename);
-            console.error('📍 라인:', e.lineno);
-        });
-    </script>
 </body>
 </html>
