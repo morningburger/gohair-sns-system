@@ -68,12 +68,15 @@ class ChecklistManager {
 updateUserDisplay() {
     const userElement = document.getElementById('currentUser');
     if (userElement) {
-        // 강제로 Firebase 연결 상태 표시
-        userElement.textContent = 'Firebase 연결됨';
-        userElement.style.color = '#10b981';
+        // 실제 Firebase 연결 상태 확인
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            userElement.textContent = 'Firebase 연결됨 ✅';
+            userElement.style.color = '#10b981';
+        } else {
+            userElement.textContent = 'Firebase 연결 실패 ❌';
+            userElement.style.color = '#ef4444';
+        }
         userElement.style.fontWeight = '500';
-        
-        console.log('✅ "Firebase 연결됨" 표시 완료');
     }
 }
     // 데이터 로드
@@ -98,58 +101,20 @@ async loadAllData() {
     }
 }
 
-    // 샘플 데이터 생성
-    generateSampleDesigners() {
-        const branches = ['송도센트럴점', '검단테라스점', '부평점', '인천논현점', '청라국제점'];
-        const positions = ['인턴', '디자이너', '팀장', '실장'];
-        const names = ['김수현', '이지민', '박준호', '최미영', '정태윤', '한소희', '오민석', '신예은'];
-        
-        return names.map((name, index) => ({
-            id: index + 1,
-            docId: `designer_${index + 1}`,
-            name: name,
-            branch: branches[Math.floor(Math.random() * branches.length)],
-            position: positions[Math.floor(Math.random() * positions.length)],
-            phone: `010-${String(Math.floor(Math.random() * 9000) + 1000)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
-            createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        }));
-    }
+generateSampleDesigners() {
+    console.log('⚠️ Firebase 연결 실패 - 빈 디자이너 데이터 반환');
+    return [];
+}
 
-    generateSampleChecklists() {
-        const data = [];
-        const designers = this.data.designers || this.generateSampleDesigners();
-        
-        designers.forEach(designer => {
-            const recordCount = Math.floor(Math.random() * 15) + 10; // 10-24개 기록
-            
-            for (let i = 0; i < recordCount; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() - Math.floor(Math.random() * 30)); // 최근 30일
-                
-                data.push({
-                    id: `checklist_${designer.id}_${i}`,
-                    docId: `checklist_${designer.id}_${i}`,
-                    designerId: designer.id,
-                    designer: designer.name,
-                    branch: designer.branch,
-                    date: date.toISOString().split('T')[0],
-                    naverReviews: Math.floor(Math.random() * 8),
-                    naverPosts: Math.floor(Math.random() * 4),
-                    naverExperience: Math.floor(Math.random() * 2),
-                    instaReels: Math.floor(Math.random() * 6),
-                    instaPhotos: Math.floor(Math.random() * 10),
-                    notes: i % 5 === 0 ? '오늘은 특별히 좋은 반응이었습니다!' : '',
-                    createdAt: new Date(date.getTime() + Math.random() * 24 * 60 * 60 * 1000).toISOString()
-                });
-            }
-        });
-        
-        return data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }
+generateSampleChecklists() {
+    console.log('⚠️ Firebase 연결 실패 - 빈 체크리스트 데이터 반환');
+    return [];
+}
 
-    generateSampleBranches() {
-        return ['송도센트럴점', '검단테라스점', '부평점', '인천논현점', '청라국제점'];
-    }
+generateSampleBranches() {
+    console.log('⚠️ Firebase 연결 실패 - 빈 지점 데이터 반환');
+    return [];
+}
 // 👥 실제 디자이너 데이터 로딩  
 async loadDesignersFromFirebase() {
     try {
@@ -181,17 +146,17 @@ async loadDesignersFromFirebase() {
         
         console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
         
-        if (designers.length === 0) {
-            console.log('📝 Firebase에 디자이너 데이터가 없음 - 임시 데이터 사용');
-            return this.generateSampleDesigners();
-        }
+if (designers.length === 0) {
+    console.log('📝 Firebase에 디자이너 데이터가 없음');
+    return [];
+}
         
         return designers;
-    } catch (error) {
-        console.error('❌ 디자이너 데이터 로딩 실패:', error);
-        console.log('📝 오류로 인해 임시 데이터 사용');
-        return this.generateSampleDesigners();
-    }
+} catch (error) {
+    console.error('❌ 디자이너 데이터 로딩 실패:', error);
+    console.log('🔧 Firebase 연결을 확인하세요');
+    return [];
+}
 }
 
 // 📋 실제 체크리스트 데이터 로딩
@@ -232,17 +197,17 @@ async loadChecklistsFromFirebase() {
         
         console.log(`✅ 체크리스트 데이터 로딩 완료: ${checklists.length}개`);
         
-        if (checklists.length === 0) {
-            console.log('📝 Firebase에 체크리스트 데이터가 없음 - 임시 데이터 사용');
-            return this.generateSampleChecklists();
-        }
+if (checklists.length === 0) {
+    console.log('📝 Firebase에 체크리스트 데이터가 없음');
+    return [];
+}
         
         return checklists.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    } catch (error) {
-        console.error('❌ 체크리스트 데이터 로딩 실패:', error);
-        console.log('📝 오류로 인해 임시 데이터 사용');
-        return this.generateSampleChecklists();
-    }
+} catch (error) {
+    console.error('❌ 체크리스트 데이터 로딩 실패:', error);
+    console.log('🔧 Firebase 연결을 확인하세요');
+    return [];
+}
 }
 
 // 🏢 실제 지점 데이터 로딩
@@ -250,10 +215,10 @@ async loadBranchesFromFirebase() {
     try {
         console.log('🏢 지점 데이터 로딩 중...');
         
-        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
-            console.warn('⚠️ Firebase가 초기화되지 않음 - 임시 데이터 사용');
-            return this.generateSampleBranches();
-        }
+if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+    console.warn('⚠️ Firebase가 초기화되지 않음');
+    return [];
+}
 
         const db = firebase.firestore();
         const snapshot = await db.collection('branches').get();
@@ -266,17 +231,17 @@ async loadBranchesFromFirebase() {
         
         console.log(`✅ 지점 데이터 로딩 완료: ${branches.length}개`);
         
-        if (branches.length === 0) {
-            console.log('📝 Firebase에 지점 데이터가 없음 - 임시 데이터 사용');
-            return this.generateSampleBranches();
-        }
+if (branches.length === 0) {
+    console.log('📝 Firebase에 지점 데이터가 없음');
+    return [];
+}
         
         return branches;
-    } catch (error) {
-        console.error('❌ 지점 데이터 로딩 실패:', error);
-        console.log('📝 오류로 인해 임시 데이터 사용');
-        return this.generateSampleBranches();
-    }
+} catch (error) {
+    console.error('❌ 지점 데이터 로딩 실패:', error);
+    console.log('🔧 Firebase 연결을 확인하세요');
+    return [];
+}
 }
 
 // 🚀 Firebase에 체크리스트 저장
@@ -687,17 +652,18 @@ async saveChecklistToFirebase(checklistData) {
     }
 
     // 샘플 데이터 채우기
-    fillSampleData() {
-        document.getElementById('naverReviews').value = Math.floor(Math.random() * 6) + 2;
-        document.getElementById('naverPosts').value = Math.floor(Math.random() * 3) + 1;
-        document.getElementById('naverExperience').value = Math.floor(Math.random() * 2);
-        document.getElementById('instaReels').value = Math.floor(Math.random() * 4) + 1;
-        document.getElementById('instaPhotos').value = Math.floor(Math.random() * 8) + 3;
-        document.getElementById('checklistNotes').value = '오늘은 고객 반응이 좋았습니다!';
-        
-        this.updateSectionTotal('naver');
-        this.updateSectionTotal('instagram');
-    }
+fillSampleData() {
+    // 고정된 샘플 값 사용
+    document.getElementById('naverReviews').value = 3;
+    document.getElementById('naverPosts').value = 2;
+    document.getElementById('naverExperience').value = 1;
+    document.getElementById('instaReels').value = 2;
+    document.getElementById('instaPhotos').value = 5;
+    document.getElementById('checklistNotes').value = '샘플 데이터입니다.';
+    
+    this.updateSectionTotal('naver');
+    this.updateSectionTotal('instagram');
+}
 
     // 폼 초기화
     clearForm() {
