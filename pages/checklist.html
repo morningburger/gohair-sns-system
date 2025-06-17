@@ -16,9 +16,28 @@
 </head>
 <body>
     <!-- Header -->
-<div class="header">
-    <!-- 동적으로 생성됨 -->
-</div>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
+                <div class="header-actions">
+                    <span id="currentUser"></span>
+                    <button class="btn btn-green" onclick="exportChecklistHistory()">📥 기록 내보내기</button>
+                    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
+                <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
+                <button class="nav-btn" onclick="goToPage('branches')">🏢 지점 관리</button>
+                <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
+                <button class="nav-btn active">📋 체크리스트 입력</button>
+                <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
+                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
+            </nav>
+        </div>
+    </div>
 
     <div class="container">
         <!-- 체크리스트 입력 페이지 -->
@@ -356,44 +375,34 @@
     </div>
 
     <!-- JavaScript Files -->
-<script src="../js/config/firebase.js"></script>
-<script src="../js/utils/auth.js"></script>
-<script src="../js/utils/navigation.js"></script>
-<script src="../js/utils/data-manager.js"></script>
-<script src="../js/utils/ui-utils.js"></script>
-<script src="../js/pages/checklist.js"></script>
-# checklist.html 기존 코드로 롤백 + 권한 개선
+    <script src="../js/config/firebase.js"></script>
+    <script src="../js/utils/data-manager.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/utils/ui-utils.js"></script>
+    <script src="../js/pages/checklist.js"></script>
 
-## 📍 수정할 위치: 전체 script 태그 (302-400줄)
 
-**❌ 현재 복잡한 코드 전체 삭제**
-
-**✅ 기존 작동하던 코드로 교체 + 권한 개선:**
-
-```javascript
-<!-- 페이지 네비게이션 함수 -->
-<script>
+    <!-- 페이지 네비게이션 함수 -->
+    <script>
 function goToMainSystem() {
     window.location.href = '../index.html';  // 상위 폴더로 이동
 }
-
-function goToPage(pageId) {
-    const pages = {
-        'designers': 'designers.html',
-        'branches': 'branches.html',
-        'history': 'history.html',
-        'checklist': 'checklist.html', 
-        'statistics': 'statistics.html',
-        'comparison': 'comparison.html'
-    };
-    
-    if (pages[pageId]) {
-        window.location.href = pages[pageId];
-    }
-}
-
+        function goToPage(pageId) {
+            const pages = {
+    'designers': 'designers.html',
+    'branches': 'branches.html',
+    'history': 'history.html',          // 추가!
+    'checklist': 'checklist.html', 
+    'statistics': 'statistics.html',
+    'comparison': 'comparison.html'     // 추가!
+};
+            
+            if (pages[pageId]) {
+                window.location.href = pages[pageId];
+            }
+        }
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📋 체크리스트 페이지 로드 시작');
+    console.log('🏠 메인 시스템 로드 시작');
     
     // 사용자 권한에 따른 네비게이션 메뉴 제어
     function setupNavigationByRole() {
@@ -404,18 +413,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('현재 사용자:', currentUser);
             
             if (currentUser && currentUser.role === '지점관리자') {
-                // 지점관리자는 계정 관리와 지점 비교 메뉴 숨김
-                const accountNavBtn = document.querySelector('.nav-btn[onclick*="designers"]');
-                const comparisonNavBtn = document.querySelector('.nav-btn[onclick*="comparison"]');
-                
-                if (accountNavBtn) {
-                    accountNavBtn.style.display = 'none';
-                    console.log('지점관리자 - 계정 관리 메뉴 숨김');
-                }
-                
-                if (comparisonNavBtn) {
-                    comparisonNavBtn.style.display = 'none';
-                    console.log('지점관리자 - 지점 비교 메뉴 숨김');
+                // 지점관리자는 지점 관리 메뉴 숨김
+                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
+                if (branchNavBtn) {
+                    branchNavBtn.style.display = 'none';
+                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
                 }
                 
                 // 사용자 정보 표시
@@ -424,10 +426,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
                     userElement.style.color = '#3b82f6';
                 }
-                
-                // 지점관리자용 필터 설정
-                setupBranchManagerFilters(currentUser.branch);
-                
             } else if (currentUser && currentUser.role === '전체관리자') {
                 // 전체관리자는 모든 메뉴 표시
                 const userElement = document.getElementById('currentUser');
@@ -440,37 +438,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('네비게이션 권한 설정 오류:', error);
         }
     }
-    
-    // 지점관리자용 필터 설정
-    function setupBranchManagerFilters(userBranch) {
-        // 히스토리 필터를 본인 지점으로 제한
-        const historyFilter = document.getElementById('historyFilter');
-        if (historyFilter) {
-            historyFilter.innerHTML = `
-                <option value="branch" selected>내 지점 (${userBranch})</option>
-            `;
-            historyFilter.disabled = true;
-            historyFilter.style.backgroundColor = '#f3f4f6';
-            historyFilter.style.cursor = 'not-allowed';
-        }
-        
-        // ChecklistManager에 지점 필터 적용 (시간 지연)
-        setTimeout(() => {
-            if (window.checklistManager) {
-                // 여러 방법으로 필터 적용 시도
-                if (window.checklistManager.applyBranchFilter) {
-                    window.checklistManager.applyBranchFilter(userBranch);
-                }
-                if (window.checklistManager.filterByBranch) {
-                    window.checklistManager.filterByBranch(userBranch);
-                }
-                if (window.checklistManager.setBranchFilter) {
-                    window.checklistManager.setBranchFilter(userBranch);
-                }
-                console.log(`🏢 지점관리자 필터 적용: ${userBranch}`);
-            }
-        }, 1500);
-    }
 
     // 네비게이션 설정 실행
     setupNavigationByRole();
@@ -482,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('❌ 파이어베이스 연결 실패');
     }
     
-    // ChecklistManager 초기화 (기존 방식 유지)
+    // 1초 후 ChecklistManager 확인
     setTimeout(() => {
         if (window.checklistManager) {
             console.log('✅ ChecklistManager 초기화 완료');
@@ -498,18 +465,6 @@ window.addEventListener('error', function(e) {
     console.error('📁 파일:', e.filename);
     console.error('📍 라인:', e.lineno);
 });
-
-// 내보내기 함수
-function exportChecklistHistory() {
-    if (window.checklistManager && window.checklistManager.exportHistory) {
-        window.checklistManager.exportHistory();
-    } else {
-        console.warn('ChecklistManager가 초기화되지 않았습니다.');
-        alert('잠시 후 다시 시도해주세요.');
-    }
-}
-</script>
-
-
+    </script>
 </body>
 </html>
