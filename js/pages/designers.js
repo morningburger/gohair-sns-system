@@ -61,24 +61,31 @@ class DesignersManager {
     }
 
     // 사용자 표시 업데이트
-    updateUserDisplay() {
-        const userElement = document.getElementById('currentUser');
-        if (userElement) {
-            // 강제로 Firebase 연결 상태 표시
+updateUserDisplay() {
+    const userElement = document.getElementById('currentUser');
+    if (userElement) {
+        if (this.currentUser) {
+            if (this.currentUser.role === '전체관리자') {
+                userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
+                userElement.style.color = '#059669';
+            } else if (this.currentUser.role === '지점관리자') {
+                userElement.textContent = `${this.currentUser.name} (${this.currentUser.role} - ${this.currentUser.branch})`;
+                userElement.style.color = '#3b82f6';
+            }
+        } else {
             userElement.textContent = 'Firebase 연결됨';
             userElement.style.color = '#10b981';
-            userElement.style.fontWeight = '500';
-            
-            console.log('✅ "Firebase 연결됨" 표시 완료');
         }
+        userElement.style.fontWeight = '500';
     }
+}
 
     // 권한에 따른 UI 조정
     adjustUIForPermissions() {
         const branchFilterContainer = document.getElementById('branchFilterContainer');
         
         // 리더인 경우 지점 필터 숨김
-        if (this.currentUser && this.currentUser.role === 'leader') {
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
             if (branchFilterContainer) {
                 branchFilterContainer.style.display = 'none';
             }
@@ -308,9 +315,11 @@ class DesignersManager {
         let branches = this.data.branches;
         
         // 현재 사용자가 리더인 경우 해당 지점만
-        if (this.currentUser && this.currentUser.role === 'leader') {
-            branches = branches.filter(b => b === this.currentUser.branch);
-        }
+// 권한에 따른 필터링
+if (this.currentUser && this.currentUser.role === '지점관리자') {
+    designers = designers.filter(d => d.branch === this.currentUser.branch);
+    console.log(`🔒 지점관리자 필터링: ${this.currentUser.branch} - ${designers.length}개 디자이너`);
+}
 
         // 지점 필터 옵션
         const branchFilter = document.getElementById('designerBranchFilter');
@@ -335,7 +344,7 @@ class DesignersManager {
         let designers = [...this.data.designers];
         
         // 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === 'leader') {
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
             designers = designers.filter(d => d.branch === this.currentUser.branch);
         }
 
