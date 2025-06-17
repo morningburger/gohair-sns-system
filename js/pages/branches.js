@@ -1,11 +1,12 @@
-// 지점 관리 페이지 전용 로직
+// 지점 관리 페이지 전용 로직 (사용자 관리 기능 추가)
 
 class BranchesManager {
     constructor() {
         this.data = {
             branches: [],
             designers: [],
-            checklists: []
+            checklists: [],
+            users: [] // 🆕 사용자 데이터 추가
         };
         this.currentUser = null;
         this.currentView = 'table'; // 'table' or 'grid'
@@ -120,6 +121,7 @@ class BranchesManager {
             this.data.branches = await this.loadBranchesFromFirebase();
             this.data.designers = await this.loadDesignersFromFirebase();
             this.data.checklists = await this.loadChecklistsFromFirebase();
+            this.data.users = await this.loadUsersFromFirebase(); // 🆕 사용자 데이터 로드
             
             // 사용자 권한에 따른 데이터 필터링 적용
             this.data.branches = this.filterDataByUserRole(this.data.branches, 'name');
@@ -131,6 +133,7 @@ class BranchesManager {
             console.log(`- 지점: ${this.data.branches.length}개`);
             console.log(`- 디자이너: ${this.data.designers.length}개`);
             console.log(`- 체크리스트: ${this.data.checklists.length}개`);
+            console.log(`- 사용자: ${this.data.users.length}개`);
             
         } catch (error) {
             console.error('❌ 데이터 로딩 중 오류:', error);
@@ -257,6 +260,54 @@ class BranchesManager {
         }
     }
 
+    // 🆕 👤 실제 사용자 데이터 로딩
+    async loadUsersFromFirebase() {
+        try {
+            console.log('👤 사용자 데이터 로딩 중...');
+            
+            if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+                console.warn('⚠️ Firebase가 초기화되지 않음');
+                return [];
+            }
+
+            const db = firebase.firestore();
+            const snapshot = await db.collection('users').get();
+            
+            const users = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                users.push({
+                    id: doc.id,
+                    docId: doc.id,
+                    name: data.name || '',
+                    email: data.email || '',
+                    role: data.role || '',
+                    branch: data.branch || '',
+                    branchCode: data.branchCode || '',
+                    phone: data.phone || '',
+                    status: data.status || 'active',
+                    createdAt: data.createdAt || new Date().toISOString().split('T')[0],
+                    lastLogin: data.lastLogin || ''
+                });
+            });
+            
+            console.log(`✅ 사용자 데이터 로딩 완료: ${users.length}개`);
+            return users;
+        } catch (error) {
+            console.error('❌ 사용자 데이터 로딩 실패:', error);
+            return [];
+        }
+    }
+
+    // 🆕 지점별 관리자 가져오기
+    getBranchManagers(branchName) {
+        return this.data.users.filter(user => 
+            user.role === '지점관리자' && 
+            user.branch === branchName && 
+            user.status === 'active'
+        );
+    }
+
     // 지점 목록 로드
     loadBranches() {
         let branches = [...this.data.branches];
@@ -272,7 +323,7 @@ class BranchesManager {
             );
         }
 
-        // 성과 데이터 계산
+        // 성과 데이터 및 관리자 정보 계산
         branches = this.calculateBranchPerformance(branches);
 
         // 정렬 적용
@@ -287,6 +338,10 @@ class BranchesManager {
                 case 'performance':
                     aVal = a.totalPerformance;
                     bVal = b.totalPerformance;
+                    break;
+                case 'managerCount': // 🆕 관리자 수로 정렬
+                    aVal = a.managerCount;
+                    bVal = b.managerCount;
                     break;
                 case 'createdAt':
                     aVal = new Date(a.createdAt);
@@ -326,12 +381,16 @@ class BranchesManager {
         this.renderPagination();
     }
 
-    // 지점 성과 계산
+    // 지점 성과 및 관리자 정보 계산
     calculateBranchPerformance(branches) {
         return branches.map(branch => {
             // 해당 지점의 디자이너들
             const branchDesigners = this.data.designers.filter(d => d.branch === branch.name);
             const designerCount = branchDesigners.length;
+
+            // 🆕 해당 지점의 관리자들
+            const branchManagers = this.getBranchManagers(branch.name);
+            const managerCount = branchManagers.length;
 
             // 해당 지점의 최근 30일 체크리스트
             const thirtyDaysAgo = new Date();
@@ -365,6 +424,9 @@ class BranchesManager {
                 ...branch,
                 designerCount,
                 designerNames: branchDesigners.map(d => d.name),
+                managerCount, // 🆕 관리자 수
+                managerNames: branchManagers.map(m => m.name), // 🆕 관리자 이름들
+                managers: branchManagers, // 🆕 관리자 전체 정보
                 totalPerformance,
                 performance,
                 performanceGrade,
@@ -390,7 +452,7 @@ class BranchesManager {
             topBranch ? topBranch.name : '-';
     }
 
-    // 테이블 뷰 렌더링
+    // 테이블 뷰 렌더링 (관리자 정보 추가)
     renderBranchesTable(branches) {
         const tbody = document.getElementById('branchesList');
         if (!tbody) return;
@@ -398,7 +460,7 @@ class BranchesManager {
         if (branches.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="text-center py-8">
+                    <td colspan="8" class="text-center py-8">
                         <div class="empty-state">
                             <div class="empty-state-icon">🏢</div>
                             <p>등록된 지점이 없습니다.</p>
@@ -426,6 +488,15 @@ class BranchesManager {
                     <span class="badge badge-blue">${branch.designerCount}명</span>
                 </td>
                 <td class="text-center">
+                    ${branch.managerCount > 0 ? `
+                        <div class="managers-list" title="${branch.managerNames.join(', ')}">
+                            <span class="badge badge-green">${branch.managerCount}명</span>
+                        </div>
+                    ` : `
+                        <span class="badge badge-red">미배정</span>
+                    `}
+                </td>
+                <td class="text-center">
                     <span class="performance-badge performance-${branch.performanceGrade}">
                         ${branch.totalPerformance}
                     </span>
@@ -438,6 +509,12 @@ class BranchesManager {
                                 style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
                                 title="상세보기">
                             👁️
+                        </button>
+                        <button onclick="manageBranchUsers('${branch.docId}')" 
+                                class="btn btn-sm" 
+                                style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                title="관리자 관리">
+                            👥
                         </button>
                         <button onclick="editBranch('${branch.docId}')" 
                                 class="btn btn-sm" 
@@ -457,7 +534,7 @@ class BranchesManager {
         `).join('');
     }
 
-    // 그리드 뷰 렌더링
+    // 그리드 뷰 렌더링 (관리자 정보 추가)
     renderBranchesGrid(branches) {
         const grid = document.getElementById('branchesGrid');
         if (!grid) return;
@@ -497,12 +574,20 @@ class BranchesManager {
                     <div class="branch-info-item">
                         🕐 <strong>${branch.hours || '-'}</strong>
                     </div>
+                    <div class="branch-info-item">
+                        👥 <strong>${branch.managerCount}명 관리자</strong>
+                        ${branch.managerNames.length > 0 ? `<br><small>${branch.managerNames.join(', ')}</small>` : ''}
+                    </div>
                 </div>
 
                 <div class="branch-stats">
                     <div class="branch-stat">
                         <div class="branch-stat-value">${branch.designerCount}</div>
                         <div class="branch-stat-label">디자이너</div>
+                    </div>
+                    <div class="branch-stat">
+                        <div class="branch-stat-value">${branch.managerCount}</div>
+                        <div class="branch-stat-label">관리자</div>
                     </div>
                     <div class="branch-stat">
                         <div class="branch-stat-value">${branch.totalPerformance}</div>
@@ -513,6 +598,9 @@ class BranchesManager {
                 <div class="branch-actions">
                     <button onclick="viewBranch('${branch.docId}')" class="btn" title="상세보기">
                         👁️ 보기
+                    </button>
+                    <button onclick="manageBranchUsers('${branch.docId}')" class="btn" title="관리자 관리">
+                        👥 관리자
                     </button>
                     <button onclick="editBranch('${branch.docId}')" class="btn" title="수정">
                         ✏️ 수정
@@ -763,6 +851,151 @@ class BranchesManager {
         }
     }
 
+    // 🆕 지점 관리자 관리 모달 표시
+    showManageBranchUsers(docId) {
+        const branch = this.data.branches.find(b => b.docId === docId);
+        if (!branch) return;
+
+        const branchManagers = this.getBranchManagers(branch.name);
+        const allBranchManagers = this.data.users.filter(u => u.role === '지점관리자' && u.status === 'active');
+
+        const manageHTML = `
+            <div class="branch-managers-management">
+                <div class="current-managers">
+                    <h4>🏢 ${branch.name} 현재 관리자 (${branchManagers.length}명)</h4>
+                    ${branchManagers.length > 0 ? `
+                        <div class="managers-list">
+                            ${branchManagers.map(manager => `
+                                <div class="manager-item">
+                                    <div class="manager-info">
+                                        <strong>${manager.name}</strong>
+                                        <span>${manager.email}</span>
+                                        <span>${manager.phone || '-'}</span>
+                                    </div>
+                                    <button onclick="removeBranchManager('${manager.docId}', '${branch.name}')" 
+                                            class="btn btn-red btn-sm">
+                                        제거
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<p>배정된 관리자가 없습니다.</p>'}
+                </div>
+
+                <div class="available-managers">
+                    <h4>👥 지점 배정 가능한 관리자</h4>
+                    ${allBranchManagers.filter(m => m.branch !== branch.name).length > 0 ? `
+                        <div class="managers-list">
+                            ${allBranchManagers.filter(m => m.branch !== branch.name).map(manager => `
+                                <div class="manager-item">
+                                    <div class="manager-info">
+                                        <strong>${manager.name}</strong>
+                                        <span>${manager.email}</span>
+                                        <span>현재: ${manager.branch || '미배정'}</span>
+                                    </div>
+                                    <button onclick="assignBranchManager('${manager.docId}', '${branch.name}')" 
+                                            class="btn btn-green btn-sm">
+                                        배정
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<p>배정 가능한 관리자가 없습니다.</p>'}
+                </div>
+            </div>
+        `;
+
+        // 기존 모달이 있다면 제거
+        const existingModal = document.getElementById('manageBranchUsersModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // 새 모달 생성
+        const modalHTML = `
+            <div id="manageBranchUsersModal" class="modal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h3 class="text-lg font-bold">👥 ${branch.name} 관리자 관리</h3>
+                        <button onclick="hideManageBranchUsers()" class="modal-close">❌</button>
+                    </div>
+                    ${manageHTML}
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    // 🆕 지점 관리자 관리 모달 숨기기
+    hideManageBranchUsers() {
+        const modal = document.getElementById('manageBranchUsersModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // 🆕 지점 관리자 배정
+    async assignBranchManager(userId, branchName) {
+        try {
+            const user = this.data.users.find(u => u.docId === userId);
+            if (!user) return;
+
+            const branch = this.data.branches.find(b => b.name === branchName);
+            if (!branch) return;
+
+            if (confirm(`"${user.name}" 관리자를 "${branchName}" 지점에 배정하시겠습니까?`)) {
+                const updateData = {
+                    branch: branchName,
+                    branchCode: branch.code
+                };
+
+                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                    const db = firebase.firestore();
+                    await db.collection('users').doc(userId).update(updateData);
+                    
+                    await this.loadAllData();
+                }
+
+                this.loadBranches();
+                this.showManageBranchUsers(branch.docId); // 모달 새로고침
+                this.showNotification(`${user.name} 관리자가 ${branchName}에 배정되었습니다.`, 'success');
+            }
+        } catch (error) {
+            console.error('관리자 배정 오류:', error);
+            this.showNotification('관리자 배정 중 오류가 발생했습니다.', 'error');
+        }
+    }
+
+    // 🆕 지점 관리자 제거
+    async removeBranchManager(userId, branchName) {
+        try {
+            const user = this.data.users.find(u => u.docId === userId);
+            if (!user) return;
+
+            if (confirm(`"${user.name}" 관리자를 "${branchName}" 지점에서 제거하시겠습니까?`)) {
+                const updateData = {
+                    branch: null,
+                    branchCode: null
+                };
+
+                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                    const db = firebase.firestore();
+                    await db.collection('users').doc(userId).update(updateData);
+                    
+                    await this.loadAllData();
+                }
+
+                this.loadBranches();
+                this.showManageBranchUsers(this.data.branches.find(b => b.name === branchName).docId); // 모달 새로고침
+                this.showNotification(`${user.name} 관리자가 ${branchName}에서 제거되었습니다.`, 'success');
+            }
+        } catch (error) {
+            console.error('관리자 제거 오류:', error);
+            this.showNotification('관리자 제거 중 오류가 발생했습니다.', 'error');
+        }
+    }
+
     // 알림 표시
     showNotification(message, type = 'info') {
         if (window.showNotification) {
@@ -810,6 +1043,7 @@ class BranchesManager {
         // 지점 성과 데이터 계산
         const branchWithPerformance = this.calculateBranchPerformance([branch])[0];
         const branchDesigners = this.data.designers.filter(d => d.branch === branch.name);
+        const branchManagers = this.getBranchManagers(branch.name); // 🆕 관리자 정보
 
         const detailHTML = `
             <div class="branch-detail">
@@ -846,6 +1080,24 @@ class BranchesManager {
                         </div>
                     </div>
                     ${branch.notes ? `<div style="margin-top: 1rem;"><strong>메모:</strong><br>${branch.notes}</div>` : ''}
+                </div>
+
+                <div class="detail-section">
+                    <h4>👥 시스템 관리자 (${branchManagers.length}명)</h4>
+                    ${branchManagers.length > 0 ? `
+                        <div class="managers-list">
+                            ${branchManagers.map(manager => `
+                                <div class="manager-item">
+                                    <div class="manager-info">
+                                        <div class="manager-name">${manager.name}</div>
+                                        <div class="manager-email">${manager.email}</div>
+                                        <div class="manager-phone">${manager.phone || '-'}</div>
+                                        <div class="manager-status">상태: ${this.getStatusLabel(manager.status)}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<p>등록된 시스템 관리자가 없습니다.</p>'}
                 </div>
 
                 <div class="detail-section">
@@ -907,15 +1159,40 @@ class BranchesManager {
         if (!branch) return;
 
         const branchDesigners = this.data.designers.filter(d => d.branch === branch.name);
+        const branchManagers = this.getBranchManagers(branch.name); // 🆕 관리자 확인
         
         let confirmMessage = `정말로 "${branch.name}" 지점을 삭제하시겠습니까?`;
-        if (branchDesigners.length > 0) {
-            confirmMessage += `\n\n⚠️ 이 지점에는 ${branchDesigners.length}명의 디자이너가 있습니다.\n지점을 삭제하면 관련된 모든 데이터가 함께 삭제됩니다.`;
+        
+        if (branchDesigners.length > 0 || branchManagers.length > 0) {
+            confirmMessage += `\n\n⚠️ 이 지점에는:`;
+            if (branchDesigners.length > 0) {
+                confirmMessage += `\n- ${branchDesigners.length}명의 디자이너`;
+            }
+            if (branchManagers.length > 0) {
+                confirmMessage += `\n- ${branchManagers.length}명의 시스템 관리자`;
+            }
+            confirmMessage += `\n\n지점을 삭제하면 관련된 모든 데이터가 함께 삭제됩니다.`;
         }
 
         if (confirm(confirmMessage)) {
             try {
-                // Firebase에서 삭제
+                // 🆕 지점 관리자들의 지점 정보 제거
+                if (branchManagers.length > 0) {
+                    const db = firebase.firestore();
+                    const batch = db.batch();
+                    
+                    branchManagers.forEach(manager => {
+                        const userRef = db.collection('users').doc(manager.docId);
+                        batch.update(userRef, {
+                            branch: null,
+                            branchCode: null
+                        });
+                    });
+                    
+                    await batch.commit();
+                }
+
+                // Firebase에서 지점 삭제
                 if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                     const db = firebase.firestore();
                     await db.collection('branches').doc(docId).delete();
@@ -933,14 +1210,15 @@ class BranchesManager {
         }
     }
 
-    // 내보내기
+    // 내보내기 (관리자 정보 포함)
     exportBranches() {
         const branches = this.calculateBranchPerformance([...this.data.branches]);
         
-        let csvContent = "\ufeff지점명,지점코드,주소,전화번호,점장,운영시간,디자이너수,월간성과,등록일\n";
+        let csvContent = "\ufeff지점명,지점코드,주소,전화번호,점장,운영시간,디자이너수,관리자수,관리자명,월간성과,등록일\n";
         
         branches.forEach(b => {
-            csvContent += `${b.name},${b.code},"${b.address}",${b.phone || ''},${b.manager || ''},${b.hours || ''},${b.designerCount},${b.totalPerformance},${b.createdAt}\n`;
+            const managerNames = b.managerNames ? b.managerNames.join(';') : '';
+            csvContent += `${b.name},${b.code},"${b.address}",${b.phone || ''},${b.manager || ''},${b.hours || ''},${b.designerCount},${b.managerCount},"${managerNames}",${b.totalPerformance},${b.createdAt}\n`;
         });
         
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -952,6 +1230,16 @@ class BranchesManager {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+    // 🆕 상태 라벨 가져오기 (사용자 상태용)
+    getStatusLabel(status) {
+        const labels = {
+            active: '활성',
+            pending: '승인대기',
+            suspended: '정지'
+        };
+        return labels[status] || status;
     }
 }
 
@@ -990,6 +1278,23 @@ function hideViewBranch() {
 
 function deleteBranch(docId) {
     window.branchesManager?.deleteBranch(docId);
+}
+
+// 🆕 지점 관리자 관리 관련 함수들
+function manageBranchUsers(docId) {
+    window.branchesManager?.showManageBranchUsers(docId);
+}
+
+function hideManageBranchUsers() {
+    window.branchesManager?.hideManageBranchUsers();
+}
+
+function assignBranchManager(userId, branchName) {
+    window.branchesManager?.assignBranchManager(userId, branchName);
+}
+
+function removeBranchManager(userId, branchName) {
+    window.branchesManager?.removeBranchManager(userId, branchName);
 }
 
 function exportBranches() {
