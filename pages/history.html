@@ -173,28 +173,17 @@
             
             console.log('현재 사용자:', currentUser);
             
-            if (currentUser && currentUser.role === '지점관리자') {
-                // 지점관리자는 지점 관리 메뉴 숨김
-                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
-                if (branchNavBtn) {
-                    branchNavBtn.style.display = 'none';
-                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
-                }
-                
-                // 사용자 정보 표시
-                const userElement = document.getElementById('currentUser');
-                if (userElement) {
-                    userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
-                    userElement.style.color = '#3b82f6';
-                }
-            } else if (currentUser && currentUser.role === '전체관리자') {
-                // 전체관리자는 모든 메뉴 표시
-                const userElement = document.getElementById('currentUser');
-                if (userElement) {
-                    userElement.textContent = `${currentUser.name} (${currentUser.role})`;
-                    userElement.style.color = '#059669';
-                }
-            }
+if (currentUser && currentUser.role === '지점관리자') {
+    // 지점관리자는 지점 관리 메뉴 숨김
+    const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
+    if (branchNavBtn) {
+        branchNavBtn.style.display = 'none';
+        console.log('지점관리자 - 지점 관리 메뉴 숨김');
+    }
+    // 사용자 정보 표시는 history.js의 updateUserDisplay()에서 처리
+} else if (currentUser && currentUser.role === '전체관리자') {
+    // 사용자 정보 표시는 history.js의 updateUserDisplay()에서 처리
+}
         } catch (error) {
             console.error('네비게이션 권한 설정 오류:', error);
         }
