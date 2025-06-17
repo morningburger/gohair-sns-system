@@ -203,7 +203,7 @@ class StatisticsManager {
                 branches = this.data.branches.map(branch => branch.name).filter(name => name);
             }
             
-            if (this.currentUser && this.currentUser.role === 'leader') {
+            if (this.currentUser && this.currentUser.role === '지점관리자') {
                 branches = branches.filter(b => b === this.currentUser.branch);
             }
             
@@ -248,7 +248,7 @@ class StatisticsManager {
         }
         
         // 사용자 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === 'leader') {
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
             filtered = filtered.filter(item => item.branch === this.currentUser.branch);
         }
         
