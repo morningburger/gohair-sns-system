@@ -25,10 +25,50 @@ class FirebaseDataManager {
 
     async createDefaultData() {
         const defaultUsers = {
-            'admin@gohair.com': { password: 'GoHair2024!', role: 'admin', name: '관리자' },
-            'songdo@gohair.com': { password: 'Songdo123!', role: 'leader', branch: '송도1지점', name: '송도리더' },
-            'geomdan@gohair.com': { password: 'Geomdan123!', role: 'leader', branch: '검단테라스점', name: '검단리더' },
-            'bupyeong@gohair.com': { password: 'Bupyeong123!', role: 'leader', branch: '부평점', name: '부평리더' }
+            'admin@gohair.com': { 
+                password: 'GoHair2024!', 
+                role: '전체관리자', // 역할명 통일
+                name: '전체관리자',
+                email: 'admin@gohair.com',
+                phone: '010-0000-0000',
+                status: 'active',
+                createdAt: '2024-01-01',
+                branch: null,
+                branchCode: null
+            },
+            'songdo@gohair.com': { 
+                password: 'Songdo123!', 
+                role: '지점관리자', // 역할명 통일
+                branch: '송도1지점',
+                branchCode: 'SD01',
+                name: '송도관리자',
+                email: 'songdo@gohair.com',
+                phone: '010-1111-1111',
+                status: 'active',
+                createdAt: '2024-01-01'
+            },
+            'geomdan@gohair.com': { 
+                password: 'Geomdan123!', 
+                role: '지점관리자', // 역할명 통일
+                branch: '검단테라스점',
+                branchCode: 'GD01', 
+                name: '검단관리자',
+                email: 'geomdan@gohair.com',
+                phone: '010-2222-2222',
+                status: 'active',
+                createdAt: '2024-01-01'
+            },
+            'bupyeong@gohair.com': { 
+                password: 'Bupyeong123!', 
+                role: '지점관리자', // 역할명 통일
+                branch: '부평점',
+                branchCode: 'BP01',
+                name: '부평관리자',
+                email: 'bupyeong@gohair.com', 
+                phone: '010-3333-3333',
+                status: 'active',
+                createdAt: '2024-01-01'
+            }
         };
 
         const defaultBranches = [
@@ -82,6 +122,42 @@ class FirebaseDataManager {
             return userData;
         } catch (error) {
             console.error('사용자 추가 오류:', error);
+            throw error;
+        }
+    }
+
+    // 모든 사용자 조회 (users.html에서 사용)
+    async getUsers() {
+        try {
+            const querySnapshot = await window.db.collection(this.collections.users).get();
+            return querySnapshot.docs.map(doc => ({ 
+                docId: doc.id, 
+                email: doc.id, // 문서 ID가 이메일
+                ...doc.data() 
+            }));
+        } catch (error) {
+            console.error('사용자 목록 조회 오류:', error);
+            return [];
+        }
+    }
+
+    // 사용자 수정
+    async updateUser(email, userData) {
+        try {
+            await window.db.collection(this.collections.users).doc(email).update(userData);
+            return userData;
+        } catch (error) {
+            console.error('사용자 수정 오류:', error);
+            throw error;
+        }
+    }
+
+    // 사용자 삭제
+    async deleteUser(email) {
+        try {
+            await window.db.collection(this.collections.users).doc(email).delete();
+        } catch (error) {
+            console.error('사용자 삭제 오류:', error);
             throw error;
         }
     }
@@ -193,7 +269,7 @@ class FirebaseDataManager {
         }
     }
 
-    // 실시간 데이터 동기화
+    // 실시간 데이터 동기화 (현재는 미사용이지만 향후 확장용)
     onBranchesChange(callback) {
         return window.db.collection(this.collections.branches).onSnapshot((snapshot) => {
             const branches = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
@@ -212,6 +288,17 @@ class FirebaseDataManager {
         return window.db.collection(this.collections.checklists).onSnapshot((snapshot) => {
             const checklists = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
             callback(checklists);
+        });
+    }
+
+    onUsersChange(callback) {
+        return window.db.collection(this.collections.users).onSnapshot((snapshot) => {
+            const users = snapshot.docs.map(doc => ({ 
+                docId: doc.id, 
+                email: doc.id,
+                ...doc.data() 
+            }));
+            callback(users);
         });
     }
 }

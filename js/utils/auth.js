@@ -10,7 +10,7 @@ class AuthManager {
     // 세션에서 사용자 정보 로드
     loadSessionUser() {
         try {
-            const savedUser = sessionStorage.getItem('gohair_current_user');
+            const savedUser = sessionStorage.getItem('currentUser'); // 키 통일
             if (savedUser) {
                 this.currentUser = JSON.parse(savedUser);
                 this.updateUI();
@@ -18,14 +18,14 @@ class AuthManager {
             }
         } catch (error) {
             console.error('세션 로드 오류:', error);
-            sessionStorage.removeItem('gohair_current_user');
+            sessionStorage.removeItem('currentUser'); // 키 통일
         }
     }
 
     // 세션에 사용자 정보 저장
     saveSessionUser() {
         if (this.currentUser) {
-            sessionStorage.setItem('gohair_current_user', JSON.stringify(this.currentUser));
+            sessionStorage.setItem('currentUser', JSON.stringify(this.currentUser)); // 키 통일
         }
     }
 
@@ -34,7 +34,21 @@ class AuthManager {
         try {
             const user = await window.dataManager.getUser(email);
             if (user && user.password === password) {
-                this.currentUser = { email: email, ...user };
+                // users.html에서 기대하는 구조로 변환
+                this.currentUser = {
+                    id: email.replace('@', '_').replace('.', '_'), // 고유 ID 생성
+                    docId: email,
+                    name: user.name,
+                    email: email,
+                    role: user.role === 'admin' ? '전체관리자' : '지점관리자', // 역할명 통일
+                    branch: user.branch || null,
+                    branchCode: user.branchCode || null,
+                    phone: user.phone || null,
+                    status: user.status || 'active',
+                    createdAt: user.createdAt || new Date().toISOString().split('T')[0],
+                    lastLogin: new Date().toISOString()
+                };
+                
                 this.saveSessionUser(); // 세션에 저장
                 this.updateUI();
                 return { success: true, user: this.currentUser };
@@ -59,9 +73,13 @@ class AuthManager {
             // 새 사용자 추가
             const newUser = {
                 password: password,
-                role: 'leader',
+                role: '지점관리자', // 역할명 통일
                 name: name,
-                branch: branch
+                branch: branch,
+                email: email,
+                phone: null,
+                status: 'active',
+                createdAt: new Date().toISOString().split('T')[0]
             };
 
             await window.dataManager.addUser(email, newUser);
@@ -75,7 +93,7 @@ class AuthManager {
     // 로그아웃
     logout() {
         this.currentUser = null;
-        sessionStorage.removeItem('gohair_current_user'); // 세션에서 제거
+        sessionStorage.removeItem('currentUser'); // 키 통일
         this.showLoginPage();
     }
 
@@ -94,13 +112,17 @@ class AuthManager {
             // 사용자 이름 표시
             const userElement = document.getElementById('currentUser');
             if (userElement) {
-                userElement.textContent = this.currentUser.name;
+                if (this.currentUser.role === '전체관리자') {
+                    userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
+                } else {
+                    userElement.textContent = `${this.currentUser.name} (${this.currentUser.role} - ${this.currentUser.branch || '지점미지정'})`;
+                }
             }
             
             // 관리자 메뉴 표시/숨김
             const adminMenus = document.querySelectorAll('.admin-only');
             adminMenus.forEach(menu => {
-                if (this.currentUser.role === 'admin') {
+                if (this.currentUser.role === '전체관리자') { // 역할명 통일
                     menu.classList.remove('hidden');
                 } else {
                     menu.classList.add('hidden');
@@ -144,11 +166,15 @@ class AuthManager {
 
     // 사용자 권한 확인
     isAdmin() {
-        return this.currentUser && this.currentUser.role === 'admin';
+        return this.currentUser && this.currentUser.role === '전체관리자'; // 역할명 통일
     }
 
-    isLeader() {
-        return this.currentUser && this.currentUser.role === 'leader';
+    isBranchManager() { // 새 메서드 추가
+        return this.currentUser && this.currentUser.role === '지점관리자';
+    }
+
+    isLeader() { // 기존 호환성 유지
+        return this.isBranchManager();
     }
 
     // 로그인 상태 확인

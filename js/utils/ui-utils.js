@@ -29,6 +29,63 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// 권한 확인 유틸리티
+function getCurrentUser() {
+    try {
+        const userData = sessionStorage.getItem('currentUser');
+        return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+        console.error('사용자 정보 파싱 오류:', error);
+        return null;
+    }
+}
+
+function isAdmin() {
+    const user = getCurrentUser();
+    return user && user.role === '전체관리자';
+}
+
+function isBranchManager() {
+    const user = getCurrentUser();
+    return user && user.role === '지점관리자';
+}
+
+function checkAdminAccess() {
+    const currentUser = getCurrentUser();
+    
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '../index.html';
+        return false;
+    }
+    
+    if (currentUser.role !== '전체관리자') {
+        alert('이 페이지는 전체관리자만 접근할 수 있습니다.');
+        window.location.href = '../index.html';
+        return false;
+    }
+    
+    return true;
+}
+
+function checkManagerAccess() {
+    const currentUser = getCurrentUser();
+    
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '../index.html';
+        return false;
+    }
+    
+    if (currentUser.role !== '전체관리자' && currentUser.role !== '지점관리자') {
+        alert('이 페이지는 관리자만 접근할 수 있습니다.');
+        window.location.href = '../index.html';
+        return false;
+    }
+    
+    return true;
+}
+
 // 기간 필터링 함수
 function filterDataByPeriod(data, period, startDate, endDate) {
     const now = new Date();
@@ -56,6 +113,33 @@ function filterDataByPeriod(data, period, startDate, endDate) {
         case 'all':
         default:
             return data;
+    }
+}
+
+// 사용자 권한에 따른 데이터 필터링
+function filterDataByUserRole(data, branchField = 'branch') {
+    try {
+        const currentUser = getCurrentUser();
+        
+        if (!currentUser || currentUser.role === '전체관리자') {
+            return data; // 전체관리자는 모든 데이터 접근
+        }
+        
+        if (currentUser.role === '지점관리자') {
+            const userBranch = currentUser.branch || currentUser.branchName;
+            const filteredData = data.filter(item => {
+                const itemBranch = item[branchField] || item.branchName || item.selectedBranch || item.name;
+                return itemBranch === userBranch;
+            });
+            
+            console.log(`🔒 지점관리자 필터링: ${userBranch} - ${data.length}개 → ${filteredData.length}개`);
+            return filteredData;
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('데이터 필터링 오류:', error);
+        return data;
     }
 }
 
@@ -141,16 +225,20 @@ function hideEditBranch() {
 
 // 편집/삭제 함수들
 function editBranch(docId) {
-    const branch = window.cachedData.branches.find(b => b.docId === docId);
-    if (branch) {
-        showEditBranch(branch);
+    if (window.cachedData && window.cachedData.branches) {
+        const branch = window.cachedData.branches.find(b => b.docId === docId);
+        if (branch) {
+            showEditBranch(branch);
+        }
     }
 }
 
 function editDesigner(docId) {
-    const designer = window.cachedData.designers.find(d => d.docId === docId);
-    if (designer) {
-        showEditDesigner(designer);
+    if (window.cachedData && window.cachedData.designers) {
+        const designer = window.cachedData.designers.find(d => d.docId === docId);
+        if (designer) {
+            showEditDesigner(designer);
+        }
     }
 }
 
@@ -159,6 +247,12 @@ async function deleteDesigner(docId) {
         try {
             await window.dataManager.deleteDesigner(docId);
             showNotification('디자이너가 삭제되었습니다.', 'success');
+            
+            // 페이지별로 리로드 처리
+            if (window.designersManager && window.designersManager.loadAllData) {
+                await window.designersManager.loadAllData();
+                window.designersManager.loadDesigners();
+            }
         } catch (error) {
             console.error('디자이너 삭제 오류:', error);
             showNotification('디자이너 삭제 중 오류가 발생했습니다.', 'error');
@@ -167,11 +261,23 @@ async function deleteDesigner(docId) {
 }
 
 async function deleteBranch(docId) {
-    const branch = window.cachedData.branches.find(b => b.docId === docId);
-    if (confirm(`정말로 "${branch.name}" 지점을 삭제하시겠습니까?\n관련된 모든 디자이너와 체크리스트도 함께 삭제됩니다.`)) {
+    let branch = null;
+    if (window.cachedData && window.cachedData.branches) {
+        branch = window.cachedData.branches.find(b => b.docId === docId);
+    }
+    
+    const branchName = branch ? branch.name : '선택된 지점';
+    
+    if (confirm(`정말로 "${branchName}" 지점을 삭제하시겠습니까?\n관련된 모든 디자이너와 체크리스트도 함께 삭제됩니다.`)) {
         try {
             await window.dataManager.deleteBranch(docId);
             showNotification('지점이 삭제되었습니다.', 'success');
+            
+            // 페이지별로 리로드 처리
+            if (window.branchesManager && window.branchesManager.loadAllData) {
+                await window.branchesManager.loadAllData();
+                window.branchesManager.loadBranches();
+            }
         } catch (error) {
             console.error('지점 삭제 오류:', error);
             showNotification('지점 삭제 중 오류가 발생했습니다.', 'error');
@@ -181,11 +287,15 @@ async function deleteBranch(docId) {
 
 // 데이터 내보내기/가져오기
 function exportData() {
-    const data = {
-        branches: window.cachedData.branches,
-        designers: window.cachedData.designers,
-        checklists: window.cachedData.checklists
-    };
+    let data = {};
+    
+    if (window.cachedData) {
+        data = {
+            branches: window.cachedData.branches || [],
+            designers: window.cachedData.designers || [],
+            checklists: window.cachedData.checklists || []
+        };
+    }
     
     const jsonData = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonData], { type: 'application/json' });
@@ -249,9 +359,52 @@ const DateUtils = {
     }
 };
 
+// 네비게이션 권한 설정
+function setupNavigationByRole() {
+    try {
+        const currentUser = getCurrentUser();
+        
+        if (!currentUser) return;
+        
+        console.log('현재 사용자:', currentUser);
+        
+        if (currentUser.role === '지점관리자') {
+            // 지점관리자는 계정 관리 메뉴 숨김
+            const userNavBtn = document.querySelector('.nav-btn[onclick*="users"]');
+            if (userNavBtn) {
+                userNavBtn.style.display = 'none';
+                console.log('지점관리자 - 계정 관리 메뉴 숨김');
+            }
+            
+            // 사용자 정보 표시
+            const userElement = document.getElementById('currentUser');
+            if (userElement) {
+                userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
+                userElement.style.color = '#3b82f6';
+            }
+        } else if (currentUser.role === '전체관리자') {
+            // 전체관리자는 모든 메뉴 표시
+            const userElement = document.getElementById('currentUser');
+            if (userElement) {
+                userElement.textContent = `${currentUser.name} (${currentUser.role})`;
+                userElement.style.color = '#059669';
+            }
+        }
+    } catch (error) {
+        console.error('네비게이션 권한 설정 오류:', error);
+    }
+}
+
 // 전역으로 노출
 window.showNotification = showNotification;
+window.getCurrentUser = getCurrentUser;
+window.isAdmin = isAdmin;
+window.isBranchManager = isBranchManager;
+window.checkAdminAccess = checkAdminAccess;
+window.checkManagerAccess = checkManagerAccess;
 window.filterDataByPeriod = filterDataByPeriod;
+window.filterDataByUserRole = filterDataByUserRole;
+window.setupNavigationByRole = setupNavigationByRole;
 window.ModalManager = ModalManager;
 window.showAddDesigner = showAddDesigner;
 window.hideAddDesigner = hideAddDesigner;
