@@ -314,11 +314,9 @@ updateUserDisplay() {
     loadBranchOptions() {
         let branches = this.data.branches;
         
-        // 현재 사용자가 리더인 경우 해당 지점만
-// 권한에 따른 필터링
+// 현재 사용자가 지점관리자인 경우 해당 지점만
 if (this.currentUser && this.currentUser.role === '지점관리자') {
-    designers = designers.filter(d => d.branch === this.currentUser.branch);
-    console.log(`🔒 지점관리자 필터링: ${this.currentUser.branch} - ${designers.length}개 디자이너`);
+    branches = branches.filter(b => b === this.currentUser.branch);
 }
 
         // 지점 필터 옵션
