@@ -70,15 +70,26 @@ class StatisticsManager {
         }
     }
 
-    // 사용자 표시 업데이트
-    updateUserDisplay() {
-        const userElement = document.getElementById('currentUser');
-        if (userElement) {
-            userElement.textContent = 'Firebase 연결됨';
+updateUserDisplay() {
+    const userElement = document.getElementById('currentUser');
+    if (userElement && this.currentUser) {
+        if (this.currentUser.role === '지점관리자') {
+            userElement.textContent = `${this.currentUser.name} (지점관리자 - ${this.currentUser.branch})`;
+            userElement.style.color = '#3b82f6';
+        } else if (this.currentUser.role === '전체관리자') {
+            userElement.textContent = `${this.currentUser.name} (전체관리자)`;
+            userElement.style.color = '#059669';
+        } else {
+            userElement.textContent = this.currentUser.name || 'Firebase 연결됨';
             userElement.style.color = '#10b981';
-            userElement.style.fontWeight = '500';
         }
+        userElement.style.fontWeight = '500';
+    } else if (userElement) {
+        userElement.textContent = 'Firebase 연결됨';
+        userElement.style.color = '#10b981';
+        userElement.style.fontWeight = '500';
     }
+}
 
     // 데이터 로드
     async loadAllData() {
@@ -207,12 +218,21 @@ class StatisticsManager {
                 branches = branches.filter(b => b === this.currentUser.branch);
             }
             
-            if (branches.length === 0) {
-                select.innerHTML = '<option value="">지점 데이터 없음</option>';
-                console.warn('⚠️ 지점 데이터가 없습니다');
-            } else {
-                select.innerHTML = '<option value="">전체 지점</option>' +
-                    branches.map(b => `<option value="${b}">${b}</option>`).join('');
+if (branches.length === 0) {
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        select.innerHTML = `<option value="${this.currentUser.branch}">${this.currentUser.branch}</option>`;
+    } else {
+        select.innerHTML = '<option value="">지점 데이터 없음</option>';
+    }
+    console.warn('⚠️ 지점 데이터가 없습니다');
+} else {
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        // 지점관리자는 "전체 지점" 옵션 없이 본인 지점만
+        select.innerHTML = branches.map(b => `<option value="${b}">${b}</option>`).join('');
+    } else {
+        // 전체관리자는 "전체 지점" 옵션 포함
+        select.innerHTML = '<option value="">전체 지점</option>' +
+            branches.map(b => `<option value="${b}">${b}</option>`).join('');
                 console.log(`✅ 지점 옵션 ${branches.length}개 로딩 완료`);
             }
         }
@@ -232,7 +252,10 @@ class StatisticsManager {
     // 필터링된 데이터 가져오기
     getFilteredData() {
         let filtered = this.data.checklists;
-        
+        // 사용자 권한에 따른 필터링
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
+            filtered = filtered.filter(item => item.branch === this.currentUser.branch);
+        }        
         // 날짜 필터
         if (this.currentPeriod.startDate && this.currentPeriod.endDate) {
             filtered = filtered.filter(item => {
@@ -247,10 +270,7 @@ class StatisticsManager {
             filtered = filtered.filter(item => item.branch === branchFilter.value);
         }
         
-        // 사용자 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === '지점관리자') {
-            filtered = filtered.filter(item => item.branch === this.currentUser.branch);
-        }
+
         
         return filtered;
     }
