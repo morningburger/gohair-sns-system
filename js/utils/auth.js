@@ -40,7 +40,7 @@ class AuthManager {
                     docId: email,
                     name: user.name,
                     email: email,
-                    role: user.role === 'admin' ? '전체관리자' : '지점관리자', // 역할명 통일
+role: user.role === '전체관리자' || user.role === 'admin' ? '전체관리자' : '지점관리자', // 역할명 통일
                     branch: user.branch || null,
                     branchCode: user.branchCode || null,
                     phone: user.phone || null,
