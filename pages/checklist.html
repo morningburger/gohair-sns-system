@@ -364,13 +364,121 @@
 <script src="../js/pages/checklist.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 🆕 필터 매니저 초기화
-        initializePageFilters();
+        console.log('📋 체크리스트 페이지 로드 시작');
         
-        // 기존 페이지 매니저 초기화
-        window.checklistManager = new ChecklistManager();
-        window.checklistManager.initialize();
+        // 사용자 정보 확인 및 권한별 초기화
+        initializeChecklistWithUserAuth();
     });
+    
+    function initializeChecklistWithUserAuth() {
+        try {
+            const userData = sessionStorage.getItem('currentUser');
+            const currentUser = userData ? JSON.parse(userData) : null;
+            
+            if (!currentUser) {
+                console.warn('⚠️ 사용자 정보가 없습니다. 로그인이 필요합니다.');
+                showLoginWarning();
+                return;
+            }
+            
+            console.log('현재 사용자:', currentUser);
+            
+            // 🆕 필터 매니저 초기화 (사용자 정보와 함께)
+            initializePageFilters();
+            
+            // ChecklistManager 초기화 전에 사용자 정보 설정
+            window.currentUserInfo = currentUser;
+            
+            // 약간의 지연 후 초기화 (navigation.js 로딩 완료 대기)
+            setTimeout(() => {
+                if (typeof ChecklistManager !== 'undefined') {
+                    window.checklistManager = new ChecklistManager();
+                    
+                    // 사용자 권한 정보를 ChecklistManager에 전달
+                    if (window.checklistManager.setUserContext) {
+                        window.checklistManager.setUserContext(currentUser);
+                    }
+                    
+                    window.checklistManager.initialize();
+                    
+                    // 권한별 추가 설정
+                    setupUserSpecificFeatures(currentUser);
+                    
+                    console.log('✅ ChecklistManager 초기화 완료 (사용자 권한 적용)');
+                } else {
+                    console.error('❌ ChecklistManager를 찾을 수 없습니다.');
+                }
+            }, 200);
+            
+        } catch (error) {
+            console.error('체크리스트 초기화 오류:', error);
+            showInitializationError();
+        }
+    }
+    
+    function setupUserSpecificFeatures(currentUser) {
+        if (currentUser.role === '지점관리자') {
+            // 지점관리자 전용 설정
+            console.log(`🏢 지점관리자 모드: ${currentUser.branch}`);
+            
+            // 히스토리 필터를 본인 지점으로 제한
+            const historyFilter = document.getElementById('historyFilter');
+            if (historyFilter) {
+                historyFilter.innerHTML = `
+                    <option value="branch" selected>내 지점 (${currentUser.branch})</option>
+                `;
+                historyFilter.disabled = true;
+                historyFilter.style.backgroundColor = '#f3f4f6';
+                historyFilter.style.cursor = 'not-allowed';
+            }
+            
+            // ChecklistManager에 지점 필터 적용
+            if (window.checklistManager && window.checklistManager.applyBranchFilter) {
+                window.checklistManager.applyBranchFilter(currentUser.branch);
+            }
+            
+        } else if (currentUser.role === '전체관리자') {
+            console.log('👑 전체관리자 모드: 모든 데이터 접근 가능');
+        }
+    }
+    
+    function showLoginWarning() {
+        const summaryElement = document.querySelector('.today-summary');
+        if (summaryElement) {
+            summaryElement.innerHTML = `
+                <div style="text-align: center; padding: 2rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🔐</div>
+                    <h3 style="color: #dc2626; margin-bottom: 1rem;">로그인이 필요합니다</h3>
+                    <p style="color: #7f1d1d;">체크리스트 기능을 사용하려면 먼저 로그인해주세요.</p>
+                    <button onclick="goToMainSystem()" class="btn" style="margin-top: 1rem;">🏠 로그인 페이지로</button>
+                </div>
+            `;
+        }
+    }
+    
+    function showInitializationError() {
+        const summaryElement = document.querySelector('.today-summary');
+        if (summaryElement) {
+            summaryElement.innerHTML = `
+                <div style="text-align: center; padding: 2rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
+                    <h3 style="color: #dc2626; margin-bottom: 1rem;">초기화 실패</h3>
+                    <p style="color: #7f1d1d;">페이지 로딩 중 오류가 발생했습니다.</p>
+                    <button onclick="location.reload()" class="btn" style="margin-top: 1rem;">🔄 페이지 새로고침</button>
+                </div>
+            `;
+        }
+    }
+    
+    // 내보내기 함수
+    function exportChecklistHistory() {
+        if (window.checklistManager && window.checklistManager.exportHistory) {
+            window.checklistManager.exportHistory();
+        } else {
+            console.warn('ChecklistManager가 초기화되지 않았습니다.');
+            alert('잠시 후 다시 시도해주세요.');
+        }
+    }
 </script>
 
 
