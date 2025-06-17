@@ -36,11 +36,14 @@ class HistoryManager {
             // 디자이너 옵션 로드
             this.loadDesignerOptions();
             
-            // 지점 옵션 로드
-            this.loadBranchOptions();
+// 지점 옵션 로드
+this.loadBranchOptions();
 
-            // 초기 날짜 범위 설정
-            this.setPeriod('month');
+// 권한에 따른 UI 조정
+this.adjustUIForPermissions();
+
+// 초기 날짜 범위 설정
+this.setPeriod('month');
             
             // 이벤트 리스너 설정
             this.setupEventListeners();
@@ -61,19 +64,36 @@ class HistoryManager {
         }
     }
 
-    // 사용자 표시 업데이트
-    updateUserDisplay() {
-        const userElement = document.getElementById('currentUser');
-        if (userElement) {
-            // 강제로 Firebase 연결 상태 표시
+// 사용자 표시 업데이트
+updateUserDisplay() {
+    const userElement = document.getElementById('currentUser');
+    if (userElement) {
+        if (this.currentUser) {
+            if (this.currentUser.role === '전체관리자') {
+                userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
+                userElement.style.color = '#059669';
+            } else if (this.currentUser.role === '지점관리자') {
+                userElement.textContent = `${this.currentUser.name} (${this.currentUser.role} - ${this.currentUser.branch})`;
+                userElement.style.color = '#3b82f6';
+            }
+        } else {
             userElement.textContent = 'Firebase 연결됨';
             userElement.style.color = '#10b981';
-            userElement.style.fontWeight = '500';
-            
-            console.log('✅ "Firebase 연결됨" 표시 완료');
+        }
+        userElement.style.fontWeight = '500';
+    }
+}
+// 권한에 따른 UI 조정
+adjustUIForPermissions() {
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        // 지점 필터 컨테이너 숨김
+        const branchFilterDiv = document.querySelector('#historyBranch').closest('div');
+        if (branchFilterDiv) {
+            branchFilterDiv.style.display = 'none';
+            console.log('🔒 지점관리자 - 지점 필터 숨김');
         }
     }
-
+}
     // 데이터 로드
     async loadAllData() {
         try {
@@ -278,40 +298,56 @@ class HistoryManager {
         }
     }
 
-    // 디자이너 옵션 로드
-    loadDesignerOptions() {
-        let designers = this.data.designers;
+// 디자이너 옵션 로드
+loadDesignerOptions() {
+    let designers = this.data.designers;
+    
+    // 사용자 권한에 따른 필터링
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        designers = designers.filter(d => d.branch === this.currentUser.branch);
+        console.log(`🔒 지점관리자 디자이너 필터링: ${this.currentUser.branch} - ${designers.length}개`);
+    }
+
+    const select = document.getElementById('historyDesigner');
+    if (select) {
+        select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
+            designers.map(d => `<option value="${d.id}">${d.name} (${d.branch} - ${d.position})</option>`).join('');
+    }
+}
+
+// 지점 옵션 로드
+loadBranchOptions() {
+    const select = document.getElementById('historyBranch');
+    if (select) {
+        console.log('🏢 지점 옵션 로딩 중... 데이터:', this.data.branches);
         
-        // 사용자 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === 'leader') {
-            designers = designers.filter(d => d.branch === this.currentUser.branch);
+        if (!this.data.branches || this.data.branches.length === 0) {
+            console.warn('⚠️ 지점 데이터가 없습니다');
+            select.innerHTML = '<option value="">지점 데이터 없음</option>';
+            return;
         }
-
-        const select = document.getElementById('historyDesigner');
-        if (select) {
-            select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
-                designers.map(d => `<option value="${d.id}">${d.name} (${d.branch} - ${d.position})</option>`).join('');
-        }
-    }
-
-    // 지점 옵션 로드
-    loadBranchOptions() {
-        const select = document.getElementById('historyBranch');
-        if (select) {
-            console.log('🏢 지점 옵션 로딩 중... 데이터:', this.data.branches);
+        
+        let branches = this.data.branches;
+        
+        // 권한에 따른 지점 필터링
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
+            branches = branches.filter(b => b === this.currentUser.branch);
+            console.log(`🔒 지점관리자 지점 필터링: ${this.currentUser.branch}`);
             
-            if (!this.data.branches || this.data.branches.length === 0) {
-                console.warn('⚠️ 지점 데이터가 없습니다');
-                select.innerHTML = '<option value="">지점 데이터 없음</option>';
-                return;
+            // 지점관리자는 지점 필터를 숨김 (자신의 지점만 있으므로)
+            const branchFilterContainer = select.closest('div');
+            if (branchFilterContainer) {
+                branchFilterContainer.style.display = 'none';
             }
-            
+        } else {
+            // 전체관리자는 지점 필터 표시
             select.innerHTML = '<option value="">전체 지점</option>' +
-                this.data.branches.map(branch => `<option value="${branch}">${branch}</option>`).join('');
-            
-            console.log(`✅ 지점 옵션 ${this.data.branches.length}개 로딩 완료`);
+                branches.map(branch => `<option value="${branch}">${branch}</option>`).join('');
         }
+        
+        console.log(`✅ 지점 옵션 ${branches.length}개 로딩 완료`);
     }
+}
 
     // 기간 설정
     setPeriod(period) {
@@ -567,17 +603,22 @@ class HistoryManager {
         document.getElementById('historyContent').innerHTML = historyHTML;
     }
 
-    // 필터링된 체크리스트 가져오기
-    getFilteredChecklists() {
-        let checklists = this.data.checklists.filter(c => {
-            // 디자이너 필터
-            if (c.designerId != this.selectedDesigner.id) return false;
-            
-            // 지점 필터 (선택된 경우에만)
-            if (this.selectedBranch && c.branch !== this.selectedBranch) return false;
-            
-            return true;
-        });
+// 필터링된 체크리스트 가져오기
+getFilteredChecklists() {
+    let checklists = this.data.checklists.filter(c => {
+        // 디자이너 필터
+        if (c.designerId != this.selectedDesigner.id) return false;
+        
+        // 권한에 따른 추가 필터링
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
+            if (c.branch !== this.currentUser.branch) return false;
+        }
+        
+        // 지점 필터 (선택된 경우에만)
+        if (this.selectedBranch && c.branch !== this.selectedBranch) return false;
+        
+        return true;
+    });
         
         // 날짜 필터링
         if (this.dateRange.start && this.dateRange.end) {
