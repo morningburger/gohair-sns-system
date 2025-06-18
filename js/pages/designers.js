@@ -597,21 +597,23 @@ getFilteredChecklists(designerId) {
 
         tbody.innerHTML = designers.map(designer => `
             <tr class="designer-row" data-designer-id="${designer.id}">
-                <td class="font-medium">
-                    <div class="flex items-center">
-                        <span>${designer.name}</span>
-                        ${designer.isActive ? 
-                            '<span class="status-badge status-active ml-2">활성</span>' : 
-                            '<span class="status-badge status-inactive ml-2">비활성</span>'
-                        }
-                    </div>
-                </td>
-                <td>${designer.branch}</td>
-                <td>
-                    <span class="badge badge-blue">${designer.position}</span>
-                </td>
-                <td>${designer.phone}</td>
-                <td>${designer.createdAt}</td>
+<td class="font-medium">${designer.name}</td>
+<td>${designer.branch}</td>
+<td>
+    <span class="badge badge-blue">${designer.position}</span>
+</td>
+<td>${designer.phone}</td>
+<td>
+    ${designer.instagram ? 
+        `<a href="${designer.instagram.startsWith('http') ? designer.instagram : 'https://instagram.com/' + designer.instagram}" 
+           target="_blank" 
+           class="instagram-link" 
+           style="color: #e4405f; text-decoration: none;" 
+           title="인스타그램 보기">📷 인스타그램</a>` : 
+        '<span style="color: #9ca3af;">-</span>'
+    }
+</td>
+<td>${designer.createdAt}</td>
                 <td class="text-center">${designer.reviews}</td>
                 <td class="text-center">${designer.posts}</td>
                 <td class="text-center">${designer.experience}</td>
@@ -797,15 +799,16 @@ if (periodSelect) {
     // 🔥 Firebase에 디자이너 추가 (실제 저장)
     async handleAddDesigner() {
         try {
-            const formData = {
-                name: document.getElementById('designerName').value,
-                branch: document.getElementById('designerBranch').value,
-                position: document.getElementById('designerPosition').value,
-                phone: document.getElementById('designerPhone').value,
-                email: document.getElementById('designerEmail').value || '',
-                createdAt: new Date().toISOString().split('T')[0],
-                notes: ''
-            };
+const formData = {
+    name: document.getElementById('designerName').value,
+    branch: document.getElementById('designerBranch').value,
+    position: document.getElementById('designerPosition').value,
+    phone: document.getElementById('designerPhone').value,
+    email: document.getElementById('designerEmail').value || '',
+    instagram: document.getElementById('designerInstagram').value || '',
+    createdAt: new Date().toISOString().split('T')[0],
+    notes: ''
+};
 
             console.log('🔥 Firebase에 디자이너 추가 중...', formData);
 
@@ -850,14 +853,15 @@ if (periodSelect) {
     async handleEditDesigner() {
         try {
             const docId = document.getElementById('editDesignerId').value;
-            const formData = {
-                name: document.getElementById('editDesignerName').value,
-                branch: document.getElementById('editDesignerBranch').value,
-                position: document.getElementById('editDesignerPosition').value,
-                phone: document.getElementById('editDesignerPhone').value,
-                email: document.getElementById('editDesignerEmail').value || '',
-                notes: document.getElementById('editDesignerNotes').value || ''
-            };
+const formData = {
+    name: document.getElementById('editDesignerName').value,
+    branch: document.getElementById('editDesignerBranch').value,
+    position: document.getElementById('editDesignerPosition').value,
+    phone: document.getElementById('editDesignerPhone').value,
+    email: document.getElementById('editDesignerEmail').value || '',
+    instagram: document.getElementById('editDesignerInstagram').value || '',
+    notes: document.getElementById('editDesignerNotes').value || ''
+};
 
             console.log('🔥 Firebase에서 디자이너 수정 중...', docId, formData);
 
@@ -952,13 +956,14 @@ if (periodSelect) {
 
         this.loadBranchOptions();
         
-        document.getElementById('editDesignerId').value = designer.docId;
-        document.getElementById('editDesignerName').value = designer.name;
-        document.getElementById('editDesignerBranch').value = designer.branch;
-        document.getElementById('editDesignerPosition').value = designer.position;
-        document.getElementById('editDesignerPhone').value = designer.phone;
-        document.getElementById('editDesignerEmail').value = designer.email || '';
-        document.getElementById('editDesignerNotes').value = designer.notes || '';
+document.getElementById('editDesignerId').value = designer.docId;
+document.getElementById('editDesignerName').value = designer.name;
+document.getElementById('editDesignerBranch').value = designer.branch;
+document.getElementById('editDesignerPosition').value = designer.position;
+document.getElementById('editDesignerPhone').value = designer.phone;
+document.getElementById('editDesignerEmail').value = designer.email || '';
+document.getElementById('editDesignerInstagram').value = designer.instagram || '';
+document.getElementById('editDesignerNotes').value = designer.notes || '';
         
         document.getElementById('editDesignerModal').classList.remove('hidden');
     }
@@ -1005,12 +1010,16 @@ console.log(`🔍 ${designer.name} 상세보기 체크리스트: ${designerCheck
                 <div class="designer-info">
                     <h4>👤 기본 정보</h4>
                     <div class="info-grid">
-                        <div><strong>이름:</strong> ${designer.name}</div>
-                        <div><strong>지점:</strong> ${designer.branch}</div>
-                        <div><strong>직급:</strong> ${designer.position}</div>
-                        <div><strong>전화번호:</strong> ${designer.phone}</div>
-                        <div><strong>이메일:</strong> ${designer.email || '-'}</div>
-                        <div><strong>등록일:</strong> ${designer.createdAt}</div>
+<div><strong>이름:</strong> ${designer.name}</div>
+<div><strong>지점:</strong> ${designer.branch}</div>
+<div><strong>직급:</strong> ${designer.position}</div>
+<div><strong>전화번호:</strong> ${designer.phone}</div>
+<div><strong>이메일:</strong> ${designer.email || '-'}</div>
+<div><strong>인스타그램:</strong> ${designer.instagram ? 
+    `<a href="${designer.instagram.startsWith('http') ? designer.instagram : 'https://instagram.com/' + designer.instagram}" 
+       target="_blank" style="color: #e4405f;">📷 ${designer.instagram}</a>` : '-'
+}</div>
+<div><strong>등록일:</strong> ${designer.createdAt}</div>
                     </div>
                     ${designer.notes ? `<div class="mt-4"><strong>메모:</strong><br>${designer.notes}</div>` : ''}
                 </div>
