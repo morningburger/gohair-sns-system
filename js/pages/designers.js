@@ -60,6 +60,16 @@ class DesignersManager {
             return null;
         }
     }
+    // 디자이너 ID로 이름 찾기
+getDesignerNameById(designerId) {
+    const designer = this.data.designers.find(d => 
+        d.id === designerId || 
+        d.docId === designerId || 
+        String(d.id) === String(designerId) ||
+        String(d.docId) === String(designerId)
+    );
+    return designer ? designer.name : null;
+}
 
     // 사용자 표시 업데이트
 updateUserDisplay() {
@@ -402,9 +412,14 @@ loadBranchOptions() {
         console.log(`📅 자동 날짜 설정: ${period} - ${startDate} ~ ${today}`);
     }
 
-    // 디자이너 목록 로드
-    loadDesigners() {
-        let designers = [...this.data.designers];
+// 디자이너 목록 로드
+loadDesigners() {
+    let designers = [...this.data.designers];
+    
+    // 🔍 데이터 연동 디버깅
+    console.log('📊 디자이너 수:', designers.length);
+    console.log('📋 체크리스트 수:', this.data.checklists.length);
+    console.log('📋 체크리스트 샘플:', this.data.checklists.slice(0, 3));
         
         // 권한에 따른 필터링
         if (this.currentUser && this.currentUser.role === '지점관리자') {
@@ -461,11 +476,26 @@ loadBranchOptions() {
         this.renderPagination();
     }
 
-    // 디자이너 활동량 계산
-    calculateDesignerActivity(designers) {
-        return designers.map(designer => {
-            // 기간에 따른 체크리스트 필터링
-            const designerChecklists = this.getFilteredChecklists(designer.id);
+// 디자이너 활동량 계산
+calculateDesignerActivity(designers) {
+    return designers.map(designer => {
+        // 다양한 ID로 체크리스트 찾기 시도
+        let designerChecklists = this.getFilteredChecklists(designer.id);
+        
+        // ID로 못 찾으면 이름으로 찾기
+        if (designerChecklists.length === 0) {
+            designerChecklists = this.getFilteredChecklists(designer.docId);
+        }
+        
+        // 여전히 못 찾으면 이름으로 찾기
+        if (designerChecklists.length === 0) {
+            designerChecklists = this.data.checklists.filter(c => 
+                c.designer === designer.name && 
+                (c.branch === designer.branch || !c.branch)
+            );
+        }
+        
+        console.log(`🔍 ${designer.name} 체크리스트 찾기: ${designerChecklists.length}개 발견`);
             
             const reviews = designerChecklists.reduce((sum, c) => sum + (c.naverReviews || 0), 0);
             const posts = designerChecklists.reduce((sum, c) => sum + (c.naverPosts || 0), 0);
@@ -487,9 +517,15 @@ loadBranchOptions() {
         });
     }
 
-    // 기간별 체크리스트 필터링
-    getFilteredChecklists(designerId) {
-        let checklists = this.data.checklists.filter(c => c.designerId === designerId);
+// 기간별 체크리스트 필터링
+getFilteredChecklists(designerId) {
+    let checklists = this.data.checklists.filter(c => {
+        // 다양한 ID 매칭 방식 시도
+        return c.designerId === designerId || 
+               c.designerId === String(designerId) ||
+               c.designer === this.getDesignerNameById(designerId) ||
+               String(c.designerId) === String(designerId);
+    });
         
         const now = new Date();
         let filterDate;
@@ -536,6 +572,15 @@ loadBranchOptions() {
     renderDesignersTable(designers) {
         const tbody = document.getElementById('designersList');
         if (!tbody) return;
+
+            // 🔍 활동량 디버깅
+    designers.forEach(d => {
+        if (d.total > 0) {
+            console.log(`✅ ${d.name}: 총 활동량 ${d.total}`);
+        } else {
+            console.log(`⚠️ ${d.name}: 활동량 0 (체크리스트 연동 확인 필요)`);
+        }
+    });
 
         tbody.innerHTML = designers.map(designer => `
             <tr class="designer-row" data-designer-id="${designer.id}">
