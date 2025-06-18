@@ -209,14 +209,20 @@ updateUserDisplay() {
                 });
             });
             
-            console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
-            
-            if (designers.length === 0) {
-                console.log('📝 Firebase에 디자이너 데이터가 없음 - 임시 데이터 사용');
-                return this.generateSampleDesigners();
-            }
-            
-            return designers;
+console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
+
+// 🔍 Firebase 디자이너 데이터 구조 확인
+console.log('🔍 Firebase 디자이너 샘플 3개:');
+designers.slice(0, 3).forEach((designer, index) => {
+    console.log(`디자이너 ${index + 1}:`, {
+        id: designer.id,
+        docId: designer.docId,
+        name: designer.name,
+        branch: designer.branch
+    });
+});
+
+return designers;
         } catch (error) {
             console.error('❌ 디자이너 데이터 로딩 실패:', error);
             console.log('📝 오류로 인해 임시 데이터 사용');
@@ -306,14 +312,21 @@ updateUserDisplay() {
                 });
             });
             
-            console.log(`✅ 체크리스트 데이터 로딩 완료: ${checklists.length}개`);
-            
-            if (checklists.length === 0) {
-                console.log('📝 Firebase에 체크리스트 데이터가 없음 - 임시 데이터 사용');
-                return this.generateSampleChecklists();
-            }
-            
-            return checklists;
+console.log(`✅ 체크리스트 데이터 로딩 완료: ${checklists.length}개`);
+
+// 🔍 Firebase 체크리스트 데이터 구조 확인
+console.log('🔍 Firebase 체크리스트 샘플 3개:');
+checklists.slice(0, 3).forEach((checklist, index) => {
+    console.log(`체크리스트 ${index + 1}:`, {
+        id: checklist.id,
+        designerId: checklist.designerId,
+        designer: checklist.designer,
+        branch: checklist.branch,
+        date: checklist.date
+    });
+});
+
+return checklists;
         } catch (error) {
             console.error('❌ 체크리스트 데이터 로딩 실패:', error);
             console.log('📝 오류로 인해 임시 데이터 사용');
