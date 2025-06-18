@@ -435,21 +435,28 @@ function showLogin() {
     // 디버깅용 함수 (임시)
 function debugPasswordReset() {
     console.log('디버깅: showPasswordReset 호출됨');
-    console.log('loginPage 존재:', !!document.getElementById('loginPage'));
-    console.log('passwordResetPage 존재:', !!document.getElementById('passwordResetPage'));
-    console.log('authManager 존재:', !!window.authManager);
     
-    // AuthManager 사용
-    if (window.authManager && typeof window.authManager.showPasswordResetPage === 'function') {
-        console.log('AuthManager의 showPasswordResetPage 호출');
-        window.authManager.showPasswordResetPage();
-    } else {
-        console.log('직접 페이지 전환');
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('signupPage').classList.add('hidden');
-        document.getElementById('passwordResetPage').classList.remove('hidden');
-    }
+    // 강제로 페이지 전환 (간단한 방법)
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('signupPage').classList.add('hidden');
+    document.getElementById('passwordResetPage').classList.remove('hidden');
+    
+    console.log('비밀번호 찾기 페이지 표시 완료');
 }
+    // 페이지 로드 시 강제 세션 체크
+window.addEventListener('load', function() {
+    setTimeout(() => {
+        const userData = sessionStorage.getItem('currentUser');
+        if (userData) {
+            console.log('세션 데이터 발견, 메인 시스템 표시');
+            const loginPage = document.getElementById('loginPage');
+            const mainSystem = document.getElementById('mainSystem');
+            
+            if (loginPage) loginPage.classList.add('hidden');
+            if (mainSystem) mainSystem.classList.remove('hidden');
+        }
+    }, 500);
+});
 </script>
 </body>
 </html>
