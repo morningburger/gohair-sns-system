@@ -1301,13 +1301,6 @@ function exportBranches() {
     window.branchesManager?.exportBranches();
 }
 
-function goToMainSystem() {
-    window.location.href = '../index.html';
-}
-
-function goToPage(pageId) {
-    window.location.href = `${pageId}.html`;
-}
 // 페이지당 항목 수 변경 함수 (기존 전역 함수들 위에 추가)
 function changeItemsPerPage() {
     const select = document.getElementById('itemsPerPage');
