@@ -492,6 +492,9 @@ async saveChecklistToFirebase(checklistData) {
 
     // 선택된 디자이너 정보 로드
     loadSelectedDesignerInfo(designerId) {
+            // 🔍 디버깅 정보
+    console.log('🔍 선택된 디자이너 정보 로딩:', designerId);
+    console.log('🔍 전체 체크리스트 수:', this.data.checklists.length);
         if (!designerId) {
             document.getElementById('selectedDesignerInfo').innerHTML = `
                 <div class="empty-state">
@@ -509,8 +512,18 @@ async saveChecklistToFirebase(checklistData) {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         
-        const recentChecklists = this.data.checklists
-            .filter(c => c.designerId == designerId && new Date(c.date) >= sevenDaysAgo)
+const recentChecklists = this.data.checklists
+    .filter(c => {
+        // 다양한 타입으로 디자이너 매칭 시도
+        const isMatch = c.designerId == designerId || 
+                       String(c.designerId) === String(designerId) ||
+                       parseInt(c.designerId) === parseInt(designerId);
+        const isRecent = new Date(c.date) >= sevenDaysAgo;
+        
+        console.log(`🔍 체크리스트 매칭: ${c.designerId} vs ${designerId} = ${isMatch}`);
+        
+        return isMatch && isRecent;
+    })
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .slice(0, 7);
 
@@ -733,10 +746,10 @@ fillSampleData() {
                 return;
             }
 
-            const checklistData = {
-                id: `checklist_${designerId}_${Date.now()}`,
-                docId: `checklist_${designerId}_${Date.now()}`,
-                designerId: parseInt(designerId),
+const checklistData = {
+    id: `checklist_${designerId}_${Date.now()}`,
+    docId: `checklist_${designerId}_${Date.now()}`,
+    designerId: designerId, // 문자열 그대로 저장 (Firebase와 일치하도록)
                 designer: designer.name,
                 branch: designer.branch,
                 date: document.getElementById('checklistDate').value,
@@ -750,8 +763,9 @@ fillSampleData() {
             };
 
             // 같은 날짜 중복 확인
-            const existingChecklist = this.data.checklists.find(c => 
-                c.designerId == designerId && c.date === checklistData.date);
+const existingChecklist = this.data.checklists.find(c => 
+    (c.designerId == designerId || String(c.designerId) === String(designerId)) && 
+    c.date === checklistData.date);
             
             if (existingChecklist) {
                 if (!confirm('해당 날짜에 이미 체크리스트가 있습니다. 덮어쓰시겠습니까?')) {
