@@ -137,13 +137,27 @@
                 </div>
 
                 <!-- 필터 및 검색 -->
-                <div class="filter-controls">
-                    <div class="search-filters">
-                        <div class="search-group">
-                            <label>🔍 지점 검색</label>
-                            <input type="text" id="branchSearch" class="search-input" 
-                                   placeholder="지점명, 주소, 지점코드로 검색..." 
-                                   onchange="loadBranches()">
+<div class="filter-controls">
+    <div class="search-filters">
+        <div class="search-group">
+            <label>🔍 지점 검색</label>
+            <input type="text" id="branchSearch" class="search-input" 
+                   placeholder="지점명, 주소, 지점코드로 검색..." 
+                   onchange="loadBranches()">
+        </div>
+        <div class="filter-group">
+            <label>📄 페이지당 표시</label>
+            <select id="itemsPerPage" onchange="changeItemsPerPage()">
+                <option value="10" selected>10개씩</option>
+                <option value="20">20개씩</option>
+                <option value="30">30개씩</option>
+                <option value="50">50개씩</option>
+                <option value="100">100개씩</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>📊 정렬 기준</label>
+            <select id="branchSortBy" onchange="loadBranches()">
                         </div>
                         <div class="filter-group">
                             <label>📊 정렬 기준</label>
