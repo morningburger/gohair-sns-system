@@ -46,7 +46,7 @@
                     <button type="submit" class="btn" style="width: 100%;">🔑 로그인</button>
                 </form>
 <div class="text-center" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-    <a href="#" onclick="showPasswordReset()" style="color: #dc2626; text-decoration: none; font-size: 0.875rem;">🔑 비밀번호를 잊으셨나요?</a>
+<a href="#" onclick="debugPasswordReset()" style="color: #dc2626; text-decoration: none; font-size: 0.875rem;">🔑 비밀번호를 잊으셨나요?</a>
     <a href="#" onclick="showSignup()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">SNS 리더로 가입하기</a>
 </div>
             </div>
@@ -415,13 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Firebase 지점 연동 준비 완료');
 });
 
-// 비밀번호 관련 함수들
-function showPasswordReset() {
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('signupPage').classList.add('hidden');
-    document.getElementById('passwordResetPage').classList.remove('hidden');
-}
-
+// 비밀번호 관련 함수들 (showPasswordReset 제거)
 function showChangePassword() {
     document.getElementById('changePasswordModal').classList.remove('hidden');
 }
@@ -437,6 +431,24 @@ function showLogin() {
     document.getElementById('signupPage').classList.add('hidden');
     document.getElementById('passwordResetPage').classList.add('hidden');
     document.getElementById('loginPage').classList.remove('hidden');
+}
+    // 디버깅용 함수 (임시)
+function debugPasswordReset() {
+    console.log('디버깅: showPasswordReset 호출됨');
+    console.log('loginPage 존재:', !!document.getElementById('loginPage'));
+    console.log('passwordResetPage 존재:', !!document.getElementById('passwordResetPage'));
+    console.log('authManager 존재:', !!window.authManager);
+    
+    // AuthManager 사용
+    if (window.authManager && typeof window.authManager.showPasswordResetPage === 'function') {
+        console.log('AuthManager의 showPasswordResetPage 호출');
+        window.authManager.showPasswordResetPage();
+    } else {
+        console.log('직접 페이지 전환');
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('signupPage').classList.add('hidden');
+        document.getElementById('passwordResetPage').classList.remove('hidden');
+    }
 }
 </script>
 </body>
