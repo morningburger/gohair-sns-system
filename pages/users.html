@@ -87,30 +87,10 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-content">
-            <div class="header-top">
-                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
-                <div class="header-actions">
-                    <span id="currentUser"></span>
-                    <button class="btn btn-green" onclick="exportUsers()">📥 계정 내보내기</button>
-                    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
-                </div>
-            </div>
-            
-            <nav class="nav">
-                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
-                <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
-                <button class="nav-btn" onclick="goToPage('branches')">🏢 지점 관리</button>
-                <button class="nav-btn active">👤 계정 관리</button>
-                <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
-                <button class="nav-btn" onclick="goToPage('checklist')">📋 체크리스트 입력</button>
-                <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
-                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
-            </nav>
-        </div>
-    </div>
+<!-- Header -->
+<div class="header">
+    <!-- 동적으로 생성됨 -->
+</div>
 
     <div class="container">
         <!-- 계정 관리 페이지 -->
@@ -349,8 +329,12 @@
     </div>
 
     <!-- JavaScript Files -->
-    <script src="../js/config/firebase.js"></script>
-    <script>
+<script src="../js/config/firebase.js"></script>
+<script src="../js/utils/data-manager.js"></script>
+<script src="../js/utils/auth.js"></script>
+<script src="../js/utils/ui-utils.js"></script>
+<script src="../js/utils/navigation.js"></script>
+<script src="../js/pages/users.js"></script>    <script>
         // 사용자 관리 클래스
         class UsersManager {
             constructor() {
@@ -373,26 +357,25 @@
                 };
             }
 
-            async initialize() {
-                try {
-                    this.currentUser = this.getCurrentUser();
-                    this.updateUserDisplay();
-                    
-                    if (!this.currentUser || this.currentUser.role !== '전체관리자') {
-                        alert('이 페이지는 전체관리자만 접근할 수 있습니다.');
-                        window.location.href = '../index.html';
-                        return;
-                    }
+ async initialize() {
+    try {
+        this.currentUser = this.getCurrentUser();
+        
+        if (!this.currentUser || this.currentUser.role !== '전체관리자') {
+            alert('이 페이지는 전체관리자만 접근할 수 있습니다.');
+            window.location.href = '../index.html';
+            return;
+        }
 
-                    await this.loadAllData();
-                    this.setupEventListeners();
-                    this.loadUsers();
-                    
-                    console.log('계정 관리 페이지 초기화 완료');
-                } catch (error) {
-                    console.error('계정 관리 페이지 초기화 오류:', error);
-                }
-            }
+        await this.loadAllData();
+        this.setupEventListeners();
+        this.loadUsers();
+        
+        console.log('계정 관리 페이지 초기화 완료');
+    } catch (error) {
+        console.error('계정 관리 페이지 초기화 오류:', error);
+    }
+}
 
             getCurrentUser() {
                 try {
@@ -403,14 +386,6 @@
                 }
             }
 
-            updateUserDisplay() {
-                const userElement = document.getElementById('currentUser');
-                if (userElement && this.currentUser) {
-                    userElement.textContent = `${this.currentUser.name} (${this.currentUser.role})`;
-                    userElement.style.color = '#059669';
-                    userElement.style.fontWeight = '500';
-                }
-            }
 
             async loadAllData() {
                 try {
@@ -1137,11 +1112,43 @@ if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
             }
         }
 
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', function() {
+// 단일 초기화 함수
+function initializeUsersPage() {
+    console.log('👤 Users 페이지 초기화 시작');
+    
+    // 네비게이션 확인
+    if (!window.navigationManager) {
+        console.warn('⚠️ 네비게이션이 아직 로드되지 않음');
+        return;
+    }
+    
+    try {
+        // 필터 매니저 초기화
+        if (typeof initializePageFilters === 'function') {
+            initializePageFilters();
+        }
+        
+        // 페이지 매니저 초기화
+        if (typeof UsersManager !== 'undefined') {
             window.usersManager = new UsersManager();
             window.usersManager.initialize();
-        });
+        }
+        
+        console.log('✅ Users 페이지 초기화 완료');
+    } catch (error) {
+        console.error('❌ 페이지 초기화 오류:', error);
+    }
+}
+
+// DOM 로드 완료 후 초기화
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        // 네비게이션 로드를 기다린 후 페이지 초기화
+        setTimeout(initializeUsersPage, 500);
+    });
+} else {
+    setTimeout(initializeUsersPage, 100);
+}
     </script>
 </body>
 </html>
