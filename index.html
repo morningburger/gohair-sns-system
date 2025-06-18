@@ -60,23 +60,43 @@
                     <h1>SNS 리더 가입</h1>
                     <p>새로운 SNS 리더 계정을 생성합니다</p>
                 </div>
-                <form id="signupForm">
-                    <div class="form-group">
-                        <label>👤 이름</label>
-                        <input type="text" id="signupName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>📧 이메일</label>
-                        <input type="email" id="signupEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label>🔒 비밀번호</label>
-                        <input type="password" id="signupPassword" required>
-                    </div>
-<div class="form-group">
-    <label>🏢 지점 선택</label>
-    <select id="signupBranch" required>
-        <option value="">지점을 선택하세요</option>
+<form id="signupForm">
+    <div class="form-group">
+        <label>👤 이름</label>
+        <input type="text" id="signupName" required>
+    </div>
+    <div class="form-group">
+        <label>🏷️ 직급</label>
+        <select id="signupPosition" required>
+            <option value="">직급을 선택하세요</option>
+            <option value="인턴">인턴</option>
+            <option value="디자이너">디자이너</option>
+            <option value="팀장">팀장</option>
+            <option value="실장">실장</option>
+            <option value="부원장">부원장</option>
+            <option value="원장">원장</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>📧 이메일</label>
+        <input type="email" id="signupEmail" required>
+    </div>
+    <div class="form-group">
+        <label>🔒 비밀번호</label>
+        <input type="password" id="signupPassword" required minlength="6">
+        <small style="color: #6b7280; font-size: 0.8rem;">최소 6자 이상 입력하세요</small>
+    </div>
+    <div class="form-group">
+        <label>🔒 비밀번호 확인</label>
+        <input type="password" id="signupPasswordConfirm" required minlength="6">
+        <small id="passwordMatchMessage" style="font-size: 0.8rem;"></small>
+    </div>
+    <div class="form-group">
+        <label>🏢 지점 선택</label>
+        <select id="signupBranch" required>
+            <option value="">지점을 선택하세요</option>
+        </select>
+    </div>
         <!-- Firebase에서 동적으로 로드됨 -->
     </select>
     <div id="branchLoadingStatus" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
@@ -85,10 +105,61 @@
 </div>
                     <button type="submit" class="btn" style="width: 100%;">➕ 가입하기</button>
                 </form>
+<div class="text-center" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+    <a href="#" onclick="showPasswordReset()" style="color: #dc2626; text-decoration: none; font-size: 0.875rem;">🔑 비밀번호를 잊으셨나요?</a>
+    <a href="#" onclick="showSignup()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">SNS 리더로 가입하기</a>
+</div>
+            </div>
+        </div>
+    </div>
+<!-- 비밀번호 찾기 페이지 -->
+    <div id="passwordResetPage" class="hidden">
+        <div class="login-container">
+            <div class="login-form">
+                <div class="logo">
+                    <h1>🔑 비밀번호 찾기</h1>
+                    <p>등록된 이메일을 입력하세요</p>
+                </div>
+                <form id="passwordResetForm">
+                    <div class="form-group">
+                        <label>📧 이메일</label>
+                        <input type="email" id="resetEmail" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">🔍 비밀번호 찾기</button>
+                </form>
                 <div class="text-center" style="margin-top: 1rem;">
-                    <a href="#" onclick="showLogin()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">이미 계정이 있으신가요? 로그인하기</a>
+                    <a href="#" onclick="showLogin()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">로그인으로 돌아가기</a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 비밀번호 변경 모달 -->
+    <div id="changePasswordModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">🔒 비밀번호 변경</h3>
+                <button onclick="hideChangePassword()" class="modal-close">❌</button>
+            </div>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label>🔒 현재 비밀번호</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>🔒 새 비밀번호</label>
+                    <input type="password" id="newPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>🔒 새 비밀번호 확인</label>
+                    <input type="password" id="newPasswordConfirm" required minlength="6">
+                    <small id="newPasswordMatchMessage" style="font-size: 0.8rem;"></small>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideChangePassword()" class="btn btn-secondary">❌ 취소</button>
+                    <button type="submit" class="btn">💾 변경</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -99,18 +170,21 @@
             <div class="header-content">
                 <div class="header-top">
                     <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
-                    <div class="header-actions">
-                        <span id="currentUser" style="color: #6b7280; font-size: 0.875rem; padding: 0.5rem;"></span>
-                        <button onclick="exportData()" class="btn btn-green">
-                            📥 내보내기
-                        </button>
-                        <button onclick="importData()" class="btn">
-                            📤 가져오기
-                        </button>
-                        <button onclick="logout()" class="btn btn-red">
-                            🚪 로그아웃
-                        </button>
-                    </div>
+<div class="header-actions">
+    <span id="currentUser" style="color: #6b7280; font-size: 0.875rem; padding: 0.5rem;"></span>
+    <button onclick="showChangePassword()" class="btn" style="background-color: #8b5cf6;">
+        🔒 비밀번호 변경
+    </button>
+    <button onclick="exportData()" class="btn btn-green">
+        📥 내보내기
+    </button>
+    <button onclick="importData()" class="btn">
+        📤 가져오기
+    </button>
+    <button onclick="logout()" class="btn btn-red">
+        🚪 로그아웃
+    </button>
+</div>
                 </div>
                 <nav class="nav">
                     <button class="nav-btn active">
