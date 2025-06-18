@@ -60,31 +60,46 @@
                     <h1>SNS 리더 가입</h1>
                     <p>새로운 SNS 리더 계정을 생성합니다</p>
                 </div>
-                <form id="signupForm">
-                    <div class="form-group">
-                        <label>👤 이름</label>
-                        <input type="text" id="signupName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>📧 이메일</label>
-                        <input type="email" id="signupEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label>🔒 비밀번호</label>
-                        <input type="password" id="signupPassword" required>
-                    </div>
-<div class="form-group">
-    <label>🏢 지점 선택</label>
-    <select id="signupBranch" required>
-        <option value="">지점을 선택하세요</option>
-        <!-- Firebase에서 동적으로 로드됨 -->
-    </select>
-    <div id="branchLoadingStatus" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
-        🔄 지점 목록을 불러오는 중...
+<form id="signupForm">
+    <div class="form-group">
+        <label>👤 이름</label>
+        <input type="text" id="signupName" required>
     </div>
-</div>
-                    <button type="submit" class="btn" style="width: 100%;">➕ 가입하기</button>
-                </form>
+    <div class="form-group">
+        <label>👑 직급</label>
+        <select id="signupRole" required>
+            <option value="">직급을 선택하세요</option>
+            <option value="지점관리자">지점관리자</option>
+            <option value="팀장">팀장</option>
+            <option value="실장">실장</option>
+            <option value="디자이너">디자이너</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>📧 이메일</label>
+        <input type="email" id="signupEmail" required>
+    </div>
+    <div class="form-group">
+        <label>🔒 비밀번호</label>
+        <input type="password" id="signupPassword" required minlength="6">
+    </div>
+    <div class="form-group">
+        <label>🔒 비밀번호 확인</label>
+        <input type="password" id="signupPasswordConfirm" required minlength="6">
+        <div id="passwordMatchMessage" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
+    </div>
+    <div class="form-group">
+        <label>🏢 지점 선택</label>
+        <select id="signupBranch" required>
+            <option value="">지점을 선택하세요</option>
+            <!-- Firebase에서 동적으로 로드됨 -->
+        </select>
+        <div id="branchLoadingStatus" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+            🔄 지점 목록을 불러오는 중...
+        </div>
+    </div>
+    <button type="submit" class="btn" style="width: 100%;">➕ 가입하기</button>
+</form>
                 <div class="text-center" style="margin-top: 1rem;">
                     <a href="#" onclick="showLogin()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">이미 계정이 있으신가요? 로그인하기</a>
                 </div>
@@ -343,7 +358,34 @@ function showLogin() {
     document.getElementById('signupPage').classList.add('hidden');
     document.getElementById('loginPage').classList.remove('hidden');
 }
-
+// 비밀번호 확인 검증
+document.addEventListener('DOMContentLoaded', function() {
+    const signupPassword = document.getElementById('signupPassword');
+    const signupPasswordConfirm = document.getElementById('signupPasswordConfirm');
+    const passwordMatchMessage = document.getElementById('passwordMatchMessage');
+    
+    if (signupPassword && signupPasswordConfirm) {
+        function checkPasswordMatch() {
+            const password = signupPassword.value;
+            const confirmPassword = signupPasswordConfirm.value;
+            
+            if (confirmPassword.length > 0) {
+                if (password === confirmPassword) {
+                    passwordMatchMessage.innerHTML = '✅ 비밀번호가 일치합니다.';
+                    passwordMatchMessage.style.color = '#059669';
+                } else {
+                    passwordMatchMessage.innerHTML = '❌ 비밀번호가 일치하지 않습니다.';
+                    passwordMatchMessage.style.color = '#dc2626';
+                }
+            } else {
+                passwordMatchMessage.innerHTML = '';
+            }
+        }
+        
+        signupPassword.addEventListener('input', checkPasswordMatch);
+        signupPasswordConfirm.addEventListener('input', checkPasswordMatch);
+    }
+});
 // Firebase 연결 확인 후 지점 로드 준비
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Firebase 지점 연동 준비 완료');
