@@ -835,6 +835,7 @@ function goToPage(pageId) {
     const pages = {
         'designers': 'designers.html',
         'branches': 'branches.html',
+        'users': 'users.html',
         'checklist': 'checklist.html',
         'statistics': 'statistics.html',
         'comparison': 'comparison.html'
