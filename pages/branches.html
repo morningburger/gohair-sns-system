@@ -354,32 +354,43 @@
     <script src="/js/utils/navigation.js"></script>
     <script src="/js/pages/branches.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 🆕 필터 매니저 초기화
-        initializePageFilters();
-        
-        // 기존 페이지 매니저 초기화
-        window.branchesManager = new BranchesManager();
-        window.branchesManager.initialize();
-    });
-    // 🔍 디버깅: navigation.js 로딩 확인
-// 🔍 navigation.js 중복 함수 충돌 확인
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔍 navigation.js 로딩 상태:', typeof NavigationManager);
-    console.log('🔍 goToMainSystem 함수:', typeof goToMainSystem);
-    console.log('🔍 goToPage 함수:', typeof goToPage);
-    console.log('🔍 헤더 요소 존재:', document.querySelector('.header'));
+// 단일 초기화 함수
+function initializeBranchesPage() {
+    console.log('🏢 Branches 페이지 초기화 시작');
     
-    // 3초 후 헤더 상태 재확인
-    setTimeout(() => {
-        const header = document.querySelector('.header');
-        console.log('🔍 3초 후 헤더 내용:', header?.innerHTML?.length || 0);
-        
-        if (header && header.innerHTML.length === 0) {
-            console.error('❌ 헤더가 비어있음 - navigation.js 실행 실패');
+    // 네비게이션 확인
+    if (!window.navigationManager) {
+        console.warn('⚠️ 네비게이션이 아직 로드되지 않음');
+        return;
+    }
+    
+    try {
+        // 필터 매니저 초기화
+        if (typeof initializePageFilters === 'function') {
+            initializePageFilters();
         }
-    }, 3000);
-});
+        
+        // 페이지 매니저 초기화
+        if (typeof BranchesManager !== 'undefined') {
+            window.branchesManager = new BranchesManager();
+            window.branchesManager.initialize();
+        }
+        
+        console.log('✅ Branches 페이지 초기화 완료');
+    } catch (error) {
+        console.error('❌ 페이지 초기화 오류:', error);
+    }
+}
+
+// DOM 로드 완료 후 초기화
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        // 네비게이션 로드를 기다린 후 페이지 초기화
+        setTimeout(initializeBranchesPage, 500);
+    });
+} else {
+    setTimeout(initializeBranchesPage, 100);
+}
 </script>
 
 </body>
