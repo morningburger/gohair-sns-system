@@ -117,11 +117,12 @@ class NavigationManager {
             <div class="header-content">
                 <div class="header-top">
                     <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
-                    <div class="header-actions">
-                        <span id="currentUser">${currentUserDisplay}</span>
-                        ${this.getPageSpecificButtons()}
-                        <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
-                    </div>
+<div class="header-actions">
+    <span id="currentUser">${currentUserDisplay}</span>
+    ${this.getPageSpecificButtons()}
+    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
+    <button class="btn btn-red" onclick="logout()">🚪 로그아웃</button>
+</div>
                 </div>
                 
                 <nav class="nav">
@@ -210,11 +211,38 @@ function goToPage(pageId) {
         console.warn(`페이지를 찾을 수 없습니다: ${pageId}`);
     }
 }
+// 로그아웃 함수
+function logout() {
+    if (confirm('정말로 로그아웃 하시겠습니까?')) {
+        try {
+            // 세션 스토리지 정리
+            sessionStorage.removeItem('currentUser');
+            sessionStorage.clear();
+            
+            // 로컬 스토리지도 정리 (필요한 경우)
+            localStorage.removeItem('currentUser');
+            
+            console.log('✅ 로그아웃 완료 - 세션 정리됨');
+            
+            // 메인 페이지로 이동
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/pages/')) {
+                window.location.href = '../index.html';
+            } else {
+                window.location.href = '/index.html';
+            }
+        } catch (error) {
+            console.error('❌ 로그아웃 처리 중 오류:', error);
+            alert('로그아웃 처리 중 오류가 발생했습니다.');
+        }
+    }
+}
 
 // 전역에서 사용할 수 있도록 노출
 window.NavigationManager = NavigationManager;
 window.goToMainSystem = goToMainSystem;
 window.goToPage = goToPage;
+window.logout = logout;
 
 // 페이지 로드 시 자동 초기화 (중복 방지)
 function initializeNavigation() {
