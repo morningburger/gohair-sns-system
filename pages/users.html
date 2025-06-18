@@ -179,18 +179,19 @@
                 
                 <div class="overflow-x-auto">
                     <table class="table">
-                        <thead>
-                            <tr>
-                                <th>이름</th>
-                                <th>이메일</th>
-                                <th>역할</th>
-                                <th>지점</th>
-                                <th>상태</th>
-                                <th>가입일</th>
-                                <th>최근 로그인</th>
-                                <th>관리</th>
-                            </tr>
-                        </thead>
+<thead>
+    <tr>
+        <th>이름</th>
+        <th>이메일</th>
+        <th>역할</th>
+        <th>지점</th>
+        <th>비밀번호</th>
+        <th>상태</th>
+        <th>가입일</th>
+        <th>최근 로그인</th>
+        <th>관리</th>
+    </tr>
+</thead>
                         <tbody id="usersList">
                             <!-- 동적으로 생성됨 -->
                         </tbody>
@@ -277,6 +278,36 @@
                 <h3 class="text-lg font-bold">✏️ 계정 정보 수정</h3>
                 <button onclick="hideEditUser()" class="modal-close">❌</button>
             </div>
+<!-- 비밀번호 변경 모달 -->
+<div id="changePasswordModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="text-lg font-bold">🔑 비밀번호 변경</h3>
+            <button onclick="hideChangePassword()" class="modal-close">❌</button>
+        </div>
+        <form id="changePasswordForm">
+            <input type="hidden" id="changePasswordUserId">
+            <div class="form-group">
+                <label>👤 사용자</label>
+                <input type="text" id="changePasswordUserName" readonly style="background-color: #f9fafb;">
+            </div>
+            <div class="form-group">
+                <label>🔒 새 비밀번호 <span class="required">*</span></label>
+                <input type="password" id="newPassword" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label>🔒 새 비밀번호 확인 <span class="required">*</span></label>
+                <input type="password" id="newPasswordConfirm" required minlength="6">
+                <div id="newPasswordMatchMessage" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" onclick="hideChangePassword()" class="btn btn-secondary">❌ 취소</button>
+                <button type="submit" class="btn">🔑 변경</button>
+            </div>
+        </form>
+    </div>
+</div>
+            
             <form id="editUserForm">
                 <input type="hidden" id="editUserId">
                 <div class="form-row">
@@ -419,22 +450,23 @@
                     const users = [];
                     snapshot.forEach(doc => {
                         const data = doc.data();
-                        users.push({
-                            id: doc.id,
-                            docId: doc.id,
-                            name: data.name || '',
-                            email: data.email || '',
-                            role: data.role || '',
-                            branch: data.branch || '',
-                            branchCode: data.branchCode || '',
-                            phone: data.phone || '',
-                            status: data.status || 'active',
-                            notes: data.notes || '',
-                            createdAt: data.createdAt || new Date().toISOString().split('T')[0],
-                            lastLogin: data.lastLogin || '',
-                            approvedBy: data.approvedBy || '',
-                            approvedAt: data.approvedAt || ''
-                        });
+users.push({
+    id: doc.id,
+    docId: doc.id,
+    name: data.name || '',
+    email: data.email || '',
+    role: data.role || '',
+    branch: data.branch || '',
+    branchCode: data.branchCode || '',
+    phone: data.phone || '',
+    password: data.password || '', // 비밀번호 추가
+    status: data.status || 'active',
+    notes: data.notes || '',
+    createdAt: data.createdAt || new Date().toISOString().split('T')[0],
+    lastLogin: data.lastLogin || '',
+    approvedBy: data.approvedBy || '',
+    approvedAt: data.approvedAt || ''
+});
                     });
                     
                     return users;
@@ -571,46 +603,59 @@
                     return;
                 }
 
-                tbody.innerHTML = users.map(user => `
-                    <tr class="user-row" data-user-id="${user.id}">
-                        <td class="font-medium">${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>
-                            <span class="user-role role-${user.role === '전체관리자' ? 'admin' : 'manager'}">
-                                ${user.role}
-                            </span>
-                        </td>
-                        <td>${user.branch || '-'}</td>
-                        <td>
-                            <span class="user-status status-${user.status}">
-                                ${this.getStatusLabel(user.status)}
-                            </span>
-                        </td>
-                        <td>${user.createdAt}</td>
-                        <td>${user.lastLogin || '-'}</td>
-                        <td>
-                            <div class="flex gap-1">
-                                ${user.status === 'pending' ? `
-                                    <div class="pending-actions">
-                                        <button onclick="approveUser('${user.docId}')" 
-                                                class="btn btn-green btn-sm" 
-                                                title="승인">✅</button>
-                                        <button onclick="rejectUser('${user.docId}')" 
-                                                class="btn btn-red btn-sm" 
-                                                title="거부">❌</button>
-                                    </div>
-                                ` : `
-                                    <button onclick="viewUser('${user.docId}')" 
-                                            class="btn btn-sm" title="상세보기">👁️</button>
-                                    <button onclick="editUser('${user.docId}')" 
-                                            class="btn btn-sm" title="수정">✏️</button>
-                                    <button onclick="deleteUser('${user.docId}')" 
-                                            class="btn btn-red btn-sm" title="삭제">🗑️</button>
-                                `}
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
+tbody.innerHTML = users.map(user => `
+    <tr class="user-row" data-user-id="${user.id}">
+        <td class="font-medium">${user.name}</td>
+        <td>${user.email}</td>
+        <td>
+            <span class="user-role role-${user.role === '전체관리자' ? 'admin' : 'manager'}">
+                ${user.role}
+            </span>
+        </td>
+        <td>${user.branch || '-'}</td>
+        <td>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-family: monospace; background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
+                    ${user.password || '***'}
+                </span>
+                <button onclick="changePassword('${user.docId}')" 
+                        class="btn btn-sm" 
+                        title="비밀번호 변경" 
+                        style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                    🔑
+                </button>
+            </div>
+        </td>
+        <td>
+            <span class="user-status status-${user.status}">
+                ${this.getStatusLabel(user.status)}
+            </span>
+        </td>
+        <td>${user.createdAt}</td>
+        <td>${user.lastLogin || '-'}</td>
+        <td>
+            <div class="flex gap-1">
+                ${user.status === 'pending' ? `
+                    <div class="pending-actions">
+                        <button onclick="approveUser('${user.docId}')" 
+                                class="btn btn-green btn-sm" 
+                                title="승인">✅</button>
+                        <button onclick="rejectUser('${user.docId}')" 
+                                class="btn btn-red btn-sm" 
+                                title="거부">❌</button>
+                    </div>
+                ` : `
+                    <button onclick="viewUser('${user.docId}')" 
+                            class="btn btn-sm" title="상세보기">👁️</button>
+                    <button onclick="editUser('${user.docId}')" 
+                            class="btn btn-sm" title="수정">✏️</button>
+                    <button onclick="deleteUser('${user.docId}')" 
+                            class="btn btn-red btn-sm" title="삭제">🗑️</button>
+                `}
+            </div>
+        </td>
+    </tr>
+`).join('');
             }
 
             getStatusLabel(status) {
@@ -707,7 +752,11 @@
                     this.pagination.currentPage = 1;
                     this.loadUsers();
                 });
-
+// 비밀번호 변경 폼
+document.getElementById('changePasswordForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    this.handleChangePassword();
+});
                 // 역할 선택에 따른 지점 선택 표시/숨김
                 document.getElementById('userRole')?.addEventListener('change', (e) => {
                     const branchGroup = document.getElementById('branchSelectGroup');
@@ -1095,7 +1144,88 @@ if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
         function approveUser(docId) { window.usersManager?.approveUser(docId); }
         function rejectUser(docId) { window.usersManager?.rejectUser(docId); }
         function exportUsers() { window.usersManager?.exportUsers(); }
+// 비밀번호 변경 관련 함수들
+function changePassword(docId) { window.usersManager?.showChangePassword(docId); }
+function hideChangePassword() { window.usersManager?.hideChangePassword(); }
 
+// UsersManager 클래스에 추가할 메서드들
+showChangePassword(docId) {
+    const user = this.data.users.find(u => u.docId === docId);
+    if (!user) return;
+
+    document.getElementById('changePasswordUserId').value = user.docId;
+    document.getElementById('changePasswordUserName').value = user.name + ' (' + user.email + ')';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('newPasswordConfirm').value = '';
+    document.getElementById('newPasswordMatchMessage').innerHTML = '';
+    
+    // 비밀번호 확인 검증 이벤트 추가
+    const newPassword = document.getElementById('newPassword');
+    const newPasswordConfirm = document.getElementById('newPasswordConfirm');
+    const matchMessage = document.getElementById('newPasswordMatchMessage');
+    
+    function checkMatch() {
+        if (newPasswordConfirm.value.length > 0) {
+            if (newPassword.value === newPasswordConfirm.value) {
+                matchMessage.innerHTML = '✅ 비밀번호가 일치합니다.';
+                matchMessage.style.color = '#059669';
+            } else {
+                matchMessage.innerHTML = '❌ 비밀번호가 일치하지 않습니다.';
+                matchMessage.style.color = '#dc2626';
+            }
+        } else {
+            matchMessage.innerHTML = '';
+        }
+    }
+    
+    newPassword.addEventListener('input', checkMatch);
+    newPasswordConfirm.addEventListener('input', checkMatch);
+    
+    document.getElementById('changePasswordModal').classList.remove('hidden');
+}
+
+hideChangePassword() {
+    document.getElementById('changePasswordModal').classList.add('hidden');
+    document.getElementById('changePasswordForm').reset();
+}
+
+async handleChangePassword() {
+    try {
+        const docId = document.getElementById('changePasswordUserId').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const newPasswordConfirm = document.getElementById('newPasswordConfirm').value;
+        
+        if (newPassword !== newPasswordConfirm) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+        
+        if (newPassword.length < 6) {
+            alert('비밀번호는 6자 이상이어야 합니다.');
+            return;
+        }
+        
+        const user = this.data.users.find(u => u.docId === docId);
+        if (!user) return;
+        
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            const db = firebase.firestore();
+            await db.collection('users').doc(docId).update({
+                password: newPassword
+            });
+            
+            await this.loadAllData();
+        }
+        
+        this.hideChangePassword();
+        this.loadUsers();
+        
+        this.showNotification('비밀번호가 성공적으로 변경되었습니다.', 'success');
+    } catch (error) {
+        console.error('비밀번호 변경 오류:', error);
+        this.showNotification('비밀번호 변경 중 오류가 발생했습니다.', 'error');
+    }
+}
         function goToMainSystem() { window.location.href = '../index.html'; }
         function goToPage(pageId) {
             const pages = {
