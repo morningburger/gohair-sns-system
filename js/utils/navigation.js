@@ -116,7 +116,7 @@ class NavigationManager {
         return `
             <div class="header-content">
                 <div class="header-top">
-                    <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
+                    <h1>IG SNS 마케팅 관리 시스템</h1>
 <div class="header-actions">
     <span id="currentUser">${currentUserDisplay}</span>
     ${this.getPageSpecificButtons()}
