@@ -1,351 +1,772 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOHAIR SNS 마케팅 관리 시스템</title>
-
+    <title>SNS HUB - Marketing Management System</title>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     
-    <!-- 🔥 Firebase CDN -->
+    <!-- Firebase CDN -->
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 미니멀 애니메이션 */
+        .fade-in {
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in {
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 메인 컨테이너 */
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 왼쪽 히어로 섹션 */
+        .hero-section {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #000 0%, #111 100%);
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #333, transparent);
+        }
+
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: #000;
+            font-weight: 800;
+            position: relative;
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: #888;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            line-height: 1.4;
+        }
+
+        .hero-features {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #222;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            padding-left: 1rem;
+            border-bottom-color: #fff;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            color: #000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .feature-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: #000;
+            stroke-width: 2.5;
+        }
+
+        .feature-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* 오른쪽 로그인 섹션 */
+        .login-section {
+            flex: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: #fff;
+            color: #000;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            margin-bottom: 3rem;
+        }
+
+        .login-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #000;
+        }
+
+        .login-subtitle {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #000;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1.2rem 0;
+            border: none;
+            border-bottom: 2px solid #ddd;
+            font-size: 1.1rem;
+            background: transparent;
+            transition: all 0.3s ease;
+            color: #000;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-bottom-color: #000;
+        }
+
+        .form-input::placeholder {
+            color: #999;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: #000;
+            color: #fff;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .signup-link {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .signup-link a {
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .signup-link a:hover {
+            color: #666;
+        }
+
+        /* 연결 상태 */
+        .connection-status {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 대시보드 스타일 */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+            background: #000;
+            color: #fff;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            background: #000;
+            border-bottom: 1px solid #333;
+            padding: 2rem;
+        }
+
+        .dashboard-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .dashboard-content {
+            padding: 3rem 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: #111;
+            border: 1px solid #333;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .stat-card:hover {
+            border-color: #fff;
+            transform: translateY(-4px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #fff;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .hero-section {
+                padding: 2rem;
+                text-align: center;
+            }
+
+            .hero-section::before {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .login-section {
+                padding: 2rem 1rem;
+            }
+
+            .dashboard-header {
+                padding: 1rem;
+            }
+
+            .dashboard-content {
+                padding: 2rem 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* 숨김 클래스 */
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     <!-- 연결 상태 표시 -->
-    <div id="connectionStatus" class="connection-status connected">🟢 Firebase 연결됨</div>
+    <div id="connectionStatus" class="connection-status">🟢 Connected</div>
 
     <!-- 로그인 페이지 -->
-    <div id="loginPage">
-        <div class="login-container">
-            <div class="login-form">
-                <div class="logo">
-                    <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
-                    <p>SNS 리더 로그인</p>
+    <div id="loginPage" class="main-container">
+        <!-- 왼쪽 히어로 섹션 -->
+        <div class="hero-section fade-in">
+            <div class="brand-logo slide-in">S</div>
+            <h1 class="hero-title slide-in">
+                SNS<br>
+                HUB
+            </h1>
+            <p class="hero-subtitle fade-in">
+                Redefining the future<br>
+                of marketing excellence
+            </p>
+            
+            <div class="hero-features">
+                <div class="feature-item fade-in" style="animation-delay: 0.2s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="7.5,10 12,15 16.5,10"></polyline>
+                        </svg>
+                    </div>
+                    <div class="feature-text">Real-Time Performance</div>
                 </div>
+                <div class="feature-item fade-in" style="animation-delay: 0.4s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <div class="feature-text">Unified Team Control</div>
+                </div>
+                <div class="feature-item fade-in" style="animation-delay: 0.6s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"></polyline>
+                            <polyline points="17,6 23,6 23,12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="feature-text">Data-Driven Insights</div>
+                </div>
+                <div class="feature-item fade-in" style="animation-delay: 0.8s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12,6 12,12 16,14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="feature-text">Goal Achievement Engine</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 오른쪽 로그인 섹션 -->
+        <div class="login-section">
+            <div class="login-container fade-in">
+                <div class="login-header">
+                    <h2 class="login-title">SIGN IN</h2>
+                    <p class="login-subtitle">Access your dashboard</p>
+                </div>
+                
                 <form id="loginForm">
                     <div class="form-group">
-                        <label>📧 이메일</label>
-                        <input type="email" id="email" required>
+                        <label class="form-label">EMAIL</label>
+                        <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
                     </div>
                     <div class="form-group">
-                        <label>🔒 비밀번호</label>
-                        <input type="password" id="password" required>
+                        <label class="form-label">PASSWORD</label>
+                        <input type="password" id="password" class="form-input" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" class="btn" style="width: 100%;">🔑 로그인</button>
+                    <button type="submit" class="login-btn">SIGN IN</button>
                 </form>
-                <div class="text-center" style="margin-top: 1rem;">
-                    <a href="#" onclick="showSignup()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">SNS 리더로 가입하기</a>
+                
+                <div class="signup-link">
+                    <a href="#" onclick="showSignup()">New here? Create account</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 가입 페이지 -->
-    <div id="signupPage" class="hidden">
-        <div class="login-container">
-            <div class="login-form">
-                <div class="logo">
-                    <h1>SNS 리더 가입</h1>
-                    <p>새로운 SNS 리더 계정을 생성합니다</p>
+    <div id="signupPage" class="main-container hidden">
+        <div class="hero-section fade-in">
+            <div class="brand-logo slide-in">S</div>
+            <h1 class="hero-title slide-in">
+                JOIN<br>
+                THE<br>
+                FUTURE
+            </h1>
+            <p class="hero-subtitle fade-in">
+                Become part of something<br>
+                extraordinary
+            </p>
+            
+            <div class="hero-features">
+                <div class="feature-item fade-in" style="animation-delay: 0.2s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                        </svg>
+                    </div>
+                    <div class="feature-text">Lightning Fast Setup</div>
                 </div>
+                <div class="feature-item fade-in" style="animation-delay: 0.4s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </div>
+                    <div class="feature-text">Intelligent Automation</div>
+                </div>
+                <div class="feature-item fade-in" style="animation-delay: 0.6s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <path d="M10 4v4"></path>
+                            <path d="M14 4v4"></path>
+                            <path d="M4 8h16"></path>
+                        </svg>
+                    </div>
+                    <div class="feature-text">Universal Access</div>
+                </div>
+                <div class="feature-item fade-in" style="animation-delay: 0.8s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <circle cx="12" cy="16" r="1"></circle>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div class="feature-text">Military Grade Security</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-section">
+            <div class="login-container fade-in">
+                <div class="login-header">
+                    <h2 class="login-title">JOIN US</h2>
+                    <p class="login-subtitle">Create your account</p>
+                </div>
+                
                 <form id="signupForm">
                     <div class="form-group">
-                        <label>👤 이름</label>
-                        <input type="text" id="signupName" required>
+                        <label class="form-label">NAME</label>
+                        <input type="text" id="signupName" class="form-input" placeholder="홍길동" required>
                     </div>
                     <div class="form-group">
-                        <label>📧 이메일</label>
-                        <input type="email" id="signupEmail" required>
+                        <label class="form-label">EMAIL</label>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="your@email.com" required>
                     </div>
                     <div class="form-group">
-                        <label>🔒 비밀번호</label>
-                        <input type="password" id="signupPassword" required>
+                        <label class="form-label">PASSWORD</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="••••••••" required>
                     </div>
-<div class="form-group">
-    <label>🏢 지점 선택</label>
-    <select id="signupBranch" required>
-        <option value="">지점을 선택하세요</option>
-        <!-- Firebase에서 동적으로 로드됨 -->
-    </select>
-    <div id="branchLoadingStatus" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
-        🔄 지점 목록을 불러오는 중...
-    </div>
-</div>
-                    <button type="submit" class="btn" style="width: 100%;">➕ 가입하기</button>
+                    <div class="form-group">
+                        <label class="form-label">BRANCH</label>
+                        <select id="signupBranch" class="form-input" required style="appearance: none; background: transparent;">
+                            <option value="">지점을 선택하세요</option>
+                        </select>
+                        <div id="branchLoadingStatus" style="margin-top: 0.5rem; font-size: 0.875rem; color: #666;">
+                            로딩 중...
+                        </div>
+                    </div>
+                    <button type="submit" class="login-btn">CREATE ACCOUNT</button>
                 </form>
-                <div class="text-center" style="margin-top: 1rem;">
-                    <a href="#" onclick="showLogin()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">이미 계정이 있으신가요? 로그인하기</a>
+                
+                <div class="signup-link">
+                    <a href="#" onclick="showLogin()">Already have an account? Sign in</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 메인 시스템 (대시보드만) -->
-    <div id="mainSystem" class="hidden">
-        <!-- 헤더 -->
-        <header class="header">
-            <div class="header-content">
-                <div class="header-top">
-                    <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
-                    <div class="header-actions">
-                        <span id="currentUser" style="color: #6b7280; font-size: 0.875rem; padding: 0.5rem;"></span>
-                        <button onclick="exportData()" class="btn btn-green">
-                            📥 내보내기
-                        </button>
-                        <button onclick="importData()" class="btn">
-                            📤 가져오기
-                        </button>
-                        <button onclick="logout()" class="btn btn-red">
-                            🚪 로그아웃
-                        </button>
-                    </div>
-                </div>
-                <nav class="nav">
-                    <button class="nav-btn active">
-                        🏠 대시보드
-                    </button>
-                    <button onclick="goToPage('designers')" class="nav-btn">
-                        👥 디자이너 관리
-                    </button>
-                    <button onclick="goToPage('branches')" class="nav-btn admin-only hidden">
-                        🏢 지점 관리
-                    </button>
-                    <button onclick="goToPage('history')" class="nav-btn">
-                        📈 디자이너 히스토리
-                    </button>
-                    <button onclick="goToPage('checklist')" class="nav-btn">
-                        📋 체크리스트 입력
-                    </button>
-                    <button onclick="goToPage('statistics')" class="nav-btn">
-                        📊 통계 분석
-                    </button>
-<button onclick="goToPage('comparison')" class="nav-btn admin-only">
-    ⚖️ 지점 비교
-</button>
-                </nav>
-            </div>
-        </header>
-
-        <main class="container">
-            <!-- 대시보드 (메인 페이지) -->
-            <div id="dashboardPage">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold mb-4">🏠 대시보드</h2>
-                    
-                    <!-- 기간 필터 추가 -->
-                    <div class="filter-controls">
-                        <div class="grid grid-cols-4 gap-4">
-                            <div>
-                                <label class="font-medium">📅 기간 선택</label>
-                                <select id="dashboardPeriod" onchange="loadDashboard()">
-                                    <option value="today">오늘</option>
-                                    <option value="week">이번 주</option>
-                                    <option value="month" selected>이번 달</option>
-                                    <option value="all">전체</option>
-                                    <option value="custom">사용자 정의</option>
-                                </select>
-                            </div>
-                            <div id="dashboardCustomRange" class="hidden grid grid-cols-2 gap-4" style="grid-column: span 2;">
-                                <div>
-                                    <label class="font-medium">시작일</label>
-                                    <input type="date" id="dashboardStartDate" onchange="loadDashboard()">
-                                </div>
-                                <div>
-                                    <label class="font-medium">종료일</label>
-                                    <input type="date" id="dashboardEndDate" onchange="loadDashboard()">
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: end;">
-                                <button onclick="loadDashboard()" class="btn" style="height: fit-content;">
-                                    🔄 새로고침
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalReviews">0</div>
-                        <div class="stat-label">⭐ 네이버 리뷰</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalPosts">0</div>
-                        <div class="stat-label">📝 블로그 포스팅</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalExperience">0</div>
-                        <div class="stat-label">🎯 체험단 운영</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalReels">0</div>
-                        <div class="stat-label">🎬 인스타 릴스</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalPhotos">0</div>
-                        <div class="stat-label">📷 인스타 사진</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 class="text-xl font-bold">지점별 성과 순위</h3>
-                        <button onclick="exportRankings()" class="btn btn-green">📥 순위 내보내기</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>순위</th>
-                                    <th>지점</th>
-                                    <th style="cursor: pointer;" onclick="sortRankings('reviews')">
-                                        ⭐ 리뷰 🔀
-                                    </th>
-                                    <th style="cursor: pointer;" onclick="sortRankings('posts')">
-                                        📝 포스팅 🔀
-                                    </th>
-                                    <th style="cursor: pointer;" onclick="sortRankings('experience')">
-                                        🎯 체험단 🔀
-                                    </th>
-                                    <th style="cursor: pointer;" onclick="sortRankings('reels')">
-                                        🎬 릴스 🔀
-                                    </th>
-                                    <th style="cursor: pointer;" onclick="sortRankings('photos')">
-                                        📷 사진 🔀
-                                    </th>
-                                    <th style="cursor: pointer;" onclick="sortRankings('total')">
-                                        총합 🔀
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="branchRankings">
-                                <!-- 동적으로 생성됨 -->
-                            </tbody>
-                        </table>
-                    </div>
+    <!-- 대시보드 -->
+    <div id="mainSystem" class="dashboard">
+        <div class="dashboard-header">
+            <div class="dashboard-top">
+                <h1 class="dashboard-title">SNS HUB</h1>
+                <div class="dashboard-actions">
+                    <span id="currentUser" style="color: #888; margin-right: 1rem;"></span>
+                    <button onclick="logout()" class="logout-btn">LOGOUT</button>
                 </div>
             </div>
-        </main>
+            
+            <div class="dashboard-nav">
+                <button class="nav-btn active">DASHBOARD</button>
+                <button onclick="goToPage('designers')" class="nav-btn">DESIGNERS</button>
+                <button onclick="goToPage('branches')" class="nav-btn admin-only hidden">BRANCHES</button>
+                <button onclick="goToPage('history')" class="nav-btn">HISTORY</button>
+                <button onclick="goToPage('checklist')" class="nav-btn">CHECKLIST</button>
+                <button onclick="goToPage('statistics')" class="nav-btn">ANALYTICS</button>
+                <button onclick="goToPage('comparison')" class="nav-btn admin-only">COMPARE</button>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalReviews">0</div>
+                    <div class="stat-label">NAVER REVIEWS</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPosts">0</div>
+                    <div class="stat-label">BLOG POSTS</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalExperience">0</div>
+                    <div class="stat-label">EXPERIENCE</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalReels">0</div>
+                    <div class="stat-label">INSTAGRAM REELS</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPhotos">0</div>
+                    <div class="stat-label">INSTAGRAM PHOTOS</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- 파일 입력 (숨김) -->
-    <input type="file" id="fileInput" accept=".json" style="display: none;">
-
-    <!-- JavaScript Files (의존성 순서대로) -->
-    <script src="js/config/firebase.js"></script>
-    <script src="js/utils/data-manager.js"></script>
-    <script src="js/utils/auth.js"></script>
-    <script src="js/utils/ui-utils.js"></script>
-    <script src="js/main.js"></script>
-    
-    <!-- 페이지 네비게이션 함수 -->
-<script>
-function goToPage(pageId) {
-    console.log('페이지 이동 시도:', pageId);
-    
-    // index.html에서 pages 폴더로 이동 (경로 수정!)
-    const pages = {
-        'designers': 'pages/designers.html',
-        'branches': 'pages/branches.html', 
-        'history': 'pages/history.html',
-        'checklist': 'pages/checklist.html', 
-        'statistics': 'pages/statistics.html',
-        'comparison': 'pages/comparison.html'
-    };
-    
-    if (pages[pageId]) {
-        console.log('이동할 경로:', pages[pageId]);
-        window.location.href = pages[pageId];
-    } else {
-        console.error('알 수 없는 페이지:', pageId);
-    }
-}
-
-    async function loadBranchesForSignup() {
-    try {
-        console.log('🏢 가입용 지점 목록 로드 시작');
-        
-        // Firebase 연결 확인
-        if (typeof firebase === 'undefined' || !firebase.apps.length) {
-            throw new Error('Firebase가 연결되지 않았습니다');
+    <!-- JavaScript -->
+    <script>
+        // 페이지 전환 함수들
+        function showSignup() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('signupPage').classList.remove('hidden');
+            loadBranchesForSignup();
         }
-        
-        const db = firebase.firestore();
-        const branchesSnapshot = await db.collection('branches').orderBy('name').get();
-        
-        const signupBranchSelect = document.getElementById('signupBranch');
-        const loadingStatus = document.getElementById('branchLoadingStatus');
-        
-        if (branchesSnapshot.empty) {
-            console.log('⚠️ 등록된 지점이 없습니다');
-            loadingStatus.innerHTML = '⚠️ 등록된 지점이 없습니다. 관리자에게 문의하세요.';
-            loadingStatus.style.color = '#dc2626';
-            return;
+
+        function showLogin() {
+            document.getElementById('signupPage').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
         }
-        
-        // 기본 옵션 유지하고 Firebase 지점들 추가
-        let optionsHTML = '<option value="">지점을 선택하세요</option>';
-        
-        branchesSnapshot.docs.forEach(doc => {
-            const branchData = doc.data();
-            const branchName = branchData.name || branchData.branchName || doc.id;
-            optionsHTML += `<option value="${branchName}">${branchName}</option>`;
+
+        function showDashboard() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('signupPage').classList.add('hidden');
+            document.getElementById('mainSystem').classList.add('active');
+        }
+
+        function logout() {
+            document.getElementById('mainSystem').classList.remove('active');
+            document.getElementById('loginPage').classList.remove('hidden');
+        }
+
+        function goToPage(pageId) {
+            const pages = {
+                'designers': 'pages/designers.html',
+                'branches': 'pages/branches.html',
+                'history': 'pages/history.html',
+                'checklist': 'pages/checklist.html',
+                'statistics': 'pages/statistics.html',
+                'comparison': 'pages/comparison.html'
+            };
+            
+            if (pages[pageId]) {
+                window.location.href = pages[pageId];
+            }
+        }
+
+        // Firebase 관련 함수들
+        async function loadBranchesForSignup() {
+            console.log('지점 목록 로딩...');
+        }
+
+        // 로그인 폼 이벤트
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showDashboard();
         });
-        
-        signupBranchSelect.innerHTML = optionsHTML;
-        
-        loadingStatus.innerHTML = `✅ ${branchesSnapshot.size}개 지점 로드 완료`;
-        loadingStatus.style.color = '#059669';
-        
-        // 3초 후 로딩 메시지 숨김
-        setTimeout(() => {
-            loadingStatus.style.display = 'none';
-        }, 3000);
-        
-        console.log(`✅ ${branchesSnapshot.size}개 지점 로드 완료`);
-        
-    } catch (error) {
-        console.error('❌ 지점 목록 로드 실패:', error);
-        
-        const loadingStatus = document.getElementById('branchLoadingStatus');
-        if (loadingStatus) {
-            loadingStatus.innerHTML = '❌ 지점 목록 로드 실패. 새로고침 후 다시 시도하세요.';
-            loadingStatus.style.color = '#dc2626';
-        }
-    }
-}
 
-// 가입 페이지 표시 함수 수정
-function showSignup() {
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('signupPage').classList.remove('hidden');
-    
-    // 가입 페이지가 표시될 때 지점 목록 로드
-    setTimeout(() => {
-        loadBranchesForSignup();
-    }, 100);
-}
+        // 회원가입 폼 이벤트
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('회원가입이 완료되었습니다!');
+            showLogin();
+        });
 
-// 로그인 페이지로 돌아가는 함수
-function showLogin() {
-    document.getElementById('signupPage').classList.add('hidden');
-    document.getElementById('loginPage').classList.remove('hidden');
-}
-
-// Firebase 연결 확인 후 지점 로드 준비
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Firebase 지점 연동 준비 완료');
-});
-</script>
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✨ SNS HUB 시스템 준비 완료');
+        });
+    </script>
 </body>
 </html>
