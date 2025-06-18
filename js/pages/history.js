@@ -457,9 +457,15 @@ loadBranchOptions() {
     }
 
     // 히스토리 로드
-    loadHistory() {
-        const designerId = document.getElementById('historyDesigner').value;
-        const branchFilter = document.getElementById('historyBranch').value;
+loadHistory() {
+    const designerId = document.getElementById('historyDesigner').value;
+    const branchFilter = document.getElementById('historyBranch').value;
+    
+    // 🔍 데이터 연동 디버깅
+    console.log('📊 히스토리 로딩 시작');
+    console.log('선택된 디자이너 ID:', designerId);
+    console.log('전체 체크리스트 수:', this.data.checklists.length);
+    console.log('전체 디자이너 수:', this.data.designers.length);
         
         if (!designerId) {
             document.getElementById('historyContent').innerHTML = `
@@ -493,10 +499,24 @@ loadBranchOptions() {
     }
 
     // 히스토리 표시
-    displayHistory() {
-        if (!this.selectedDesigner) return;
+displayHistory() {
+    if (!this.selectedDesigner) return;
 
-        const filteredChecklists = this.getFilteredChecklists();
+    // 🔍 선택된 디자이너 정보 확인
+    console.log('🔍 선택된 디자이너:', {
+        id: this.selectedDesigner.id,
+        docId: this.selectedDesigner.docId,
+        name: this.selectedDesigner.name,
+        branch: this.selectedDesigner.branch
+    });
+
+    const filteredChecklists = this.getFilteredChecklists();
+    
+    // 🔍 필터링 결과 확인
+    console.log(`🔍 ${this.selectedDesigner.name}의 체크리스트: ${filteredChecklists.length}개 발견`);
+    if (filteredChecklists.length > 0) {
+        console.log('첫 번째 체크리스트 샘플:', filteredChecklists[0]);
+    }
         
         // 페이지네이션 적용
         this.pagination.totalItems = filteredChecklists.length;
@@ -605,9 +625,16 @@ loadBranchOptions() {
 
 // 필터링된 체크리스트 가져오기
 getFilteredChecklists() {
-    let checklists = this.data.checklists.filter(c => {
-        // 디자이너 필터
-        if (c.designerId != this.selectedDesigner.id) return false;
+let checklists = this.data.checklists.filter(c => {
+    // 다양한 방식으로 디자이너 매칭 시도
+    const isDesignerMatch = 
+        c.designerId == this.selectedDesigner.id ||
+        c.designerId == this.selectedDesigner.docId ||
+        c.designer === this.selectedDesigner.name ||
+        String(c.designerId) === String(this.selectedDesigner.id) ||
+        String(c.designerId) === String(this.selectedDesigner.docId);
+    
+    if (!isDesignerMatch) return false;
         
         // 권한에 따른 추가 필터링
         if (this.currentUser && this.currentUser.role === '지점관리자') {
@@ -628,8 +655,15 @@ getFilteredChecklists() {
             });
         }
 
-        return checklists.sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
+// 🔍 매칭 과정 디버깅
+console.log(`🔍 체크리스트 매칭 과정:`);
+this.data.checklists.slice(0, 3).forEach(c => {
+    console.log(`체크리스트: designerId=${c.designerId}, designer=${c.designer}, branch=${c.branch}`);
+});
+
+const result = checklists.sort((a, b) => new Date(b.date) - new Date(a.date));
+console.log(`✅ 최종 필터링 결과: ${result.length}개`);
+return result;    }
 
     // 통계 계산
     calculateStats(checklists) {
