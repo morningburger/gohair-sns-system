@@ -15,29 +15,10 @@
 </head>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-content">
-            <div class="header-top">
-                <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
-                <div class="header-actions">
-                    <span id="currentUser"></span>
-                    <button class="btn btn-green" onclick="exportChecklistHistory()">📥 기록 내보내기</button>
-                    <button class="btn" onclick="goToMainSystem()">🏠 메인으로</button>
-                </div>
-            </div>
-            
-            <nav class="nav">
-                <button class="nav-btn" onclick="goToMainSystem()">🏠 대시보드</button>
-                <button class="nav-btn" onclick="goToPage('designers')">👥 디자이너 관리</button>
-                <button class="nav-btn" onclick="goToPage('branches')">🏢 지점 관리</button>
-                <button class="nav-btn" onclick="goToPage('history')">📈 디자이너 히스토리</button>
-                <button class="nav-btn active">📋 체크리스트 입력</button>
-                <button class="nav-btn" onclick="goToPage('statistics')">📊 통계 분석</button>
-                <button class="nav-btn" onclick="goToPage('comparison')">⚖️ 지점 비교</button>
-            </nav>
-        </div>
-    </div>
+<!-- Header -->
+<div class="header">
+    <!-- 동적으로 생성됨 -->
+</div>
 
     <div class="container">
         <!-- 체크리스트 입력 페이지 -->
@@ -385,87 +366,43 @@
 
     <!-- 페이지 네비게이션 함수 -->
     <script>
-function goToMainSystem() {
-    window.location.href = '../index.html';  // 상위 폴더로 이동
+// 단일 초기화 함수
+function initializeChecklistPage() {
+    console.log('📋 Checklist 페이지 초기화 시작');
+    
+    // 네비게이션 확인
+    if (!window.navigationManager) {
+        console.warn('⚠️ 네비게이션이 아직 로드되지 않음');
+        return;
+    }
+    
+    try {
+        // 필터 매니저 초기화
+        if (typeof initializePageFilters === 'function') {
+            initializePageFilters();
+        }
+        
+        // 페이지 매니저 초기화
+        if (typeof ChecklistManager !== 'undefined') {
+            window.checklistManager = new ChecklistManager();
+            window.checklistManager.initialize();
+        }
+        
+        console.log('✅ Checklist 페이지 초기화 완료');
+    } catch (error) {
+        console.error('❌ 페이지 초기화 오류:', error);
+    }
 }
-        function goToPage(pageId) {
-            const pages = {
-    'designers': 'designers.html',
-    'branches': 'branches.html',
-    'history': 'history.html',          // 추가!
-    'checklist': 'checklist.html', 
-    'statistics': 'statistics.html',
-    'comparison': 'comparison.html'     // 추가!
-};
-            
-            if (pages[pageId]) {
-                window.location.href = pages[pageId];
-            }
-        }
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🏠 메인 시스템 로드 시작');
-    
-    // 사용자 권한에 따른 네비게이션 메뉴 제어
-    function setupNavigationByRole() {
-        try {
-            const userData = sessionStorage.getItem('currentUser');
-            const currentUser = userData ? JSON.parse(userData) : null;
-            
-            console.log('현재 사용자:', currentUser);
-            
-            if (currentUser && currentUser.role === '지점관리자') {
-                // 지점관리자는 지점 관리 메뉴 숨김
-                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
-                if (branchNavBtn) {
-                    branchNavBtn.style.display = 'none';
-                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
-                }
-                
-                // 사용자 정보 표시
-                const userElement = document.getElementById('currentUser');
-                if (userElement) {
-                    userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
-                    userElement.style.color = '#3b82f6';
-                }
-            } else if (currentUser && currentUser.role === '전체관리자') {
-                // 전체관리자는 모든 메뉴 표시
-                const userElement = document.getElementById('currentUser');
-                if (userElement) {
-                    userElement.textContent = `${currentUser.name} (${currentUser.role})`;
-                    userElement.style.color = '#059669';
-                }
-            }
-        } catch (error) {
-            console.error('네비게이션 권한 설정 오류:', error);
-        }
-    }
 
-    // 네비게이션 설정 실행
-    setupNavigationByRole();
-    
-    // Firebase 연결 상태 확인
-    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-        console.log('🔥 파이어베이스 연결됨');
-    } else {
-        console.log('❌ 파이어베이스 연결 실패');
-    }
-    
-    // 1초 후 ChecklistManager 확인
-    setTimeout(() => {
-        if (window.checklistManager) {
-            console.log('✅ ChecklistManager 초기화 완료');
-        } else {
-            console.log('⚠️ ChecklistManager 초기화 대기 중...');
-        }
-    }, 1000);
-});
-
-// 에러 발생 시 로그
-window.addEventListener('error', function(e) {
-    console.error('❌ JavaScript 에러:', e.message);
-    console.error('📁 파일:', e.filename);
-    console.error('📍 라인:', e.lineno);
-});
+// DOM 로드 완료 후 초기화
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        // 네비게이션 로드를 기다린 후 페이지 초기화
+        setTimeout(initializeChecklistPage, 500);
+    });
+} else {
+    setTimeout(initializeChecklistPage, 100);
+}
     </script>
 </body>
 </html>
