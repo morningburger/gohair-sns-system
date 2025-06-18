@@ -180,7 +180,13 @@ class NavigationManager {
 
 // 페이지 네비게이션 함수들
 function goToMainSystem() {
-    window.location.href = '/index.html';
+    // 현재 위치에 따라 경로 결정
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/pages/')) {
+        window.location.href = '../index.html';
+    } else {
+        window.location.href = '/index.html';
+    }
 }
 
 function goToPage(pageId) {
@@ -195,7 +201,15 @@ function goToPage(pageId) {
     };
     
     if (pages[pageId]) {
-        window.location.href = pages[pageId];
+        // 현재 위치에 따라 경로 결정
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/pages/')) {
+            // 이미 pages 폴더 안에 있으면 상대 경로
+            window.location.href = pages[pageId];
+        } else {
+            // 루트에 있으면 pages 폴더로 이동
+            window.location.href = `pages/${pages[pageId]}`;
+        }
     } else {
         console.warn(`페이지를 찾을 수 없습니다: ${pageId}`);
     }
