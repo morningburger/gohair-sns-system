@@ -147,39 +147,39 @@ updateUserDisplay() {
     }
 
     // 기간 설정 함수들
-    setToday() {
-        const today = new Date();
-        this.setDateRange(today, today);
-        this.updatePeriodButtons('today');
-    }
+setToday() {
+    const today = new Date();
+    this.setDateRange(today, today);
+    this.updatePeriodButtons('setToday()');
+}
 
-    setThisWeek() {
-        const today = new Date();
-        const monday = new Date(today);
-        monday.setDate(today.getDate() - today.getDay() + 1);
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
-        this.setDateRange(monday, sunday);
-        this.updatePeriodButtons('week');
-    }
+setThisWeek() {
+    const today = new Date();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - today.getDay() + 1);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    this.setDateRange(monday, sunday);
+    this.updatePeriodButtons('setThisWeek()');
+}
 
-    setThisMonth() {
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        this.setDateRange(firstDay, lastDay);
-        this.updatePeriodButtons('month');
-    }
+setThisMonth() {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    this.setDateRange(firstDay, lastDay);
+    this.updatePeriodButtons('setThisMonth()');
+}
 
-    setThisQuarter() {
-        const today = new Date();
-        const quarter = Math.floor(today.getMonth() / 3);
-        const firstMonth = quarter * 3;
-        const firstDay = new Date(today.getFullYear(), firstMonth, 1);
-        const lastDay = new Date(today.getFullYear(), firstMonth + 3, 0);
-        this.setDateRange(firstDay, lastDay);
-        this.updatePeriodButtons('quarter');
-    }
+setThisQuarter() {
+    const today = new Date();
+    const quarter = Math.floor(today.getMonth() / 3);
+    const firstMonth = quarter * 3;
+    const firstDay = new Date(today.getFullYear(), firstMonth, 1);
+    const lastDay = new Date(today.getFullYear(), firstMonth + 3, 0);
+    this.setDateRange(firstDay, lastDay);
+    this.updatePeriodButtons('setThisQuarter()');
+}
 
     setDateRange(startDate, endDate) {
         this.currentPeriod.startDate = startDate;
@@ -194,49 +194,65 @@ updateUserDisplay() {
         this.processData();
     }
 
-    updatePeriodButtons(active) {
-        document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.querySelector(`[onclick*="${active}"]`);
-        if (activeBtn) {
-            activeBtn.classList.add('active');
-        }
+updatePeriodButtons(active) {
+    document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`[onclick="${active}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
     }
+}
 
-    // 지점 필터 옵션 로드
-    loadBranchFilterOptions() {
-        const select = document.getElementById('branchFilter');
-        if (select) {
-            console.log('🏢 지점 필터 옵션 로딩 중... 데이터:', this.data.branches);
-            
-            // Firebase에서 로드한 지점 데이터는 객체 배열 (name 필드 사용)
-            let branches = [];
-            if (this.data.branches && this.data.branches.length > 0) {
-                branches = this.data.branches.map(branch => branch.name).filter(name => name);
-            }
-            
+// 지점 필터 옵션 로드
+loadBranchFilterOptions() {
+    const select = document.getElementById('branchFilter');
+    if (select) {
+        console.log('🏢 지점 필터 옵션 로딩 중... 데이터:', this.data.branches);
+        
+        // Firebase에서 로드한 지점 데이터와 체크리스트에서 지점명 추출
+        let branches = [];
+        
+        // 1. 지점 컬렉션에서 지점명 추출
+        if (this.data.branches && this.data.branches.length > 0) {
+            const branchNames = this.data.branches.map(branch => branch.name).filter(name => name);
+            branches = [...branches, ...branchNames];
+        }
+        
+        // 2. 체크리스트 데이터에서도 지점명 추출 (실제 사용 중인 지점들)
+        if (this.data.checklists && this.data.checklists.length > 0) {
+            const checklistBranches = this.data.checklists.map(item => item.branch).filter(branch => branch);
+            branches = [...branches, ...checklistBranches];
+        }
+        
+        // 중복 제거 및 정렬
+        branches = [...new Set(branches)].sort();
+        
+        console.log('🏢 추출된 지점 목록:', branches);
+        
+        // 사용자 권한에 따른 필터링
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
+            branches = branches.filter(b => b === this.currentUser.branch);
+        }
+        
+        if (branches.length === 0) {
             if (this.currentUser && this.currentUser.role === '지점관리자') {
-                branches = branches.filter(b => b === this.currentUser.branch);
+                select.innerHTML = `<option value="${this.currentUser.branch}">${this.currentUser.branch}</option>`;
+            } else {
+                select.innerHTML = '<option value="">지점 데이터 없음</option>';
             }
-            
-if (branches.length === 0) {
-    if (this.currentUser && this.currentUser.role === '지점관리자') {
-        select.innerHTML = `<option value="${this.currentUser.branch}">${this.currentUser.branch}</option>`;
-    } else {
-        select.innerHTML = '<option value="">지점 데이터 없음</option>';
-    }
-    console.warn('⚠️ 지점 데이터가 없습니다');
-} else {
-    if (this.currentUser && this.currentUser.role === '지점관리자') {
-        // 지점관리자는 "전체 지점" 옵션 없이 본인 지점만
-        select.innerHTML = branches.map(b => `<option value="${b}">${b}</option>`).join('');
-    } else {
-        // 전체관리자는 "전체 지점" 옵션 포함
-        select.innerHTML = '<option value="">전체 지점</option>' +
-            branches.map(b => `<option value="${b}">${b}</option>`).join('');
-                console.log(`✅ 지점 옵션 ${branches.length}개 로딩 완료`);
+            console.warn('⚠️ 지점 데이터가 없습니다');
+        } else {
+            if (this.currentUser && this.currentUser.role === '지점관리자') {
+                // 지점관리자는 "전체 지점" 옵션 없이 본인 지점만
+                select.innerHTML = branches.map(b => `<option value="${b}">${b}</option>`).join('');
+            } else {
+                // 전체관리자는 "전체 지점" 옵션 포함
+                select.innerHTML = '<option value="">전체 지점</option>' +
+                    branches.map(b => `<option value="${b}">${b}</option>`).join('');
             }
+            console.log(`✅ 지점 옵션 ${branches.length}개 로딩 완료:`, branches);
         }
     }
+}
 
     // 데이터 처리 및 표시
     processData() {
