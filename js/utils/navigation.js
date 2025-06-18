@@ -48,7 +48,7 @@ class NavigationManager {
                 id: 'branches',
                 label: '🏢 지점 관리',
                 action: "goToPage('branches')",
-                roles: ['전체관리자', '지점관리자']
+                roles: ['전체관리자']
             },
             {
                 id: 'users',
@@ -341,5 +341,62 @@ function initializePageFilters() {
 
 // 전역 함수로 노출
 window.initializePageFilters = initializePageFilters;
+// 🔒 전역 권한 기반 메뉴 제어 함수
+function applyGlobalMenuPermissions() {
+    try {
+        const userData = sessionStorage.getItem('currentUser');
+        const currentUser = userData ? JSON.parse(userData) : null;
+        
+        if (!currentUser) {
+            console.log('🔒 사용자 정보 없음 - 권한 체크 건너뜀');
+            return;
+        }
+        
+        console.log('🔒 전역 권한 체크 시작:', currentUser.role);
+        
+        if (currentUser.role === '지점관리자') {
+            // 지점관리자가 접근할 수 없는 메뉴들 숨기기
+            const restrictedMenus = [
+                '.nav-btn[onclick*="branches"]',     // 지점 관리
+                '.nav-btn[onclick*="comparison"]',   // 지점 비교
+                '.admin-only'                        // 전체관리자 전용 클래스
+            ];
+            
+            restrictedMenus.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    element.style.display = 'none';
+                    console.log('🔒 메뉴 숨김:', element.textContent?.trim());
+                });
+            });
+            
+            console.log('✅ 지점관리자 권한 적용 완료');
+        } else if (currentUser.role === '전체관리자') {
+            console.log('✅ 전체관리자 - 모든 메뉴 접근 가능');
+        }
+        
+    } catch (error) {
+        console.error('❌ 전역 권한 체크 오류:', error);
+    }
+}
 
+// 페이지 로드 후 자동 권한 적용
+function initializeGlobalPermissions() {
+    // DOM이 준비되면 권한 적용
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyGlobalMenuPermissions);
+    } else {
+        applyGlobalMenuPermissions();
+    }
+    
+    // 추가 안전장치: 1초 후에도 한 번 더 실행
+    setTimeout(applyGlobalMenuPermissions, 1000);
+}
+
+// 전역 함수로 노출
+window.applyGlobalMenuPermissions = applyGlobalMenuPermissions;
+window.initializeGlobalPermissions = initializeGlobalPermissions;
+
+// 자동 초기화
+initializeGlobalPermissions();
 console.log('🧭 네비게이션 컴포넌트 로딩 완료');
