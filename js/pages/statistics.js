@@ -259,7 +259,8 @@ loadBranchFilterOptions() {
         this.updateSummaryCards(filteredData);
         this.updateBranchRankings(filteredData);
         this.updateDesignerRankings(filteredData);
-        this.updateCharts(filteredData);
+        this.updateBranchChart(filteredData);
+        this.updateCategoryChart(filteredData);
         this.updateLastUpdated();
     }
 
@@ -271,12 +272,21 @@ loadBranchFilterOptions() {
             filtered = filtered.filter(item => item.branch === this.currentUser.branch);
         }        
         // 날짜 필터
-        if (this.currentPeriod.startDate && this.currentPeriod.endDate) {
-            filtered = filtered.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= this.currentPeriod.startDate && itemDate <= this.currentPeriod.endDate;
-            });
-        }
+if (this.currentPeriod.startDate && this.currentPeriod.endDate) {
+    filtered = filtered.filter(item => {
+        if (!item.date) return false;
+        const itemDate = new Date(item.date);
+        const startDate = new Date(this.currentPeriod.startDate);
+        const endDate = new Date(this.currentPeriod.endDate);
+        
+        // 시간 부분 제거하고 날짜만 비교
+        itemDate.setHours(0, 0, 0, 0);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        
+        return itemDate >= startDate && itemDate <= endDate;
+    });
+}
         
         // 지점 필터
         const branchFilter = document.getElementById('branchFilter');
@@ -586,6 +596,11 @@ try {
             startDate.addEventListener('change', () => this.handleDateChange());
             endDate.addEventListener('change', () => this.handleDateChange());
         }
+        // 지점 필터 변경 이벤트
+const branchFilter = document.getElementById('branchFilter');
+if (branchFilter) {
+    branchFilter.addEventListener('change', () => this.processData());
+}
     }
 
     // 날짜 변경 처리
@@ -700,7 +715,9 @@ function applyFilters() {
 
 function refreshData() {
     if (window.statisticsManager) {
-        window.statisticsManager.loadAllData();
+        window.statisticsManager.loadAllData().then(() => {
+            window.statisticsManager.processData();
+        });
     }
 }
 
