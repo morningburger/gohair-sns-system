@@ -61,34 +61,34 @@ role: user.role === '전체관리자' || user.role === 'admin' ? '전체관리�
         }
     }
 
-    // 회원가입 처리
-    async signup(email, password, name, branch) {
-        try {
-            // 이메일 중복 체크
-            const existingUser = await window.dataManager.getUser(email);
-            if (existingUser) {
-                return { success: false, message: '이미 등록된 이메일입니다.' };
-            }
-
-            // 새 사용자 추가
-            const newUser = {
-                password: password,
-                role: '지점관리자', // 역할명 통일
-                name: name,
-                branch: branch,
-                email: email,
-                phone: null,
-                status: 'active',
-                createdAt: new Date().toISOString().split('T')[0]
-            };
-
-            await window.dataManager.addUser(email, newUser);
-            return { success: true, message: '가입이 완료되었습니다.' };
-        } catch (error) {
-            console.error('가입 오류:', error);
-            return { success: false, message: '가입 중 오류가 발생했습니다.' };
+// 회원가입 처리
+async signup(email, password, name, role, branch) {
+    try {
+        // 이메일 중복 체크
+        const existingUser = await window.dataManager.getUser(email);
+        if (existingUser) {
+            return { success: false, message: '이미 등록된 이메일입니다.' };
         }
+
+        // 새 사용자 추가
+        const newUser = {
+            password: password,
+            role: role, // 선택한 직급 사용
+            name: name,
+            branch: branch,
+            email: email,
+            phone: null,
+            status: 'active',
+            createdAt: new Date().toISOString().split('T')[0]
+        };
+
+        await window.dataManager.addUser(email, newUser);
+        return { success: true, message: '가입이 완료되었습니다.' };
+    } catch (error) {
+        console.error('가입 오류:', error);
+        return { success: false, message: '가입 중 오류가 발생했습니다.' };
     }
+}
 
     // 로그아웃
     logout() {
@@ -216,26 +216,34 @@ function setupAuthEventHandlers() {
         });
     }
 
-    // 회원가입 폼 이벤트
-    const signupForm = document.getElementById('signupForm');
-    if (signupForm) {
-        signupForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            const name = document.getElementById('signupName').value;
-            const branch = document.getElementById('signupBranch').value;
+// 회원가입 폼 이벤트
+const signupForm = document.getElementById('signupForm');
+if (signupForm) {
+    signupForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+        const name = document.getElementById('signupName').value;
+        const role = document.getElementById('signupRole').value;
+        const branch = document.getElementById('signupBranch').value;
 
-            const result = await window.authManager.signup(email, password, name, branch);
-            if (result.success) {
-                alert(result.message + ' 로그인해주세요.');
-                window.authManager.showLoginPage();
-            } else {
-                alert(result.message);
-            }
-        });
-    }
+        // 비밀번호 확인 검증
+        if (password !== passwordConfirm) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        const result = await window.authManager.signup(email, password, name, role, branch);
+        if (result.success) {
+            alert(result.message + ' 로그인해주세요.');
+            window.authManager.showLoginPage();
+        } else {
+            alert(result.message);
+        }
+    });
+}
 }
 
 // 전역 함수들
