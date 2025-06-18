@@ -134,17 +134,18 @@ updateUserDisplay() {
         const positions = ['인턴', '디자이너', '팀장', '실장', '부원장', '원장'];
         const names = ['김수현', '이지민', '박준호', '최미영', '정태윤', '한소희', '오민석', '신예은'];
         
-        return names.map((name, index) => ({
-            id: index + 1,
-            docId: `designer_${index + 1}`,
-            name: name,
-            branch: branches[Math.floor(Math.random() * branches.length)],
-            position: positions[Math.floor(Math.random() * positions.length)],
-            phone: `010-${String(Math.floor(Math.random() * 9000) + 1000).substring(0, 4)}-${String(Math.floor(Math.random() * 9000) + 1000).substring(0, 4)}`,
-            email: `${name.toLowerCase()}@gohair.com`,
-            createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            notes: index % 3 === 0 ? '우수 디자이너, 고객 만족도 높음' : ''
-        }));
+return names.map((name, index) => ({
+    id: index + 1,
+    docId: `designer_${index + 1}`,
+    name: name,
+    branch: branches[Math.floor(Math.random() * branches.length)],
+    position: positions[Math.floor(Math.random() * positions.length)],
+    phone: `010-${String(Math.floor(Math.random() * 9000) + 1000).substring(0, 4)}-${String(Math.floor(Math.random() * 9000) + 1000).substring(0, 4)}`,
+    email: `${name.toLowerCase()}@gohair.com`,
+    instagram: index % 2 === 0 ? `${name.toLowerCase()}_hair` : '',
+    createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    notes: index % 3 === 0 ? '우수 디자이너, 고객 만족도 높음' : ''
+}));
     }
 
     generateSampleBranches() {
@@ -196,29 +197,32 @@ updateUserDisplay() {
             const designers = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
-                designers.push({
-                    id: doc.id,
-                    docId: doc.id,
-                    name: data.name || '',
-                    branch: data.branch || '',
-                    position: data.position || '',
-                    phone: data.phone || '',
-                    email: data.email || '',
-                    notes: data.notes || '',
-                    createdAt: data.createdAt || new Date().toISOString().split('T')[0]
-                });
+designers.push({
+    id: doc.id,
+    docId: doc.id,
+    name: data.name || '',
+    branch: data.branch || '',
+    position: data.position || '',
+    phone: data.phone || '',
+    email: data.email || '',
+    instagram: data.instagram || '',
+    notes: data.notes || '',
+    createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+});
             });
             
 console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
 
-// 🔍 Firebase 디자이너 데이터 구조 확인
+// 🔍 Firebase 디자이너 데이터 구조 확인 (Instagram 필드 포함)
 console.log('🔍 Firebase 디자이너 샘플 3개:');
 designers.slice(0, 3).forEach((designer, index) => {
     console.log(`디자이너 ${index + 1}:`, {
         id: designer.id,
         docId: designer.docId,
         name: designer.name,
-        branch: designer.branch
+        branch: designer.branch,
+        instagram: designer.instagram,
+        hasInstagram: !!designer.instagram
     });
 });
 
@@ -1101,11 +1105,11 @@ console.log(`🔍 ${designer.name} 상세보기 체크리스트: ${designerCheck
     exportDesigners() {
         const designers = this.calculateDesignerActivity([...this.data.designers]);
         
-        let csvContent = "이름,지점,직급,전화번호,이메일,등록일,리뷰,포스팅,체험단,릴스,사진,총활동량\n";
-        
-        designers.forEach(d => {
-            csvContent += `${d.name},${d.branch},${d.position},${d.phone},${d.email || ''},${d.createdAt},${d.reviews},${d.posts},${d.experience},${d.reels},${d.photos},${d.total}\n`;
-        });
+let csvContent = "이름,지점,직급,전화번호,이메일,인스타그램,등록일,리뷰,포스팅,체험단,릴스,사진,총활동량\n";
+
+designers.forEach(d => {
+    csvContent += `${d.name},${d.branch},${d.position},${d.phone},${d.email || ''},${d.instagram || ''},${d.createdAt},${d.reviews},${d.posts},${d.experience},${d.reels},${d.photos},${d.total}\n`;
+});
         
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
