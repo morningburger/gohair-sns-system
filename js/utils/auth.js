@@ -62,95 +62,33 @@ role: user.role === '전체관리자' || user.role === 'admin' ? '전체관리�
     }
 
     // 회원가입 처리
- async signup(email, password, name, position, branch) {
-    try {
-        // 이메일 중복 체크
-        const existingUser = await window.dataManager.getUser(email);
-        if (existingUser) {
-            return { success: false, message: '이미 등록된 이메일입니다.' };
+    async signup(email, password, name, branch) {
+        try {
+            // 이메일 중복 체크
+            const existingUser = await window.dataManager.getUser(email);
+            if (existingUser) {
+                return { success: false, message: '이미 등록된 이메일입니다.' };
+            }
+
+            // 새 사용자 추가
+            const newUser = {
+                password: password,
+                role: '지점관리자', // 역할명 통일
+                name: name,
+                branch: branch,
+                email: email,
+                phone: null,
+                status: 'active',
+                createdAt: new Date().toISOString().split('T')[0]
+            };
+
+            await window.dataManager.addUser(email, newUser);
+            return { success: true, message: '가입이 완료되었습니다.' };
+        } catch (error) {
+            console.error('가입 오류:', error);
+            return { success: false, message: '가입 중 오류가 발생했습니다.' };
         }
-
-        // 새 사용자 추가
-        const newUser = {
-            password: password,
-            role: '지점관리자',
-            name: name,
-            position: position,
-            branch: branch,
-            email: email,
-            phone: null,
-            status: 'active',
-            createdAt: new Date().toISOString().split('T')[0]
-        };
-
-        await window.dataManager.addUser(email, newUser);
-        return { success: true, message: '가입이 완료되었습니다.' };
-    } catch (error) {
-        console.error('가입 오류:', error);
-        return { success: false, message: '가입 중 오류가 발생했습니다.' };
     }
-}
-
-// 비밀번호 찾기
-async findPassword(email) {
-    try {
-        const user = await window.dataManager.getUser(email);
-        if (user) {
-            return { success: true, password: user.password, name: user.name };
-        } else {
-            return { success: false, message: '등록되지 않은 이메일입니다.' };
-        }
-    } catch (error) {
-        console.error('비밀번호 찾기 오류:', error);
-        return { success: false, message: '비밀번호 찾기 중 오류가 발생했습니다.' };
-    }
-}
-
-// 비밀번호 변경
-async changePassword(currentPassword, newPassword) {
-    try {
-        if (!this.currentUser) {
-            return { success: false, message: '로그인이 필요합니다.' };
-        }
-
-        // 현재 비밀번호 확인
-        const user = await window.dataManager.getUser(this.currentUser.email);
-        if (!user || user.password !== currentPassword) {
-            return { success: false, message: '현재 비밀번호가 일치하지 않습니다.' };
-        }
-
-        // 새 비밀번호로 업데이트
-        const updatedUser = { ...user, password: newPassword };
-        await window.dataManager.updateUser(this.currentUser.email, updatedUser);
-        
-        return { success: true, message: '비밀번호가 성공적으로 변경되었습니다.' };
-    } catch (error) {
-        console.error('비밀번호 변경 오류:', error);
-        return { success: false, message: '비밀번호 변경 중 오류가 발생했습니다.' };
-    }
-}
-
-// 관리자용 비밀번호 변경
-async adminChangePassword(userEmail, newPassword) {
-    try {
-        if (!this.currentUser || this.currentUser.role !== '전체관리자') {
-            return { success: false, message: '권한이 없습니다.' };
-        }
-
-        const user = await window.dataManager.getUser(userEmail);
-        if (!user) {
-            return { success: false, message: '사용자를 찾을 수 없습니다.' };
-        }
-
-        const updatedUser = { ...user, password: newPassword };
-        await window.dataManager.updateUser(userEmail, updatedUser);
-        
-        return { success: true, message: '비밀번호가 성공적으로 변경되었습니다.' };
-    } catch (error) {
-        console.error('관리자 비밀번호 변경 오류:', error);
-        return { success: false, message: '비밀번호 변경 중 오류가 발생했습니다.' };
-    }
-}
 
     // 로그아웃
     logout() {
@@ -278,7 +216,7 @@ function setupAuthEventHandlers() {
         });
     }
 
-// 회원가입 폼 이벤트
+    // 회원가입 폼 이벤트
     const signupForm = document.getElementById('signupForm');
     if (signupForm) {
         signupForm.addEventListener('submit', async function(e) {
@@ -295,89 +233,6 @@ function setupAuthEventHandlers() {
                 window.authManager.showLoginPage();
             } else {
                 alert(result.message);
-            }
-        });
-    }
-
-    // 비밀번호 찾기 폼 이벤트
-    const passwordResetForm = document.getElementById('passwordResetForm');
-    if (passwordResetForm) {
-        passwordResetForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('resetEmail').value;
-            const result = await window.authManager.findPassword(email);
-            
-            if (result.success) {
-                alert(`${result.name}님의 비밀번호는 "${result.password}" 입니다.\n보안을 위해 로그인 후 비밀번호를 변경해주세요.`);
-                window.authManager.showLoginPage();
-            } else {
-                alert(result.message);
-            }
-        });
-    }
-
-    // 비밀번호 변경 폼 이벤트
-    const changePasswordForm = document.getElementById('changePasswordForm');
-    if (changePasswordForm) {
-        changePasswordForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('newPasswordConfirm').value;
-            
-            if (newPassword !== confirmPassword) {
-                alert('새 비밀번호가 일치하지 않습니다.');
-                return;
-            }
-            
-            const result = await window.authManager.changePassword(currentPassword, newPassword);
-            
-            if (result.success) {
-                alert(result.message);
-                hideChangePassword();
-            } else {
-                alert(result.message);
-            }
-        });
-    }
-
-    // 비밀번호 확인 실시간 검증
-    const signupPasswordConfirm = document.getElementById('signupPasswordConfirm');
-    if (signupPasswordConfirm) {
-        signupPasswordConfirm.addEventListener('input', function() {
-            const password = document.getElementById('signupPassword').value;
-            const confirmPassword = this.value;
-            const message = document.getElementById('passwordMatchMessage');
-            
-            if (confirmPassword === '') {
-                message.textContent = '';
-            } else if (password === confirmPassword) {
-                message.textContent = '✅ 비밀번호가 일치합니다';
-                message.style.color = '#10b981';
-            } else {
-                message.textContent = '❌ 비밀번호가 일치하지 않습니다';
-                message.style.color = '#ef4444';
-            }
-        });
-    }
-
-    const newPasswordConfirm = document.getElementById('newPasswordConfirm');
-    if (newPasswordConfirm) {
-        newPasswordConfirm.addEventListener('input', function() {
-            const password = document.getElementById('newPassword').value;
-            const confirmPassword = this.value;
-            const message = document.getElementById('newPasswordMatchMessage');
-            
-            if (confirmPassword === '') {
-                message.textContent = '';
-            } else if (password === confirmPassword) {
-                message.textContent = '✅ 비밀번호가 일치합니다';
-                message.style.color = '#10b981';
-            } else {
-                message.textContent = '❌ 비밀번호가 일치하지 않습니다';
-                message.style.color = '#ef4444';
             }
         });
     }
