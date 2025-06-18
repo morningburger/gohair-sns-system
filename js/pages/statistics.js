@@ -18,30 +18,30 @@ class StatisticsManager {
         this.currentUser = null;
     }
 
-    // 페이지 초기화
-    async initialize() {
-        try {
-            this.showLoading();
-            
-            // Firebase 연결 확인
-            if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
-                throw new Error('Firebase가 초기화되지 않았습니다');
-            }
-            
-            // 사용자 정보 확인
-            this.currentUser = this.getCurrentUser();
-            this.updateUserDisplay();
-            
-            // 기본 기간 설정 (이번 달)
-            this.setThisMonth();
-            
-            // 데이터 로드
-            await this.loadAllData();
-            
-            // 이벤트 리스너 설정
-            this.setupEventListeners();
-            
-            console.log('✅ 통계 페이지 초기화 완료');
+// 페이지 초기화
+async initialize() {
+    try {
+        this.showLoading();
+        
+        // Firebase 연결 확인
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            throw new Error('Firebase가 초기화되지 않았습니다');
+        }
+        
+        // 사용자 정보 확인
+        this.currentUser = this.getCurrentUser();
+        this.updateUserDisplay();
+        
+        // 데이터 로드 (기간 설정은 여기서 함께 처리)
+        await this.loadAllData();
+        
+        // 기본 기간 설정 (데이터 로드 후)
+        this.setThisMonth();
+        
+        // 이벤트 리스너 설정
+        this.setupEventListeners();
+        
+        console.log('✅ 통계 페이지 초기화 완료');
             
         } catch (error) {
             console.error('❌ 통계 페이지 초기화 오류:', error);
@@ -130,8 +130,6 @@ updateUserDisplay() {
             // 지점 필터 옵션 로드
             this.loadBranchFilterOptions();
             
-            // 데이터 처리 및 표시
-            this.processData();
             
         } catch (error) {
             console.error('❌ Firebase 데이터 로딩 오류:', error);
@@ -411,33 +409,34 @@ loadBranchFilterOptions() {
         }
     }
 
-    // 차트 업데이트
-    updateCharts(data) {
-        this.updateBranchChart(data);
-        this.updateCategoryChart(data);
-    }
-
-    // 지점별 차트 업데이트
-    updateBranchChart(data) {
-        const branchStats = {};
+// 지점별 차트 업데이트
+updateBranchChart(data) {
+    const branchStats = {};
+    
+    data.forEach(item => {
+        const branchName = item.branch;
+        if (!branchName) return;
         
-        data.forEach(item => {
-            const branchName = item.branch;
-            if (!branchName) return;
-            
-            if (!branchStats[branchName]) {
-                branchStats[branchName] = 0;
-            }
-            branchStats[branchName] += (item.naverReviews || 0) + (item.naverPosts || 0) + 
-                                      (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
-        });
-        
-        const ctx = document.getElementById('branchChart');
-        if (!ctx) return;
-        
-        if (this.charts.branchChart) {
-            this.charts.branchChart.destroy();
+        if (!branchStats[branchName]) {
+            branchStats[branchName] = 0;
         }
+        branchStats[branchName] += (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                                  (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+    });
+    
+    const ctx = document.getElementById('branchChart');
+    if (!ctx) return;
+    
+    // 안전한 차트 파괴
+    try {
+        if (this.charts.branchChart && typeof this.charts.branchChart.destroy === 'function') {
+            this.charts.branchChart.destroy();
+            this.charts.branchChart = null;
+        }
+    } catch (error) {
+        console.warn('차트 파괴 중 오류:', error);
+        this.charts.branchChart = null;
+    }
         
         const labels = Object.keys(branchStats);
         const values = Object.values(branchStats);
@@ -490,12 +489,19 @@ loadBranchFilterOptions() {
             instaPhotos: 0
         });
         
-        const ctx = document.getElementById('categoryChart');
-        if (!ctx) return;
-        
-        if (this.charts.categoryChart) {
-            this.charts.categoryChart.destroy();
-        }
+const ctx = document.getElementById('categoryChart');
+if (!ctx) return;
+
+// 안전한 차트 파괴
+try {
+    if (this.charts.categoryChart && typeof this.charts.categoryChart.destroy === 'function') {
+        this.charts.categoryChart.destroy();
+        this.charts.categoryChart = null;
+    }
+} catch (error) {
+    console.warn('카테고리 차트 파괴 중 오류:', error);
+    this.charts.categoryChart = null;
+}
         
         const total = categoryTotals.naverReviews + categoryTotals.naverPosts + 
                      categoryTotals.naverExperience + categoryTotals.instaReels + categoryTotals.instaPhotos;
