@@ -20,13 +20,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('현재 사용자:', currentUser);
             
-            if (currentUser && currentUser.role === '지점관리자') {
-                // 지점관리자는 지점 관리 메뉴 숨김
-                const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
-                if (branchNavBtn) {
-                    branchNavBtn.style.display = 'none';
-                    console.log('지점관리자 - 지점 관리 메뉴 숨김');
-                }
+if (currentUser && currentUser.role === '지점관리자') {
+    // 지점관리자는 지점 관리 메뉴 숨김
+    const branchNavBtn = document.querySelector('.nav-btn[onclick*="branches"]');
+    if (branchNavBtn) {
+        branchNavBtn.style.display = 'none';
+        console.log('지점관리자 - 지점 관리 메뉴 숨김');
+    }
+    
+    // 지점관리자는 지점 비교 메뉴도 숨김
+    const comparisonNavBtn = document.querySelector('.nav-btn[onclick*="comparison"]');
+    if (comparisonNavBtn) {
+        comparisonNavBtn.style.display = 'none';
+        console.log('지점관리자 - 지점 비교 메뉴 숨김');
+    }
                 
                 // 사용자 정보 표시
                 const userElement = document.getElementById('currentUser');
