@@ -279,25 +279,32 @@ function setupAuthEventHandlers() {
     }
 
 // 회원가입 폼 이벤트
-    const signupForm = document.getElementById('signupForm');
-    if (signupForm) {
-        signupForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            const name = document.getElementById('signupName').value;
-            const branch = document.getElementById('signupBranch').value;
+const signupForm = document.getElementById('signupForm');
+if (signupForm) {
+    signupForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const confirmPassword = document.getElementById('signupPasswordConfirm').value;
+        const name = document.getElementById('signupName').value;
+        const position = document.getElementById('signupPosition').value;
+        const branch = document.getElementById('signupBranch').value;
 
-            const result = await window.authManager.signup(email, password, name, branch);
-            if (result.success) {
-                alert(result.message + ' 로그인해주세요.');
-                window.authManager.showLoginPage();
-            } else {
-                alert(result.message);
-            }
-        });
-    }
+        if (password !== confirmPassword) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        const result = await window.authManager.signup(email, password, name, position, branch);
+        if (result.success) {
+            alert(result.message + ' 로그인해주세요.');
+            window.authManager.showLoginPage();
+        } else {
+            alert(result.message);
+        }
+    });
+}
 
     // 비밀번호 찾기 폼 이벤트
     const passwordResetForm = document.getElementById('passwordResetForm');
@@ -396,11 +403,28 @@ function logout() {
     window.authManager.logout();
 }
 
+// 비밀번호 변경 모달 관리 함수
+function hideChangePassword() {
+    const modal = document.getElementById('changePasswordModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        const form = document.getElementById('changePasswordForm');
+        if (form) {
+            form.reset();
+        }
+        const message = document.getElementById('newPasswordMatchMessage');
+        if (message) {
+            message.textContent = '';
+        }
+    }
+}
+
 // 전역으로 노출
 window.AuthManager = AuthManager;
 window.showLogin = showLogin;
 window.showSignup = showSignup;
 window.logout = logout;
+window.hideChangePassword = hideChangePassword;
 window.setupAuthEventHandlers = setupAuthEventHandlers;
 
 console.log('인증 관리 모듈 로딩 완료');
