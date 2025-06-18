@@ -422,6 +422,30 @@ function showLogin() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Firebase 지점 연동 준비 완료');
 });
+
+// 비밀번호 관련 함수들
+function showPasswordReset() {
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('signupPage').classList.add('hidden');
+    document.getElementById('passwordResetPage').classList.remove('hidden');
+}
+
+function showChangePassword() {
+    document.getElementById('changePasswordModal').classList.remove('hidden');
+}
+
+function hideChangePassword() {
+    document.getElementById('changePasswordModal').classList.add('hidden');
+    document.getElementById('changePasswordForm').reset();
+    document.getElementById('newPasswordMatchMessage').textContent = '';
+}
+
+// showLogin 함수 수정 (기존 함수 대체)
+function showLogin() {
+    document.getElementById('signupPage').classList.add('hidden');
+    document.getElementById('passwordResetPage').classList.add('hidden');
+    document.getElementById('loginPage').classList.remove('hidden');
+}
 </script>
 </body>
 </html>
