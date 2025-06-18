@@ -278,13 +278,6 @@
                 <h3 class="text-lg font-bold">✏️ 계정 정보 수정</h3>
                 <button onclick="hideEditUser()" class="modal-close">❌</button>
             </div>
-<!-- 비밀번호 변경 모달 -->
-<div id="changePasswordModal" class="modal hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="text-lg font-bold">🔑 비밀번호 변경</h3>
-            <button onclick="hideChangePassword()" class="modal-close">❌</button>
-        </div>
         <form id="changePasswordForm">
             <input type="hidden" id="changePasswordUserId">
             <div class="form-group">
@@ -358,7 +351,13 @@
             </form>
         </div>
     </div>
-
+<!-- 비밀번호 변경 모달 -->
+<div id="changePasswordModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="text-lg font-bold">🔑 비밀번호 변경</h3>
+            <button onclick="hideChangePassword()" class="modal-close">❌</button>
+        </div>
     <!-- JavaScript Files -->
 <script src="../js/config/firebase.js"></script>
 <script src="../js/utils/data-manager.js"></script>
@@ -592,7 +591,7 @@ users.push({
                 if (users.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="8" class="text-center py-8">
+                            <td colspan="9" class="text-center py-8">
                                 <div class="empty-state">
                                     <div class="empty-state-icon">👤</div>
                                     <p>등록된 계정이 없습니다.</p>
@@ -1131,6 +1130,96 @@ if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                     alert(message);
                 }
             }
+            showNotification(message, type = 'info') {
+                if (window.showNotification) {
+                    window.showNotification(message, type);
+                } else {
+                    alert(message);
+                }
+            }
+
+            // 비밀번호 변경 관련 메서드들 ← 여기에 추가!
+            showChangePassword(docId) {
+                const user = this.data.users.find(u => u.docId === docId);
+                if (!user) return;
+
+                document.getElementById('changePasswordUserId').value = user.docId;
+                document.getElementById('changePasswordUserName').value = user.name + ' (' + user.email + ')';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('newPasswordConfirm').value = '';
+                document.getElementById('newPasswordMatchMessage').innerHTML = '';
+                
+                // 비밀번호 확인 검증 이벤트 추가
+                const newPassword = document.getElementById('newPassword');
+                const newPasswordConfirm = document.getElementById('newPasswordConfirm');
+                const matchMessage = document.getElementById('newPasswordMatchMessage');
+                
+                function checkMatch() {
+                    if (newPasswordConfirm.value.length > 0) {
+                        if (newPassword.value === newPasswordConfirm.value) {
+                            matchMessage.innerHTML = '✅ 비밀번호가 일치합니다.';
+                            matchMessage.style.color = '#059669';
+                        } else {
+                            matchMessage.innerHTML = '❌ 비밀번호가 일치하지 않습니다.';
+                            matchMessage.style.color = '#dc2626';
+                        }
+                    } else {
+                        matchMessage.innerHTML = '';
+                    }
+                }
+                
+                newPassword.addEventListener('input', checkMatch);
+                newPasswordConfirm.addEventListener('input', checkMatch);
+                
+                document.getElementById('changePasswordModal').classList.remove('hidden');
+            }
+
+            hideChangePassword() {
+                document.getElementById('changePasswordModal').classList.add('hidden');
+                document.getElementById('changePasswordForm').reset();
+            }
+
+            async handleChangePassword() {
+                try {
+                    const docId = document.getElementById('changePasswordUserId').value;
+                    const newPassword = document.getElementById('newPassword').value;
+                    const newPasswordConfirm = document.getElementById('newPasswordConfirm').value;
+                    
+                    if (newPassword !== newPasswordConfirm) {
+                        alert('비밀번호가 일치하지 않습니다.');
+                        return;
+                    }
+                    
+                    if (newPassword.length < 6) {
+                        alert('비밀번호는 6자 이상이어야 합니다.');
+                        return;
+                    }
+                    
+                    const user = this.data.users.find(u => u.docId === docId);
+                    if (!user) return;
+                    
+                    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                        const db = firebase.firestore();
+                        await db.collection('users').doc(docId).update({
+                            password: newPassword
+                        });
+                        
+                        await this.loadAllData();
+                    }
+                    
+                    this.hideChangePassword();
+                    this.loadUsers();
+                    
+                    this.showNotification('비밀번호가 성공적으로 변경되었습니다.', 'success');
+                } catch (error) {
+                    console.error('비밀번호 변경 오류:', error);
+                    this.showNotification('비밀번호 변경 중 오류가 발생했습니다.', 'error');
+                }
+            }
+        } ← UsersManager 클래스 끝
+
+        // 전역 함수들
+        function showAddUser() { window.usersManager?.showAddUser(); }
         }
 
         // 전역 함수들
@@ -1144,88 +1233,8 @@ if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
         function approveUser(docId) { window.usersManager?.approveUser(docId); }
         function rejectUser(docId) { window.usersManager?.rejectUser(docId); }
         function exportUsers() { window.usersManager?.exportUsers(); }
-// 비밀번호 변경 관련 함수들
-function changePassword(docId) { window.usersManager?.showChangePassword(docId); }
-function hideChangePassword() { window.usersManager?.hideChangePassword(); }
-
-// UsersManager 클래스에 추가할 메서드들
-showChangePassword(docId) {
-    const user = this.data.users.find(u => u.docId === docId);
-    if (!user) return;
-
-    document.getElementById('changePasswordUserId').value = user.docId;
-    document.getElementById('changePasswordUserName').value = user.name + ' (' + user.email + ')';
-    document.getElementById('newPassword').value = '';
-    document.getElementById('newPasswordConfirm').value = '';
-    document.getElementById('newPasswordMatchMessage').innerHTML = '';
-    
-    // 비밀번호 확인 검증 이벤트 추가
-    const newPassword = document.getElementById('newPassword');
-    const newPasswordConfirm = document.getElementById('newPasswordConfirm');
-    const matchMessage = document.getElementById('newPasswordMatchMessage');
-    
-    function checkMatch() {
-        if (newPasswordConfirm.value.length > 0) {
-            if (newPassword.value === newPasswordConfirm.value) {
-                matchMessage.innerHTML = '✅ 비밀번호가 일치합니다.';
-                matchMessage.style.color = '#059669';
-            } else {
-                matchMessage.innerHTML = '❌ 비밀번호가 일치하지 않습니다.';
-                matchMessage.style.color = '#dc2626';
-            }
-        } else {
-            matchMessage.innerHTML = '';
-        }
-    }
-    
-    newPassword.addEventListener('input', checkMatch);
-    newPasswordConfirm.addEventListener('input', checkMatch);
-    
-    document.getElementById('changePasswordModal').classList.remove('hidden');
-}
-
-hideChangePassword() {
-    document.getElementById('changePasswordModal').classList.add('hidden');
-    document.getElementById('changePasswordForm').reset();
-}
-
-async handleChangePassword() {
-    try {
-        const docId = document.getElementById('changePasswordUserId').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const newPasswordConfirm = document.getElementById('newPasswordConfirm').value;
-        
-        if (newPassword !== newPasswordConfirm) {
-            alert('비밀번호가 일치하지 않습니다.');
-            return;
-        }
-        
-        if (newPassword.length < 6) {
-            alert('비밀번호는 6자 이상이어야 합니다.');
-            return;
-        }
-        
-        const user = this.data.users.find(u => u.docId === docId);
-        if (!user) return;
-        
-        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-            const db = firebase.firestore();
-            await db.collection('users').doc(docId).update({
-                password: newPassword
-            });
-            
-            await this.loadAllData();
-        }
-        
-        this.hideChangePassword();
-        this.loadUsers();
-        
-        this.showNotification('비밀번호가 성공적으로 변경되었습니다.', 'success');
-    } catch (error) {
-        console.error('비밀번호 변경 오류:', error);
-        this.showNotification('비밀번호 변경 중 오류가 발생했습니다.', 'error');
-    }
-}
+    function changePassword(docId) { window.usersManager?.showChangePassword(docId); }
+        function hideChangePassword() { window.usersManager?.hideChangePassword(); }
         function goToMainSystem() { window.location.href = '../index.html'; }
         function goToPage(pageId) {
             const pages = {
