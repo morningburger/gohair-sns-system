@@ -10,12 +10,12 @@ class BranchesManager {
         };
         this.currentUser = null;
         this.currentView = 'table'; // 'table' or 'grid'
-        this.pagination = {
-            currentPage: 1,
-            itemsPerPage: 10,
-            totalItems: 0,
-            totalPages: 0
-        };
+this.pagination = {
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+    totalPages: 0
+};
         this.filters = {
             search: '',
             sortBy: 'name',
@@ -1308,7 +1308,18 @@ function goToMainSystem() {
 function goToPage(pageId) {
     window.location.href = `${pageId}.html`;
 }
-
+// 페이지당 항목 수 변경 함수 (기존 전역 함수들 위에 추가)
+function changeItemsPerPage() {
+    const select = document.getElementById('itemsPerPage');
+    const newItemsPerPage = parseInt(select.value);
+    
+    if (window.branchesManager) {
+        window.branchesManager.pagination.itemsPerPage = newItemsPerPage;
+        window.branchesManager.pagination.currentPage = 1; // 첫 페이지로 리셋
+        window.branchesManager.loadBranches();
+        console.log(`📄 페이지당 항목 수 변경: ${newItemsPerPage}개`);
+    }
+}
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     window.branchesManager = new BranchesManager();
