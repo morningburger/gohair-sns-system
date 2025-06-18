@@ -1,3 +1,13 @@
+// 🔍 디버깅: 현재 경로 확인
+console.log('현재 URL:', window.location.href);
+console.log('현재 경로:', window.location.pathname);
+console.log('베이스 URL:', window.location.origin);
+
+// 동적 네비게이션 컴포넌트
+class NavigationManager {
+    // ... 기존 코드
+}
+
 // 동적 네비게이션 컴포넌트
 class NavigationManager {
     constructor() {
@@ -170,7 +180,7 @@ class NavigationManager {
 
 // 페이지 네비게이션 함수들
 function goToMainSystem() {
-    window.location.href = '../index.html';
+    window.location.href = '/index.html';
 }
 
 function goToPage(pageId) {
