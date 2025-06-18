@@ -363,14 +363,21 @@
         window.branchesManager.initialize();
     });
     // 🔍 디버깅: navigation.js 로딩 확인
+// 🔍 navigation.js 중복 함수 충돌 확인
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔍 navigation.js 로딩 상태:', typeof NavigationManager);
+    console.log('🔍 goToMainSystem 함수:', typeof goToMainSystem);
+    console.log('🔍 goToPage 함수:', typeof goToPage);
     console.log('🔍 헤더 요소 존재:', document.querySelector('.header'));
     
     // 3초 후 헤더 상태 재확인
     setTimeout(() => {
         const header = document.querySelector('.header');
         console.log('🔍 3초 후 헤더 내용:', header?.innerHTML?.length || 0);
+        
+        if (header && header.innerHTML.length === 0) {
+            console.error('❌ 헤더가 비어있음 - navigation.js 실행 실패');
+        }
     }, 3000);
 });
 </script>
