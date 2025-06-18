@@ -45,9 +45,10 @@
                     </div>
                     <button type="submit" class="btn" style="width: 100%;">🔑 로그인</button>
                 </form>
-                <div class="text-center" style="margin-top: 1rem;">
-                    <a href="#" onclick="showSignup()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">SNS 리더로 가입하기</a>
-                </div>
+<div class="text-center" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+    <a href="#" onclick="showPasswordReset()" style="color: #dc2626; text-decoration: none; font-size: 0.875rem;">🔑 비밀번호를 잊으셨나요?</a>
+    <a href="#" onclick="showSignup()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">SNS 리더로 가입하기</a>
+</div>
             </div>
         </div>
     </div>
@@ -96,18 +97,13 @@
         <select id="signupBranch" required>
             <option value="">지점을 선택하세요</option>
         </select>
-    </div>
-        <!-- Firebase에서 동적으로 로드됨 -->
-    </select>
-    <div id="branchLoadingStatus" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+<div id="branchLoadingStatus" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
         🔄 지점 목록을 불러오는 중...
     </div>
-</div>
                     <button type="submit" class="btn" style="width: 100%;">➕ 가입하기</button>
                 </form>
-<div class="text-center" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-    <a href="#" onclick="showPasswordReset()" style="color: #dc2626; text-decoration: none; font-size: 0.875rem;">🔑 비밀번호를 잊으셨나요?</a>
-    <a href="#" onclick="showSignup()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">SNS 리더로 가입하기</a>
+<div class="text-center" style="margin-top: 1rem;">
+    <a href="#" onclick="showLogin()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">이미 계정이 있으신가요? 로그인하기</a>
 </div>
             </div>
         </div>
@@ -412,11 +408,7 @@ function showSignup() {
     }, 100);
 }
 
-// 로그인 페이지로 돌아가는 함수
-function showLogin() {
-    document.getElementById('signupPage').classList.add('hidden');
-    document.getElementById('loginPage').classList.remove('hidden');
-}
+
 
 // Firebase 연결 확인 후 지점 로드 준비
 document.addEventListener('DOMContentLoaded', function() {
