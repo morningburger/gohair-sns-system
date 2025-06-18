@@ -1313,10 +1313,6 @@ function changeItemsPerPage() {
         console.log(`📄 페이지당 항목 수 변경: ${newItemsPerPage}개`);
     }
 }
-// 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    window.branchesManager = new BranchesManager();
-    window.branchesManager.initialize();
-});
+
 
 console.log('지점 페이지 스크립트 로딩 완료');
