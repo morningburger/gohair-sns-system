@@ -312,27 +312,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 2000);
             
-            // 3초 후 최종 백업
-            setTimeout(() => {
-                const loading = document.getElementById('loadingScreen');
-                if (loading && (loading.style.display !== 'none')) {
-                    console.log('🚨 최종 백업 - 강제 로딩 숨김');
-                    forceHideLoading();
-                    
-                    // 기본 데이터라도 표시
-                    document.getElementById('totalReviews').textContent = '45';
-                    document.getElementById('totalPosts').textContent = '23';
-                    document.getElementById('totalExperience').textContent = '12';
-                    document.getElementById('totalReels').textContent = '67';
-                    document.getElementById('totalPhotos').textContent = '89';
-                    
-                    // 임시 사용자 정보
-                    const userElement = document.getElementById('currentUser');
-                    if (userElement) {
-                        userElement.textContent = '관리자';
-                    }
-                }
-            }, 3000);
+// 3초 후 최종 백업 (고정값 제거)
+setTimeout(() => {
+    const loading = document.getElementById('loadingScreen');
+    if (loading && (loading.style.display !== 'none')) {
+        console.log('🚨 최종 백업 - 강제 로딩 숨김');
+        forceHideLoading();
+    }
+}, 3000);
         });
 
         // 에러 발생 시 즉시 로딩 숨김
