@@ -86,11 +86,12 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>이름</th>
-                                <th>지점</th>
-                                <th>직급</th>
-                                <th>전화번호</th>
-                                <th>등록일</th>
+<th>이름</th>
+<th>지점</th>
+<th>직급</th>
+<th>전화번호</th>
+<th>인스타그램</th>
+<th>등록일</th>
                                 <th class="sortable" onclick="sortDesigners('reviews')">
                                     ⭐ 리뷰 <span class="sort-icon">🔀</span>
                                 </th>
@@ -165,6 +166,11 @@
                     <label>📧 이메일</label>
                     <input type="email" id="designerEmail" placeholder="designer@gohair.com">
                 </div>
+                <div class="form-group">
+    <label>📷 인스타그램</label>
+    <input type="text" id="designerInstagram" placeholder="username 또는 전체 URL">
+    <small style="color: #6b7280; font-size: 0.8rem;">예: username 또는 https://instagram.com/username</small>
+</div>
                 <div class="modal-actions">
                     <button type="button" onclick="hideAddDesigner()" class="btn btn-secondary">❌ 취소</button>
                     <button type="submit" class="btn">➕ 추가</button>
@@ -212,6 +218,11 @@
                     <label>📧 이메일</label>
                     <input type="email" id="editDesignerEmail">
                 </div>
+                <div class="form-group">
+    <label>📷 인스타그램</label>
+    <input type="text" id="editDesignerInstagram" placeholder="username 또는 전체 URL">
+    <small style="color: #6b7280; font-size: 0.8rem;">예: username 또는 https://instagram.com/username</small>
+</div>
                 <div class="form-group">
                     <label>📋 메모</label>
                     <textarea id="editDesignerNotes" rows="3" placeholder="디자이너에 대한 메모나 특이사항"></textarea>
