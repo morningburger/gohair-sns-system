@@ -3,10 +3,6 @@ console.log('현재 URL:', window.location.href);
 console.log('현재 경로:', window.location.pathname);
 console.log('베이스 URL:', window.location.origin);
 
-// 동적 네비게이션 컴포넌트
-class NavigationManager {
-    // ... 기존 코드
-}
 
 // 동적 네비게이션 컴포넌트
 class NavigationManager {
@@ -220,14 +216,28 @@ window.NavigationManager = NavigationManager;
 window.goToMainSystem = goToMainSystem;
 window.goToPage = goToPage;
 
-// 페이지 로드 시 자동 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    // 네비게이션 매니저 초기화
-    window.navigationManager = new NavigationManager();
-    window.navigationManager.render();
+// 페이지 로드 시 자동 초기화 (중복 방지)
+function initializeNavigation() {
+    if (window.navigationManager) {
+        console.log('⚠️ 네비게이션이 이미 초기화됨');
+        return;
+    }
     
-    console.log('📊 동적 네비게이션 시스템 로딩 완료');
-});
+    try {
+        window.navigationManager = new NavigationManager();
+        window.navigationManager.render();
+        console.log('✅ 동적 네비게이션 시스템 로딩 완료');
+    } catch (error) {
+        console.error('❌ 네비게이션 초기화 오류:', error);
+    }
+}
+
+// DOM 상태에 따른 초기화
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeNavigation);
+} else {
+    initializeNavigation();
+}
 
 // 사용자 로그인/로그아웃 시 네비게이션 업데이트 함수
 function updateNavigation() {
