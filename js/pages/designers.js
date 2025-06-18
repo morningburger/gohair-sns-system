@@ -959,8 +959,24 @@ if (periodSelect) {
         const designer = this.data.designers.find(d => d.docId === docId);
         if (!designer) return;
 
-        const designerChecklists = this.data.checklists.filter(c => c.designerId === designer.id);
-        const recentChecklists = designerChecklists.slice(-10).reverse();
+// 다양한 방식으로 체크리스트 찾기
+let designerChecklists = this.data.checklists.filter(c => 
+    c.designerId === designer.id || 
+    c.designerId === designer.docId ||
+    c.designer === designer.name ||
+    String(c.designerId) === String(designer.id) ||
+    String(c.designerId) === String(designer.docId)
+);
+
+// 이름과 지점으로도 찾기
+if (designerChecklists.length === 0) {
+    designerChecklists = this.data.checklists.filter(c => 
+        c.designer === designer.name && 
+        (c.branch === designer.branch || !c.branch)
+    );
+}
+
+console.log(`🔍 ${designer.name} 상세보기 체크리스트: ${designerChecklists.length}개 발견`);        const recentChecklists = designerChecklists.slice(-10).reverse();
 
         const totalActivity = designerChecklists.reduce((acc, c) => {
             acc.reviews += c.naverReviews || 0;
