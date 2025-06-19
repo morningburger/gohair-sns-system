@@ -1,29 +1,30 @@
 // 디자이너 관리 페이지 전용 로직
 
 class DesignersManager {
-    constructor() {
-        this.data = {
-            designers: [],
-            branches: [],
-            checklists: []
-        };
-        this.currentUser = null;
-        this.sortConfig = {
-            field: null,
-            direction: 'asc'
-        };
-        this.pagination = {
-            currentPage: 1,
-            itemsPerPage: 10,
-            totalItems: 0,
-            totalPages: 0
-        };
-        this.filters = {
-            branch: '',
-            period: 'month',
-            search: ''
-        };
-    }
+constructor() {
+    this.data = {
+        designers: [],
+        branches: [],
+        checklists: []
+    };
+    this.currentUser = null;
+    this.sortConfig = {
+        field: null,
+        direction: 'asc'
+    };
+    this.pagination = {
+        currentPage: 1,
+        itemsPerPage: 10,
+        totalItems: 0,
+        totalPages: 0
+    };
+    this.filters = {
+        branch: '',
+        period: 'month',
+        search: ''
+    };
+    this.isSubmitting = false; // 중복 제출 방지 플래그 추가
+}
 
     // 페이지 초기화
     async initialize() {
@@ -780,29 +781,44 @@ if (periodSelect) {
     }
 
     // 폼 이벤트 리스너 설정
-    setupFormEventListeners() {
-        // 디자이너 추가 폼
-        const addForm = document.getElementById('addDesignerForm');
-        if (addForm) {
-            addForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleAddDesigner();
-            });
-        }
-
-        // 디자이너 수정 폼
-        const editForm = document.getElementById('editDesignerForm');
-        if (editForm) {
-            editForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleEditDesigner();
-            });
-        }
+setupFormEventListeners() {
+    // 디자이너 추가 폼 - 기존 이벤트 리스너 제거 후 추가
+    const addForm = document.getElementById('addDesignerForm');
+    if (addForm) {
+        // 기존 이벤트 리스너 제거
+        const newAddForm = addForm.cloneNode(true);
+        addForm.parentNode.replaceChild(newAddForm, addForm);
+        
+        newAddForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleAddDesigner();
+        });
     }
 
+    // 디자이너 수정 폼 - 기존 이벤트 리스너 제거 후 추가
+    const editForm = document.getElementById('editDesignerForm');
+    if (editForm) {
+        // 기존 이벤트 리스너 제거
+        const newEditForm = editForm.cloneNode(true);
+        editForm.parentNode.replaceChild(newEditForm, editForm);
+        
+        newEditForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleEditDesigner();
+        });
+    }
+}
+
     // 🔥 Firebase에 디자이너 추가 (실제 저장)
-    async handleAddDesigner() {
-        try {
+async handleAddDesigner() {
+    // 중복 제출 방지
+    if (this.isSubmitting) {
+        console.log('이미 제출 중입니다.');
+        return;
+    }
+    this.isSubmitting = true;
+    
+    try {
 const formData = {
     name: document.getElementById('designerName').value,
     branch: document.getElementById('designerBranch').value,
@@ -847,15 +863,25 @@ const formData = {
             
             this.showNotification('디자이너가 성공적으로 추가되었습니다.', 'success');
             
-        } catch (error) {
+} catch (error) {
             console.error('❌ 디자이너 추가 오류:', error);
             this.showNotification('디자이너 추가 중 오류가 발생했습니다: ' + error.message, 'error');
+        } finally {
+            // 제출 상태 해제
+            this.isSubmitting = false;
         }
     }
 
     // 🔥 Firebase에서 디자이너 수정 (실제 저장)
-    async handleEditDesigner() {
-        try {
+async handleEditDesigner() {
+    // 중복 제출 방지
+    if (this.isSubmitting) {
+        console.log('이미 제출 중입니다.');
+        return;
+    }
+    this.isSubmitting = true;
+    
+    try {
             const docId = document.getElementById('editDesignerId').value;
 const formData = {
     name: document.getElementById('editDesignerName').value,
@@ -894,9 +920,12 @@ const formData = {
             
             this.showNotification('디자이너 정보가 성공적으로 수정되었습니다.', 'success');
             
-        } catch (error) {
+} catch (error) {
             console.error('❌ 디자이너 수정 오류:', error);
             this.showNotification('디자이너 수정 중 오류가 발생했습니다: ' + error.message, 'error');
+        } finally {
+            // 제출 상태 해제
+            this.isSubmitting = false;
         }
     }
 
@@ -1171,11 +1200,3 @@ function goToMainSystem() {
 function goToPage(pageId) {
     window.location.href = `${pageId}.html`;
 }
-
-// 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    window.designersManager = new DesignersManager();
-    window.designersManager.initialize();
-});
-
-console.log('디자이너 페이지 스크립트 로딩 완료');
