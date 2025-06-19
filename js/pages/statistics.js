@@ -265,39 +265,54 @@ loadBranchFilterOptions() {
     }
 
     // 필터링된 데이터 가져오기
-    getFilteredData() {
-        let filtered = this.data.checklists;
-        // 사용자 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === '지점관리자') {
-            filtered = filtered.filter(item => item.branch === this.currentUser.branch);
-        }        
-        // 날짜 필터
-if (this.currentPeriod.startDate && this.currentPeriod.endDate) {
+getFilteredData() {
+    let filtered = this.data.checklists;
+    
+    // 🔥 1단계: 삭제된 디자이너/지점 데이터 제외
+    const currentDesignerNames = this.data.designers.map(d => d.name);
+    const currentBranchNames = this.data.branches.map(b => b.name);
+    
     filtered = filtered.filter(item => {
-        if (!item.date) return false;
-        const itemDate = new Date(item.date);
-        const startDate = new Date(this.currentPeriod.startDate);
-        const endDate = new Date(this.currentPeriod.endDate);
+        // 디자이너가 현재 존재하는지 확인
+        const hasValidDesigner = item.designer && currentDesignerNames.includes(item.designer);
+        // 지점이 현재 존재하는지 확인  
+        const hasValidBranch = item.branch && currentBranchNames.includes(item.branch);
         
-        // 시간 부분 제거하고 날짜만 비교
-        itemDate.setHours(0, 0, 0, 0);
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(23, 59, 59, 999);
-        
-        return itemDate >= startDate && itemDate <= endDate;
+        return hasValidDesigner && hasValidBranch;
     });
-}
-        
-        // 지점 필터
-        const branchFilter = document.getElementById('branchFilter');
-        if (branchFilter && branchFilter.value) {
-            filtered = filtered.filter(item => item.branch === branchFilter.value);
-        }
-        
-
-        
-        return filtered;
+    
+    console.log(`🔍 삭제된 데이터 제외 후: ${filtered.length}개 체크리스트`);
+    
+    // 사용자 권한에 따른 필터링
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        filtered = filtered.filter(item => item.branch === this.currentUser.branch);
+    }        
+    
+    // 날짜 필터
+    if (this.currentPeriod.startDate && this.currentPeriod.endDate) {
+        filtered = filtered.filter(item => {
+            if (!item.date) return false;
+            const itemDate = new Date(item.date);
+            const startDate = new Date(this.currentPeriod.startDate);
+            const endDate = new Date(this.currentPeriod.endDate);
+            
+            // 시간 부분 제거하고 날짜만 비교
+            itemDate.setHours(0, 0, 0, 0);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
+            
+            return itemDate >= startDate && itemDate <= endDate;
+        });
     }
+    
+    // 지점 필터
+    const branchFilter = document.getElementById('branchFilter');
+    if (branchFilter && branchFilter.value) {
+        filtered = filtered.filter(item => item.branch === branchFilter.value);
+    }
+    
+    return filtered;
+}
 
     // 요약 카드 업데이트
     updateSummaryCards(data) {
@@ -329,24 +344,26 @@ if (this.currentPeriod.startDate && this.currentPeriod.endDate) {
         if (totalPhotosEl) totalPhotosEl.textContent = totals.instaPhotos;
     }
 
-    // 지점별 순위 업데이트
-    updateBranchRankings(data) {
-        const branchStats = {};
+// 지점별 순위 업데이트
+updateBranchRankings(data) {
+    const branchStats = {};
+    const currentBranchNames = this.data.branches.map(b => b.name);
+    
+    data.forEach(item => {
+        const branchName = item.branch;
+        // 🔥 현재 존재하는 지점만 포함
+        if (!branchName || !currentBranchNames.includes(branchName)) return;
         
-        data.forEach(item => {
-            const branchName = item.branch;
-            if (!branchName) return;
-            
-            if (!branchStats[branchName]) {
-                branchStats[branchName] = { total: 0, count: 0 };
-            }
-            
-            const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
-                            (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
-            
-            branchStats[branchName].total += itemTotal;
-            branchStats[branchName].count += 1;
-        });
+        if (!branchStats[branchName]) {
+            branchStats[branchName] = { total: 0, count: 0 };
+        }
+        
+        const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                        (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+        
+        branchStats[branchName].total += itemTotal;
+        branchStats[branchName].count += 1;
+    });
         
         const rankings = Object.entries(branchStats)
             .map(([branch, stats]) => ({
@@ -373,26 +390,28 @@ if (this.currentPeriod.startDate && this.currentPeriod.endDate) {
         }
     }
 
-    // 디자이너별 순위 업데이트
-    updateDesignerRankings(data) {
-        const designerStats = {};
+// 디자이너별 순위 업데이트
+updateDesignerRankings(data) {
+    const designerStats = {};
+    const currentDesignerNames = this.data.designers.map(d => d.name);
+    
+    data.forEach(item => {
+        const designerName = item.designer;
+        // 🔥 현재 존재하는 디자이너만 포함
+        if (!designerName || !currentDesignerNames.includes(designerName)) return;
         
-        data.forEach(item => {
-            const designerName = item.designer;
-            if (!designerName) return;
-            
-            if (!designerStats[designerName]) {
-                designerStats[designerName] = {
-                    branch: item.branch,
-                    total: 0
-                };
-            }
-            
-            const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
-                            (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
-            
-            designerStats[designerName].total += itemTotal;
-        });
+        if (!designerStats[designerName]) {
+            designerStats[designerName] = {
+                branch: item.branch,
+                total: 0
+            };
+        }
+        
+        const itemTotal = (item.naverReviews || 0) + (item.naverPosts || 0) + 
+                        (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
+        
+        designerStats[designerName].total += itemTotal;
+    });
         
         const rankings = Object.entries(designerStats)
             .map(([designer, stats]) => ({
@@ -422,10 +441,12 @@ if (this.currentPeriod.startDate && this.currentPeriod.endDate) {
 // 지점별 차트 업데이트
 updateBranchChart(data) {
     const branchStats = {};
+    const currentBranchNames = this.data.branches.map(b => b.name);
     
     data.forEach(item => {
         const branchName = item.branch;
-        if (!branchName) return;
+        // 🔥 현재 존재하는 지점만 포함
+        if (!branchName || !currentBranchNames.includes(branchName)) return;
         
         if (!branchStats[branchName]) {
             branchStats[branchName] = 0;
