@@ -1,27 +1,28 @@
 // 체크리스트 입력 페이지 전용 로직
 
 class ChecklistManager {
-    constructor() {
-        this.data = {
-            designers: [],
-            checklists: [],
-            branches: []
-        };
-        this.currentUser = null;
-        this.pagination = {
-            currentPage: 1,
-            itemsPerPage: 15,
-            totalItems: 0,
-            totalPages: 0
-        };
-        this.targets = {
-            reviews: 10,
-            posts: 5,
-            experience: 2,
-            reels: 8,
-            photos: 12
-        };
-    }
+constructor() {
+    this.data = {
+        designers: [],
+        checklists: [],
+        branches: []
+    };
+    this.currentUser = null;
+    this.pagination = {
+        currentPage: 1,
+        itemsPerPage: 15,
+        totalItems: 0,
+        totalPages: 0
+    };
+    this.targets = {
+        reviews: 10,
+        posts: 5,
+        experience: 2,
+        reels: 8,
+        photos: 12
+    };
+    this.isSubmitting = false; // 중복 제출 방지 플래그 추가
+}
 
     // 페이지 초기화
     async initialize() {
@@ -715,29 +716,44 @@ fillSampleData() {
     }
 
     // 폼 이벤트 리스너 설정
-    setupFormEventListeners() {
-        // 체크리스트 제출 폼
-        const checklistForm = document.getElementById('checklistForm');
-        if (checklistForm) {
-            checklistForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleSubmitChecklist();
-            });
-        }
-
-        // 체크리스트 수정 폼
-        const editForm = document.getElementById('editChecklistForm');
-        if (editForm) {
-            editForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleEditChecklist();
-            });
-        }
+setupFormEventListeners() {
+    // 체크리스트 제출 폼 - 기존 이벤트 리스너 제거 후 추가
+    const checklistForm = document.getElementById('checklistForm');
+    if (checklistForm) {
+        // 기존 이벤트 리스너 제거
+        const newForm = checklistForm.cloneNode(true);
+        checklistForm.parentNode.replaceChild(newForm, checklistForm);
+        
+        newForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleSubmitChecklist();
+        });
     }
 
+    // 체크리스트 수정 폼 - 기존 이벤트 리스너 제거 후 추가
+    const editForm = document.getElementById('editChecklistForm');
+    if (editForm) {
+        // 기존 이벤트 리스너 제거
+        const newEditForm = editForm.cloneNode(true);
+        editForm.parentNode.replaceChild(newEditForm, editForm);
+        
+        newEditForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleEditChecklist();
+        });
+    }
+}
+
     // 체크리스트 제출 처리
-    async handleSubmitChecklist() {
-        try {
+async handleSubmitChecklist() {
+    // 중복 제출 방지
+    if (this.isSubmitting) {
+        console.log('이미 제출 중입니다.');
+        return;
+    }
+    this.isSubmitting = true;
+    
+    try {
             const designerId = document.getElementById('checklistDesigner').value;
             const designer = this.data.designers.find(d => d.id == designerId);
             
@@ -798,9 +814,12 @@ try {
             this.loadRecentHistory();
             this.loadSelectedDesignerInfo(designerId);
             
-        } catch (error) {
+} catch (error) {
             console.error('체크리스트 제출 오류:', error);
             this.showNotification('체크리스트 제출 중 오류가 발생했습니다.', 'error');
+        } finally {
+            // 제출 상태 해제
+            this.isSubmitting = false;
         }
     }
 
@@ -994,11 +1013,3 @@ function goToMainSystem() {
 function goToPage(pageId) {
     window.location.href = `${pageId}.html`;
 }
-
-// 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    window.checklistManager = new ChecklistManager();
-    window.checklistManager.initialize();
-});
-
-console.log('체크리스트 페이지 스크립트 로딩 완료');
