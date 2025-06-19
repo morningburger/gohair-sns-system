@@ -823,26 +823,44 @@ const checklistData = {
 
 // Firebase에서 실제 중복 확인
 const existingChecklist = await this.checkDuplicateInFirebase(designerId, checklistData.date);
-            
-            if (existingChecklist) {
-                if (!confirm('해당 날짜에 이미 체크리스트가 있습니다. 덮어쓰시겠습니까?')) {
-                    return;
-                }
-                // 기존 기록 제거
-                this.data.checklists = this.data.checklists.filter(c => c.docId !== existingChecklist.docId);
-            }
 
-            // 실제로는 Firebase에 저장
-try {
-    const savedId = await this.saveChecklistToFirebase(checklistData);
-    checklistData.docId = savedId;
-    checklistData.id = savedId;
-    this.data.checklists.unshift(checklistData);
-    console.log('✅ 체크리스트 Firebase 저장 완료');
-} catch (firebaseError) {
-    console.error('⚠️ Firebase 저장 실패, 메모리에만 저장:', firebaseError);
-    this.data.checklists.unshift(checklistData);
+if (existingChecklist) {
+    if (!confirm('해당 날짜에 이미 체크리스트가 있습니다. 덮어쓰시겠습니까?')) {
+        return;
+    }
+    // 🔥 기존 문서 업데이트
+    try {
+        await this.updateChecklistInFirebase(existingChecklist.docId, checklistData);
+        
+        // 로컬 데이터 업데이트
+        const localIndex = this.data.checklists.findIndex(c => c.docId === existingChecklist.docId);
+        if (localIndex !== -1) {
+            this.data.checklists[localIndex] = { ...checklistData, docId: existingChecklist.docId };
+        } else {
+            // 로컬에 없으면 추가
+            this.data.checklists.unshift({ ...checklistData, docId: existingChecklist.docId });
+        }
+        console.log('✅ 기존 체크리스트 업데이트 완료');
+    } catch (error) {
+        console.error('❌ 체크리스트 업데이트 실패:', error);
+        this.showNotification('체크리스트 업데이트 중 오류가 발생했습니다.', 'error');
+        return;
+    }
+} else {
+    // 🔥 새 문서 추가
+    try {
+        const savedId = await this.saveChecklistToFirebase(checklistData);
+        checklistData.docId = savedId;
+        checklistData.id = savedId;
+        this.data.checklists.unshift(checklistData);
+        console.log('✅ 새 체크리스트 저장 완료');
+    } catch (firebaseError) {
+        console.error('⚠️ Firebase 저장 실패:', firebaseError);
+        this.showNotification('체크리스트 저장 중 오류가 발생했습니다.', 'error');
+        return;
+    }
 }
+``
             
             // 성공 메시지 표시
             this.showSuccessMessage();
