@@ -262,6 +262,49 @@ async saveChecklistToFirebase(checklistData) {
         throw error;
     }
 }
+    // Firebase에서 중복 체크리스트 확인
+async checkDuplicateInFirebase(designerId, date) {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            return null;
+        }
+
+        const db = firebase.firestore();
+        const snapshot = await db.collection('checklists')
+            .where('designerId', '==', designerId)
+            .where('date', '==', date)
+            .get();
+        
+        if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            return {
+                docId: doc.id,
+                ...doc.data()
+            };
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('❌ Firebase 중복 확인 오류:', error);
+        return null;
+    }
+}
+    // Firebase에서 체크리스트 업데이트
+async updateChecklistInFirebase(docId, checklistData) {
+    try {
+        const db = firebase.firestore();
+        await db.collection('checklists').doc(docId).update({
+            ...checklistData,
+            updatedAt: new Date().toISOString()
+        });
+        
+        console.log('✅ 체크리스트 Firebase 업데이트 완료:', docId);
+        return docId;
+    } catch (error) {
+        console.error('❌ 체크리스트 업데이트 실패:', error);
+        throw error;
+    }
+}
     // 오늘 날짜 설정
     setTodayDate() {
         const today = new Date();
@@ -778,10 +821,8 @@ const checklistData = {
                 createdAt: new Date().toISOString()
             };
 
-            // 같은 날짜 중복 확인
-const existingChecklist = this.data.checklists.find(c => 
-    (c.designerId == designerId || String(c.designerId) === String(designerId)) && 
-    c.date === checklistData.date);
+// Firebase에서 실제 중복 확인
+const existingChecklist = await this.checkDuplicateInFirebase(designerId, checklistData.date);
             
             if (existingChecklist) {
                 if (!confirm('해당 날짜에 이미 체크리스트가 있습니다. 덮어쓰시겠습니까?')) {
