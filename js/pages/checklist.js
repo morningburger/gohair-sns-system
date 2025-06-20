@@ -332,7 +332,21 @@ async updateChecklistInFirebase(docId, checklistData) {
 
 // 디자이너 옵션 로드
 loadDesignerOptions() {
+    console.log('🔍 loadDesignerOptions 호출됨');
+    console.log('🔍 this.data.designers:', this.data.designers);
+    console.log('🔍 디자이너 수:', this.data.designers.length);
+    
     let designers = this.data.designers;
+    
+    // 디자이너가 없으면 경고
+    if (!designers || designers.length === 0) {
+        console.error('❌ 디자이너 데이터가 없습니다!');
+        const select = document.getElementById('checklistDesigner');
+        if (select) {
+            select.innerHTML = '<option value="">디자이너 데이터가 없습니다</option>';
+        }
+        return;
+    }
     
     // 사용자 권한에 따른 필터링
     if (this.currentUser && this.currentUser.role === '지점관리자') {
@@ -340,44 +354,19 @@ loadDesignerOptions() {
         console.log(`🔒 지점관리자 디자이너 필터링: ${this.currentUser.branch} - ${designers.length}명`);
     }
     
-    // select 요소에 옵션 추가
-    const designerSelect = document.getElementById('checklistDesigner');
-    if (!designerSelect) {
-        console.error('❌ checklistDesigner select 요소를 찾을 수 없습니다.');
-        return;
+    const select = document.getElementById('checklistDesigner');
+    if (select) {
+        // 간단한 옵션 추가로 변경 (지점별 그룹화 제거)
+        select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
+            designers.map(d => `
+                <option value="${d.id}">
+                    ${d.name} (${d.branch} - ${d.position})
+                </option>
+            `).join('');
+        console.log('✅ 디자이너 옵션 추가 완료');
+    } else {
+        console.error('❌ checklistDesigner select 요소를 찾을 수 없습니다');
     }
-    
-    // 기존 옵션 초기화
-    designerSelect.innerHTML = '<option value="">디자이너를 선택하세요</option>';
-    
-    // 지점별로 그룹화
-    const designersByBranch = {};
-    designers.forEach(designer => {
-        const branch = designer.branch || '미지정';
-        if (!designersByBranch[branch]) {
-            designersByBranch[branch] = [];
-        }
-        designersByBranch[branch].push(designer);
-    });
-    
-    // 지점별로 옵션 추가
-    Object.keys(designersByBranch).sort().forEach(branch => {
-        if (designersByBranch[branch].length > 0) {
-            const optgroup = document.createElement('optgroup');
-            optgroup.label = branch;
-            
-            designersByBranch[branch].forEach(designer => {
-                const option = document.createElement('option');
-                option.value = designer.id;
-                option.textContent = `${designer.name} (${designer.position})`;
-                optgroup.appendChild(option);
-            });
-            
-            designerSelect.appendChild(optgroup);
-        }
-    });
-    
-    console.log(`✅ 디자이너 옵션 로드 완료: ${designers.length}명`);
 }
 
 
