@@ -330,14 +330,26 @@ async updateChecklistInFirebase(docId, checklistData) {
         document.getElementById('todayDate').textContent = todayFormatted;
     }
 
-    // 디자이너 옵션 로드
-    loadDesignerOptions() {
-        let designers = this.data.designers;
-        
-        // 사용자 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === '지점관리자') {
-            designers = designers.filter(d => d.branch === this.currentUser.branch);
-        }
+// 디자이너 옵션 로드
+loadDesignerOptions() {
+    let designers = this.data.designers;
+    
+    // 사용자 권한에 따른 필터링
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        designers = designers.filter(d => d.branch === this.currentUser.branch);
+        console.log(`🔒 지점관리자 디자이너 필터링: ${this.currentUser.branch} - ${designers.length}명`);
+    }
+
+    const select = document.getElementById('checklistDesigner');
+    if (select) {
+        select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
+            designers.map(d => `
+                <option value="${d.id}">
+                    ${d.name} (${d.branch} - ${d.position})
+                </option>
+            `).join('');
+    }
+}
 
         const select = document.getElementById('checklistDesigner');
         if (select) {
