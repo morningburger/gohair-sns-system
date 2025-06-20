@@ -295,7 +295,7 @@ window.dataManager.onChecklistsChange((checklists) => {
 // 초기 데이터 로드
 async function loadInitialData() {
     try {
-        // 캐시 초기화
+        // 캐시 초기화 - 이전 데이터 완전히 제거
         cachedData = {
             branches: [],
             designers: [],
@@ -445,8 +445,12 @@ try {
 }
     
     const branchStats = userBranches.map(branch => {
-        const branchChecklists = checklists.filter(c => c.branch === branch.name);
-        const reviews = branchChecklists.reduce((sum, c) => sum + (c.naverReviews || 0), 0);
+const branchChecklists = checklists.filter(c => {
+    // 다양한 branch 필드명 처리
+    const checklistBranch = c.branch || c.branchName || c.selectedBranch;
+    const branchName = branch.name || branch.branchName || branch;
+    return checklistBranch === branchName;
+});        const reviews = branchChecklists.reduce((sum, c) => sum + (c.naverReviews || 0), 0);
         const posts = branchChecklists.reduce((sum, c) => sum + (c.naverPosts || 0), 0);
         const experience = branchChecklists.reduce((sum, c) => sum + (c.naverExperience || 0), 0);
         const reels = branchChecklists.reduce((sum, c) => sum + (c.instaReels || 0), 0);
