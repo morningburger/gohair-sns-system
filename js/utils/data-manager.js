@@ -296,10 +296,16 @@ async getChecklists() {
         });
     }
 
+// 실시간 데이터 동기화 - 삭제된 데이터 필터링 추가
     onChecklistsChange(callback) {
         return window.db.collection(this.collections.checklists).onSnapshot((snapshot) => {
-            const checklists = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-            callback(checklists);
+            // 모든 데이터를 가져와서 삭제된 것 제외
+            const allChecklists = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+            const activeChecklists = allChecklists.filter(item => item.deleted !== true);
+            
+            console.log(`🔄 실시간 체크리스트 업데이트: 전체 ${allChecklists.length}건, 활성 ${activeChecklists.length}건`);
+            
+            callback(activeChecklists);
         });
     }
 
