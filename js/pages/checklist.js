@@ -339,6 +339,46 @@ loadDesignerOptions() {
         designers = designers.filter(d => d.branch === this.currentUser.branch);
         console.log(`🔒 지점관리자 디자이너 필터링: ${this.currentUser.branch} - ${designers.length}명`);
     }
+    
+    // select 요소에 옵션 추가
+    const designerSelect = document.getElementById('checklistDesigner');
+    if (!designerSelect) {
+        console.error('❌ checklistDesigner select 요소를 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 기존 옵션 초기화
+    designerSelect.innerHTML = '<option value="">디자이너를 선택하세요</option>';
+    
+    // 지점별로 그룹화
+    const designersByBranch = {};
+    designers.forEach(designer => {
+        const branch = designer.branch || '미지정';
+        if (!designersByBranch[branch]) {
+            designersByBranch[branch] = [];
+        }
+        designersByBranch[branch].push(designer);
+    });
+    
+    // 지점별로 옵션 추가
+    Object.keys(designersByBranch).sort().forEach(branch => {
+        if (designersByBranch[branch].length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = branch;
+            
+            designersByBranch[branch].forEach(designer => {
+                const option = document.createElement('option');
+                option.value = designer.id;
+                option.textContent = `${designer.name} (${designer.position})`;
+                optgroup.appendChild(option);
+            });
+            
+            designerSelect.appendChild(optgroup);
+        }
+    });
+    
+    console.log(`✅ 디자이너 옵션 로드 완료: ${designers.length}명`);
+}
 
 
     // 오늘의 요약 로드
