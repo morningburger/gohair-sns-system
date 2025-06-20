@@ -351,17 +351,6 @@ loadDesignerOptions() {
     }
 }
 
-        const select = document.getElementById('checklistDesigner');
-        if (select) {
-            select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
-                designers.map(d => `
-                    <option value="${d.id}">
-                        ${d.name} (${d.branch} - ${d.position})
-                    </option>
-                `).join('');
-        }
-    }
-
     // 오늘의 요약 로드
     loadTodaySummary() {
         const today = new Date().toISOString().split('T')[0];
