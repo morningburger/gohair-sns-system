@@ -170,7 +170,7 @@ if (designers.length === 0) {
 }
 }
 
-// 📋 실제 체크리스트 데이터 로딩
+// 📋 실제 체크리스트 데이터 로딩 - 삭제된 항목 필터링 추가
 async loadChecklistsFromFirebase() {
     try {
         console.log('📋 체크리스트 데이터 로딩 중...');
@@ -189,6 +189,13 @@ async loadChecklistsFromFirebase() {
         const checklists = [];
         snapshot.forEach(doc => {
             const data = doc.data();
+            
+            // 🔥 삭제된 항목은 제외
+            if (data.deleted === true) {
+                console.log(`🗑️ 삭제된 체크리스트 제외: ${doc.id}`);
+                return; // forEach에서 continue 역할
+            }
+            
             checklists.push({
                 id: doc.id,
                 docId: doc.id,
@@ -285,15 +292,19 @@ async checkDuplicateInFirebase(designerId, date) {
             .where('date', '==', date)
             .get();
         
-        if (!snapshot.empty) {
-            const doc = snapshot.docs[0];
-            return {
-                docId: doc.id,
-                ...doc.data()
-            };
-        }
+        // 삭제되지 않은 문서만 확인
+        let existingChecklist = null;
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.deleted !== true) {
+                existingChecklist = {
+                    docId: doc.id,
+                    ...data
+                };
+            }
+        });
         
-        return null;
+        return existingChecklist;
     } catch (error) {
         console.error('❌ Firebase 중복 확인 오류:', error);
         return null;
@@ -377,7 +388,7 @@ loadDesignerOptions() {
 
         // 사용자 권한에 따른 필터링
         let filteredChecklists = todayChecklists;
-        if (this.currentUser && this.currentUser.role === 'leader') {
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
             filteredChecklists = todayChecklists.filter(c => c.branch === this.currentUser.branch);
         }
 
@@ -570,11 +581,13 @@ loadRecentHistory() {
         this.loadRecentHistory();
     }
 
-    // 선택된 디자이너 정보 로드
+    // 선택된 디자이너 정보 로드 - 수정됨
     loadSelectedDesignerInfo(designerId) {
-            // 🔍 디버깅 정보
-    console.log('🔍 선택된 디자이너 정보 로딩:', designerId);
-    console.log('🔍 전체 체크리스트 수:', this.data.checklists.length);
+        // 🔍 디버깅 정보
+        console.log('🔍 선택된 디자이너 정보 로딩:', designerId);
+        console.log('🔍 전체 디자이너 목록:', this.data.designers);
+        console.log('🔍 전체 체크리스트 수:', this.data.checklists.length);
+        
         if (!designerId) {
             document.getElementById('selectedDesignerInfo').innerHTML = `
                 <div class="empty-state">
@@ -585,27 +598,34 @@ loadRecentHistory() {
             return;
         }
 
-        const designer = this.data.designers.find(d => d.id == designerId);
-        if (!designer) return;
+        const designer = this.data.designers.find(d => d.id === designerId);
+        if (!designer) {
+            console.error('❌ 디자이너를 찾을 수 없음:', designerId);
+            return;
+        }
+
+        console.log('✅ 찾은 디자이너:', designer);
 
         // 최근 7일 기록
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         
-const recentChecklists = this.data.checklists
-    .filter(c => {
-        // 다양한 타입으로 디자이너 매칭 시도
-        const isMatch = c.designerId == designerId || 
-                       String(c.designerId) === String(designerId) ||
-                       parseInt(c.designerId) === parseInt(designerId);
-        const isRecent = new Date(c.date) >= sevenDaysAgo;
-        
-        console.log(`🔍 체크리스트 매칭: ${c.designerId} vs ${designerId} = ${isMatch}`);
-        
-        return isMatch && isRecent;
-    })
+        const recentChecklists = this.data.checklists
+            .filter(c => {
+                // 디자이너 ID 매칭 (문자열로 비교)
+                const isMatch = c.designerId === designerId;
+                const isRecent = new Date(c.date) >= sevenDaysAgo;
+                
+                if (isMatch) {
+                    console.log(`✅ 매칭된 체크리스트: ${c.date} - ${c.designer}`);
+                }
+                
+                return isMatch && isRecent;
+            })
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .slice(0, 7);
+
+        console.log(`🔍 최근 7일 체크리스트 수: ${recentChecklists.length}`);
 
         // 총 활동량 계산
         const totalActivity = recentChecklists.reduce((acc, c) => {
@@ -834,10 +854,11 @@ async handleSubmitChecklist() {
     
     try {
             const designerId = document.getElementById('checklistDesigner').value;
-            const designer = this.data.designers.find(d => d.id == designerId);
+            const designer = this.data.designers.find(d => d.id === designerId);
             
             if (!designer) {
                 alert('디자이너를 선택해주세요.');
+                this.isSubmitting = false;
                 return;
             }
 
@@ -862,6 +883,7 @@ const existingChecklist = await this.checkDuplicateInFirebase(designerId, checkl
 
 if (existingChecklist) {
     if (!confirm('해당 날짜에 이미 체크리스트가 있습니다. 덮어쓰시겠습니까?')) {
+        this.isSubmitting = false;
         return;
     }
     // 🔥 기존 문서 업데이트
@@ -880,6 +902,7 @@ if (existingChecklist) {
     } catch (error) {
         console.error('❌ 체크리스트 업데이트 실패:', error);
         this.showNotification('체크리스트 업데이트 중 오류가 발생했습니다.', 'error');
+        this.isSubmitting = false;
         return;
     }
 } else {
@@ -893,10 +916,10 @@ if (existingChecklist) {
     } catch (firebaseError) {
         console.error('⚠️ Firebase 저장 실패:', firebaseError);
         this.showNotification('체크리스트 저장 중 오류가 발생했습니다.', 'error');
+        this.isSubmitting = false;
         return;
     }
 }
-``
             
             // 성공 메시지 표시
             this.showSuccessMessage();
@@ -1016,7 +1039,8 @@ async deleteChecklist(docId) {
                 const db = firebase.firestore();
                 await db.collection('checklists').doc(docId).update({
                     deleted: true,
-                    deletedAt: new Date().toISOString()
+                    deletedAt: new Date().toISOString(),
+                    deletedBy: this.currentUser?.email || 'unknown'
                 });
                 console.log('✅ Firebase에서 체크리스트 삭제 완료:', docId);
             } else {
@@ -1047,11 +1071,11 @@ async deleteChecklist(docId) {
         let checklists = [...this.data.checklists];
         
         // 사용자 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === 'leader') {
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
             checklists = checklists.filter(c => c.branch === this.currentUser.branch);
         }
 
-        let csvContent = "날짜,디자이너,지점,네이버리뷰,블로그포스팅,체험단,인스타릴스,인스타사진,총합,메모,등록시간\n";
+        let csvContent = "\ufeff날짜,디자이너,지점,네이버리뷰,블로그포스팅,체험단,인스타릴스,인스타사진,총합,메모,등록시간\n";
         
         checklists.forEach(c => {
             const total = (c.naverReviews || 0) + (c.naverPosts || 0) + (c.naverExperience || 0) + 
