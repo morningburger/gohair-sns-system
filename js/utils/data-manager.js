@@ -248,16 +248,28 @@ class FirebaseDataManager {
         }
     }
 
-    // 체크리스트 관련 메서드
-    async getChecklists() {
+// 수정된 getChecklists() 함수
+async getChecklists() {
+    try {
+        const querySnapshot = await window.db.collection(this.collections.checklists)
+            .where('deleted', '!=', true)  // 삭제되지 않은 데이터만
+            .get();
+        return querySnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error('체크리스트 조회 오류:', error);
+        
+        // where 쿼리가 실패하면 전체 데이터에서 필터링
         try {
-            const querySnapshot = await window.db.collection(this.collections.checklists).get();
-            return querySnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-        } catch (error) {
-            console.error('체크리스트 조회 오류:', error);
+            const allSnapshot = await window.db.collection(this.collections.checklists).get();
+            return allSnapshot.docs
+                .map(doc => ({ docId: doc.id, ...doc.data() }))
+                .filter(item => !item.deleted); // 삭제되지 않은 것만
+        } catch (fallbackError) {
+            console.error('체크리스트 fallback 조회 오류:', fallbackError);
             return [];
         }
     }
+}
 
     async addChecklist(checklistData) {
         try {
@@ -268,7 +280,27 @@ class FirebaseDataManager {
             throw error;
         }
     }
+async updateChecklist(docId, checklistData) {
+    try {
+        await window.db.collection(this.collections.checklists).doc(docId).update(checklistData);
+        return checklistData;
+    } catch (error) {
+        console.error('체크리스트 수정 오류:', error);
+        throw error;
+    }
+}
 
+async deleteChecklist(docId) {
+    try {
+        await window.db.collection(this.collections.checklists).doc(docId).update({
+            deleted: true,
+            deletedAt: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('체크리스트 삭제 오류:', error);
+        throw error;
+    }
+}
     // 실시간 데이터 동기화 (현재는 미사용이지만 향후 확장용)
     onBranchesChange(callback) {
         return window.db.collection(this.collections.branches).onSnapshot((snapshot) => {
@@ -284,12 +316,18 @@ class FirebaseDataManager {
         });
     }
 
-    onChecklistsChange(callback) {
-        return window.db.collection(this.collections.checklists).onSnapshot((snapshot) => {
-            const checklists = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-            callback(checklists);
-        });
-    }
+// 실시간 데이터 동기화 - 삭제된 데이터 필터링 추가
+onChecklistsChange(callback) {
+    return window.db.collection(this.collections.checklists).onSnapshot((snapshot) => {
+        // 모든 데이터를 가져와서 삭제된 것 제외
+        const allChecklists = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+        const activeChecklists = allChecklists.filter(item => item.deleted !== true);
+        
+        console.log(`🔄 실시간 체크리스트 업데이트: 전체 ${allChecklists.length}건, 활성 ${activeChecklists.length}건`);
+        
+        callback(activeChecklists);
+    });
+}
 
     onUsersChange(callback) {
         return window.db.collection(this.collections.users).onSnapshot((snapshot) => {
