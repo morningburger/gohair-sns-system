@@ -48,12 +48,7 @@ constructor() {
             
             // 최근 기록 로드
             this.loadRecentHistory();
-            
-            console.log('체크리스트 페이지 초기화 완료');
-        } catch (error) {
-            console.error('체크리스트 페이지 초기화 오류:', error);
-        }
-        // 권한에 따른 UI 조정
+                    // 권한에 따른 UI 조정
 if (this.currentUser && this.currentUser.role === '지점관리자') {
     const historyFilter = document.getElementById('historyFilter');
     if (historyFilter) {
@@ -63,6 +58,11 @@ if (this.currentUser && this.currentUser.role === '지점관리자') {
         // historyFilter.value = 'mine';
     }
 }
+            
+            console.log('체크리스트 페이지 초기화 완료');
+        } catch (error) {
+            console.error('체크리스트 페이지 초기화 오류:', error);
+        }
     }
 
     // 현재 사용자 정보 가져오기
@@ -335,7 +335,7 @@ async updateChecklistInFirebase(docId, checklistData) {
         let designers = this.data.designers;
         
         // 사용자 권한에 따른 필터링
-        if (this.currentUser && this.currentUser.role === 'leader') {
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
             designers = designers.filter(d => d.branch === this.currentUser.branch);
         }
 
@@ -403,28 +403,28 @@ loadRecentHistory() {
     if (this.currentUser && this.currentUser.role === '지점관리자') {
         checklists = checklists.filter(c => c.branch === this.currentUser.branch);
         console.log(`🔒 지점관리자 필터링: ${this.currentUser.branch} - ${checklists.length}개`);
-    } else {
+    } else if (this.currentUser && this.currentUser.role === '전체관리자') {
         // 전체관리자는 필터 옵션에 따라 처리
         const filterValue = document.getElementById('historyFilter')?.value || 'all';
-        if (filterValue === 'mine' && this.currentUser && this.currentUser.branch) {
+        if (filterValue === 'mine' && this.currentUser.branch) {
             checklists = checklists.filter(c => c.branch === this.currentUser.branch);
         }
     }
 
-        // 페이지네이션 적용
-        this.pagination.totalItems = checklists.length;
-        this.pagination.totalPages = Math.ceil(checklists.length / this.pagination.itemsPerPage);
-        
-        const startIndex = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
-        const endIndex = startIndex + this.pagination.itemsPerPage;
-        const paginatedChecklists = checklists.slice(startIndex, endIndex);
+    // 페이지네이션 적용
+    this.pagination.totalItems = checklists.length;
+    this.pagination.totalPages = Math.ceil(checklists.length / this.pagination.itemsPerPage);
+    
+    const startIndex = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
+    const endIndex = startIndex + this.pagination.itemsPerPage;
+    const paginatedChecklists = checklists.slice(startIndex, endIndex);
 
-        // 테이블 렌더링
-        this.renderHistoryTable(paginatedChecklists);
-        
-        // 페이지네이션 렌더링
-        this.renderHistoryPagination();
-    }
+    // 테이블 렌더링
+    this.renderHistoryTable(paginatedChecklists);
+    
+    // 페이지네이션 렌더링
+    this.renderHistoryPagination();
+}
 
     // 기록 테이블 렌더링
     renderHistoryTable(checklists) {
