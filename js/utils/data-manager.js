@@ -248,16 +248,28 @@ class FirebaseDataManager {
         }
     }
 
-    // 체크리스트 관련 메서드
-    async getChecklists() {
+// 수정된 getChecklists() 함수
+async getChecklists() {
+    try {
+        const querySnapshot = await window.db.collection(this.collections.checklists)
+            .where('deleted', '!=', true)  // 삭제되지 않은 데이터만
+            .get();
+        return querySnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error('체크리스트 조회 오류:', error);
+        
+        // where 쿼리가 실패하면 전체 데이터에서 필터링
         try {
-            const querySnapshot = await window.db.collection(this.collections.checklists).get();
-            return querySnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-        } catch (error) {
-            console.error('체크리스트 조회 오류:', error);
+            const allSnapshot = await window.db.collection(this.collections.checklists).get();
+            return allSnapshot.docs
+                .map(doc => ({ docId: doc.id, ...doc.data() }))
+                .filter(item => !item.deleted); // 삭제되지 않은 것만
+        } catch (fallbackError) {
+            console.error('체크리스트 fallback 조회 오류:', fallbackError);
             return [];
         }
     }
+}
 
     async addChecklist(checklistData) {
         try {
