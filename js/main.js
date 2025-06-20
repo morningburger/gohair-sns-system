@@ -56,26 +56,209 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
+// Firebase에서 직접 데이터 가져오기 함수들
+async function getChecklistsFromFirebase() {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음');
+            return [];
+        }
+
+        const db = firebase.firestore();
+        const snapshot = await db.collection('checklists').get();
+        
+        const checklists = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            checklists.push({
+                id: doc.id,
+                docId: doc.id,
+                designerId: data.designerId || '',
+                designer: data.designer || '',
+                branch: data.branch || '',
+                date: data.date || '',
+                naverReviews: data.naverReviews || 0,
+                naverPosts: data.naverPosts || 0,
+                naverExperience: data.naverExperience || 0,
+                instaReels: data.instaReels || 0,
+                instaPhotos: data.instaPhotos || 0,
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString()
+            });
+        });
+        
+        console.log(`✅ 체크리스트 데이터 로딩 완료: ${checklists.length}개`);
+        return checklists;
+    } catch (error) {
+        console.error('❌ 체크리스트 데이터 로딩 실패:', error);
+        return [];
+    }
+}
+
+async function getBranchesFromFirebase() {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음');
+            return [];
+        }
+
+        const db = firebase.firestore();
+        const snapshot = await db.collection('branches').get();
+        
+        const branches = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            branches.push({
+                id: doc.id,
+                docId: doc.id,
+                name: data.name || '',
+                code: data.code || '',
+                address: data.address || '',
+                phone: data.phone || '',
+                manager: data.manager || '',
+                hours: data.hours || '',
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+            });
+        });
+        
+        console.log(`✅ 지점 데이터 로딩 완료: ${branches.length}개`);
+        return branches;
+    } catch (error) {
+        console.error('❌ 지점 데이터 로딩 실패:', error);
+        return [];
+    }
+}
+
+async function getDesignersFromFirebase() {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            console.warn('⚠️ Firebase가 초기화되지 않음');
+            return [];
+        }
+
+        const db = firebase.firestore();
+        const snapshot = await db.collection('designers').get();
+        
+        const designers = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            designers.push({
+                id: doc.id,
+                docId: doc.id,
+                name: data.name || '',
+                branch: data.branch || '',
+                position: data.position || '',
+                phone: data.phone || '',
+                email: data.email || '',
+                instagram: data.instagram || '',
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString().split('T')[0]
+            });
+        });
+        
+        console.log(`✅ 디자이너 데이터 로딩 완료: ${designers.length}개`);
+        return designers;
+    } catch (error) {
+        console.error('❌ 디자이너 데이터 로딩 실패:', error);
+        return [];
+    }
+}
+
+async function addDesignerToFirebase(designer) {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            throw new Error('Firebase가 초기화되지 않음');
+        }
+
+        const db = firebase.firestore();
+        const docRef = await db.collection('designers').add(designer);
+        console.log('✅ Firebase에 디자이너 추가 완료. 문서 ID:', docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error('❌ 디자이너 추가 실패:', error);
+        throw error;
+    }
+}
+
+async function updateDesignerInFirebase(docId, designer) {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            throw new Error('Firebase가 초기화되지 않음');
+        }
+
+        const db = firebase.firestore();
+        await db.collection('designers').doc(docId).update(designer);
+        console.log('✅ Firebase에서 디자이너 수정 완료');
+    } catch (error) {
+        console.error('❌ 디자이너 수정 실패:', error);
+        throw error;
+    }
+}
+
+async function addBranchToFirebase(branch) {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            throw new Error('Firebase가 초기화되지 않음');
+        }
+
+        const db = firebase.firestore();
+        const docRef = await db.collection('branches').add(branch);
+        console.log('✅ Firebase에 지점 추가 완료. 문서 ID:', docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error('❌ 지점 추가 실패:', error);
+        throw error;
+    }
+}
+
+async function updateBranchInFirebase(docId, branch) {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            throw new Error('Firebase가 초기화되지 않음');
+        }
+
+        const db = firebase.firestore();
+        await db.collection('branches').doc(docId).update(branch);
+        console.log('✅ Firebase에서 지점 수정 완료');
+    } catch (error) {
+        console.error('❌ 지점 수정 실패:', error);
+        throw error;
+    }
+}
+
+async function addChecklistToFirebase(checklist) {
+    try {
+        if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
+            throw new Error('Firebase가 초기화되지 않음');
+        }
+
+        const db = firebase.firestore();
+        const docRef = await db.collection('checklists').add({
+            ...checklist,
+            createdAt: new Date().toISOString()
+        });
+        console.log('✅ Firebase에 체크리스트 추가 완료. 문서 ID:', docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error('❌ 체크리스트 추가 실패:', error);
+        throw error;
+    }
+}
+
 // 앱 초기화
 async function initializeApp() {
     try {
-        // 데이터 관리자 초기화
-        window.dataManager = new window.FirebaseDataManager();
-        
-        // 인증 관리자 초기화  
-        window.authManager = new window.AuthManager();
-        
         // 이벤트 핸들러 설정
         setupEventHandlers();
         
         // 파일 가져오기 설정
-        window.setupFileImport();
+        if (window.setupFileImport) {
+            window.setupFileImport();
+        }
         
         // 기간 선택 이벤트 리스너 추가
         setupPeriodEventListeners();
-        
-        // 실시간 데이터 동기화 설정
-        setupRealtimeSync();
         
         console.log('앱 초기화 완료');
     } catch (error) {
@@ -86,7 +269,9 @@ async function initializeApp() {
 // 이벤트 핸들러 설정
 function setupEventHandlers() {
     // 인증 관련 이벤트
-    window.setupAuthEventHandlers();
+    if (window.setupAuthEventHandlers) {
+        window.setupAuthEventHandlers();
+    }
     
     // 폼 제출 이벤트들
     setupFormEventHandlers();
@@ -102,14 +287,14 @@ function setupFormEventHandlers() {
             
             try {
                 const designer = {
-                    id: Date.now(),
                     name: document.getElementById('designerName').value,
                     branch: document.getElementById('designerBranch').value,
                     position: document.getElementById('designerPosition').value,
-                    phone: document.getElementById('designerPhone').value
+                    phone: document.getElementById('designerPhone').value,
+                    createdAt: new Date().toISOString().split('T')[0]
                 };
 
-                await window.dataManager.addDesigner(designer);
+                await addDesignerToFirebase(designer);
                 window.hideAddDesigner();
                 window.showNotification('디자이너가 성공적으로 추가되었습니다.', 'success');
                 
@@ -139,7 +324,7 @@ function setupFormEventHandlers() {
                     phone: document.getElementById('editDesignerPhone').value
                 };
 
-                await window.dataManager.updateDesigner(docId, designer);
+                await updateDesignerInFirebase(docId, designer);
                 window.hideEditDesigner();
                 window.showNotification('디자이너 정보가 성공적으로 수정되었습니다.', 'success');
                 
@@ -162,13 +347,13 @@ function setupFormEventHandlers() {
             
             try {
                 const branch = {
-                    id: Date.now(),
                     name: document.getElementById('branchName').value,
                     code: document.getElementById('branchCode').value,
-                    address: document.getElementById('branchAddress').value
+                    address: document.getElementById('branchAddress').value,
+                    createdAt: new Date().toISOString().split('T')[0]
                 };
 
-                await window.dataManager.addBranch(branch);
+                await addBranchToFirebase(branch);
                 window.hideAddBranch();
                 window.showNotification('지점이 성공적으로 추가되었습니다.', 'success');
                 
@@ -197,7 +382,7 @@ function setupFormEventHandlers() {
                     address: document.getElementById('editBranchAddress').value
                 };
 
-                await window.dataManager.updateBranch(docId, branch);
+                await updateBranchInFirebase(docId, branch);
                 window.hideEditBranch();
                 window.showNotification('지점이 성공적으로 수정되었습니다.', 'success');
                 
@@ -222,7 +407,7 @@ function setupFormEventHandlers() {
                 const designerId = document.getElementById('checklistDesigner').value;
                 
                 // Firebase에서 디자이너 정보 직접 조회
-                const designers = await window.dataManager.getDesigners();
+                const designers = await getDesignersFromFirebase();
                 const designer = designers.find(d => d.id == designerId);
                 
                 if (!designer) {
@@ -241,7 +426,7 @@ function setupFormEventHandlers() {
                     instaPhotos: parseInt(document.getElementById('instaPhotos').value) || 0
                 };
 
-                await window.dataManager.addChecklist(checklist);
+                await addChecklistToFirebase(checklist);
                 
                 // 폼 리셋 (디자이너 선택과 날짜 제외)
                 ['naverReviews', 'naverPosts', 'naverExperience', 'instaReels', 'instaPhotos'].forEach(id => {
@@ -280,50 +465,6 @@ function setupPeriodEventListeners() {
                     }
                 }
             });
-        }
-    });
-}
-
-// 실시간 데이터 동기화 설정
-function setupRealtimeSync() {
-    // 지점 데이터 동기화
-    window.dataManager.onBranchesChange(async (branches) => {
-        console.log('지점 데이터 실시간 업데이트:', branches.length + '개');
-        if (currentPage === 'branches') {
-            await loadBranches();
-        }
-        // 대시보드도 지점 데이터에 의존하므로 새로고침
-        if (currentPage === 'dashboard') {
-            await loadDashboard();
-        }
-    });
-
-    // 디자이너 데이터 동기화
-    window.dataManager.onDesignersChange(async (designers) => {
-        console.log('디자이너 데이터 실시간 업데이트:', designers.length + '개');
-        if (currentPage === 'designers') {
-            await loadDesigners();
-        }
-        // 체크리스트 페이지에서 디자이너 목록 새로고침
-        if (currentPage === 'checklist') {
-            await loadBranchOptions();
-        }
-    });
-
-    // 체크리스트 데이터 동기화
-    window.dataManager.onChecklistsChange(async (checklists) => {
-        console.log('체크리스트 데이터 실시간 업데이트:', checklists.length + '개');
-        if (currentPage === 'dashboard') {
-            await loadDashboard();
-        }
-        if (currentPage === 'history') {
-            await loadHistoryPage();
-        }
-        if (currentPage === 'statistics') {
-            await loadStatistics();
-        }
-        if (currentPage === 'comparison') {
-            await loadComparison();
         }
     });
 }
@@ -387,7 +528,7 @@ async function loadDashboard() {
         const endDate = document.getElementById('dashboardEndDate')?.value;
         
         // Firebase에서 직접 데이터 가져오기
-        let checklists = await window.dataManager.getChecklists();
+        let checklists = await getChecklistsFromFirebase();
         
         // 사용자 권한에 따른 데이터 필터링
         try {
@@ -407,7 +548,9 @@ async function loadDashboard() {
         }
         
         // 기간 필터링
-        checklists = window.filterDataByPeriod(checklists, period, startDate, endDate);
+        if (window.filterDataByPeriod) {
+            checklists = window.filterDataByPeriod(checklists, period, startDate, endDate);
+        }
         
         // 전체 통계 계산
         const totalReviews = checklists.reduce((sum, c) => sum + (c.naverReviews || 0), 0);
@@ -436,7 +579,9 @@ async function loadDashboard() {
         
     } catch (error) {
         console.error('대시보드 로드 오류:', error);
-        window.showNotification('대시보드 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('대시보드 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -444,7 +589,7 @@ async function loadDashboard() {
 async function loadBranchRankings(checklists) {
     try {
         // Firebase에서 직접 지점 데이터 가져오기
-        const branches = await window.dataManager.getBranches();
+        const branches = await getBranchesFromFirebase();
         
         // 사용자 권한에 따른 지점 필터링
         let userBranches = branches;
@@ -501,7 +646,9 @@ async function loadBranchRankings(checklists) {
         
     } catch (error) {
         console.error('지점별 순위 로드 오류:', error);
-        window.showNotification('지점별 순위 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('지점별 순위 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -518,7 +665,7 @@ async function loadDesigners() {
         await loadBranchOptions();
         
         // Firebase에서 직접 디자이너 데이터 가져오기
-        const designers = await window.dataManager.getDesigners();
+        const designers = await getDesignersFromFirebase();
         
         // 사용자 권한에 따른 디자이너 필터링
         let filteredDesigners = designers;
@@ -543,7 +690,9 @@ async function loadDesigners() {
         
     } catch (error) {
         console.error('디자이너 로드 오류:', error);
-        window.showNotification('디자이너 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('디자이너 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -551,14 +700,16 @@ async function loadDesigners() {
 async function loadBranches() {
     try {
         // Firebase에서 직접 지점 데이터 가져오기
-        const branches = await window.dataManager.getBranches();
+        const branches = await getBranchesFromFirebase();
         
         // 지점 목록 UI 업데이트 로직 구현 필요
         console.log('지점 로드 완료:', branches.length + '개');
         
     } catch (error) {
         console.error('지점 로드 오류:', error);
-        window.showNotification('지점 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('지점 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -566,14 +717,16 @@ async function loadBranches() {
 async function loadHistoryPage() {
     try {
         // Firebase에서 직접 체크리스트 데이터 가져오기
-        const checklists = await window.dataManager.getChecklists();
+        const checklists = await getChecklistsFromFirebase();
         
         // 히스토리 UI 업데이트 로직 구현 필요
         console.log('히스토리 로드 완료:', checklists.length + '건');
         
     } catch (error) {
         console.error('히스토리 로드 오류:', error);
-        window.showNotification('히스토리 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('히스토리 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -581,17 +734,21 @@ async function loadHistoryPage() {
 async function loadChecklist() {
     try {
         // 체크리스트 로드 로직 구현
-        const today = window.DateUtils.today();
-        const dateInput = document.getElementById('checklistDate');
-        if (dateInput) {
-            dateInput.value = today;
+        if (window.DateUtils && window.DateUtils.today) {
+            const today = window.DateUtils.today();
+            const dateInput = document.getElementById('checklistDate');
+            if (dateInput) {
+                dateInput.value = today;
+            }
         }
         
         await loadBranchOptions();
         
     } catch (error) {
         console.error('체크리스트 로드 오류:', error);
-        window.showNotification('체크리스트 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('체크리스트 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -599,14 +756,16 @@ async function loadChecklist() {
 async function loadStatistics() {
     try {
         // Firebase에서 직접 데이터 가져오기
-        const checklists = await window.dataManager.getChecklists();
+        const checklists = await getChecklistsFromFirebase();
         
         // 통계 UI 업데이트 로직 구현 필요
         console.log('통계 로드 완료:', checklists.length + '건');
         
     } catch (error) {
         console.error('통계 로드 오류:', error);
-        window.showNotification('통계 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('통계 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -615,8 +774,8 @@ async function loadComparison() {
     try {
         // Firebase에서 직접 데이터 가져오기
         const [branches, checklists] = await Promise.all([
-            window.dataManager.getBranches(),
-            window.dataManager.getChecklists()
+            getBranchesFromFirebase(),
+            getChecklistsFromFirebase()
         ]);
         
         // 비교 UI 업데이트 로직 구현 필요
@@ -624,7 +783,9 @@ async function loadComparison() {
         
     } catch (error) {
         console.error('비교 로드 오류:', error);
-        window.showNotification('비교 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('비교 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -633,8 +794,8 @@ async function loadBranchOptions() {
     try {
         // Firebase에서 직접 지점과 디자이너 데이터 가져오기
         const [branches, designers] = await Promise.all([
-            window.dataManager.getBranches(),
-            window.dataManager.getDesigners()
+            getBranchesFromFirebase(),
+            getDesignersFromFirebase()
         ]);
         
         // 지점 옵션 UI 업데이트 로직 구현 필요
@@ -642,7 +803,9 @@ async function loadBranchOptions() {
         
     } catch (error) {
         console.error('지점 옵션 로드 오류:', error);
-        window.showNotification('지점 옵션 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('지점 옵션 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -650,7 +813,7 @@ async function loadBranchOptions() {
 async function loadSelectedDesignerInfo(designerId) {
     try {
         // Firebase에서 직접 체크리스트 데이터 가져오기
-        const checklists = await window.dataManager.getChecklists();
+        const checklists = await getChecklistsFromFirebase();
         
         // 해당 디자이너의 체크리스트 필터링
         const designerChecklists = checklists.filter(c => c.designerId == designerId);
@@ -660,7 +823,9 @@ async function loadSelectedDesignerInfo(designerId) {
         
     } catch (error) {
         console.error('디자이너 정보 로드 오류:', error);
-        window.showNotification('디자이너 정보 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('디자이너 정보 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -668,30 +833,38 @@ async function loadSelectedDesignerInfo(designerId) {
 async function loadDesignerHistory() {
     try {
         // Firebase에서 직접 체크리스트 데이터 가져오기
-        const checklists = await window.dataManager.getChecklists();
+        const checklists = await getChecklistsFromFirebase();
         
         // 디자이너 히스토리 UI 업데이트 로직 구현 필요
         console.log('디자이너 히스토리 로드 완료:', checklists.length + '건');
         
     } catch (error) {
         console.error('디자이너 히스토리 로드 오류:', error);
-        window.showNotification('디자이너 히스토리 로드 중 오류가 발생했습니다.', 'error');
+        if (window.showNotification) {
+            window.showNotification('디자이너 히스토리 로드 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
 function exportRankings() {
     // 순위 내보내기 로직 구현
-    window.showNotification('순위 내보내기 기능은 개발 중입니다.', 'info');
+    if (window.showNotification) {
+        window.showNotification('순위 내보내기 기능은 개발 중입니다.', 'info');
+    }
 }
 
 function updateStatisticsChart() {
     // 통계 차트 업데이트 로직 구현
-    window.showNotification('통계 차트 업데이트 기능은 개발 중입니다.', 'info');
+    if (window.showNotification) {
+        window.showNotification('통계 차트 업데이트 기능은 개발 중입니다.', 'info');
+    }
 }
 
 function updateComparisonCharts() {
     // 비교 차트 업데이트 로직 구현
-    window.showNotification('비교 차트 업데이트 기능은 개발 중입니다.', 'info');
+    if (window.showNotification) {
+        window.showNotification('비교 차트 업데이트 기능은 개발 중입니다.', 'info');
+    }
 }
 
 // 전역으로 노출
