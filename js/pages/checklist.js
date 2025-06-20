@@ -913,14 +913,19 @@ if (existingChecklist) {
                 notes: document.getElementById('editChecklistNotes').value || ''
             };
 
-            // 실제로는 Firebase에서 업데이트
-            const checklistIndex = this.data.checklists.findIndex(c => c.docId === docId);
-            if (checklistIndex !== -1) {
-                this.data.checklists[checklistIndex] = {
-                    ...this.data.checklists[checklistIndex],
-                    ...formData
-                };
-            }
+// Firebase에서 실제로 업데이트
+if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+    await this.updateChecklistInFirebase(docId, formData);
+}
+
+// 로컬 데이터도 업데이트
+const checklistIndex = this.data.checklists.findIndex(c => c.docId === docId);
+if (checklistIndex !== -1) {
+    this.data.checklists[checklistIndex] = {
+        ...this.data.checklists[checklistIndex],
+        ...formData
+    };
+}
 
             this.hideEditChecklist();
             this.loadRecentHistory();
