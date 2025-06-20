@@ -281,22 +281,37 @@ function setupRealtimeSync() {
         }
     });
 
-    // 체크리스트 데이터 동기화
-    window.dataManager.onChecklistsChange((checklists) => {
-        cachedData.checklists = checklists;
-        if (currentPage === 'dashboard') {
-            loadDashboard();
-        }
-    });
+// 체크리스트 데이터 동기화
+window.dataManager.onChecklistsChange((checklists) => {
+    // 캐시 완전히 교체 (이전 데이터 제거)
+    cachedData.checklists = [...checklists];
+    console.log('체크리스트 캐시 업데이트:', checklists.length + '개');
+    if (currentPage === 'dashboard') {
+        loadDashboard();
+    }
+});
 }
 
 // 초기 데이터 로드
 async function loadInitialData() {
     try {
+        // 캐시 초기화
+        cachedData = {
+            branches: [],
+            designers: [],
+            checklists: []
+        };
+        
+        // 새로 로드
         cachedData.branches = await window.dataManager.getBranches();
         cachedData.designers = await window.dataManager.getDesigners();
         cachedData.checklists = await window.dataManager.getChecklists();
-        console.log('초기 데이터 로드 완료');
+        
+        console.log('초기 데이터 로드 완료:', {
+            branches: cachedData.branches.length,
+            designers: cachedData.designers.length,
+            checklists: cachedData.checklists.length
+        });
     } catch (error) {
         console.error('초기 데이터 로드 오류:', error);
     }
