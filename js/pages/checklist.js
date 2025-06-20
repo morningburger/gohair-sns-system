@@ -1005,24 +1005,36 @@ if (checklistIndex !== -1) {
         document.getElementById('editChecklistForm').reset();
     }
 
-    async deleteChecklist(docId) {
-        const checklist = this.data.checklists.find(c => c.docId === docId);
-        if (!checklist) return;
+async deleteChecklist(docId) {
+    const checklist = this.data.checklists.find(c => c.docId === docId);
+    if (!checklist) return;
 
-        if (confirm(`${checklist.date} ${checklist.designer}님의 체크리스트를 삭제하시겠습니까?`)) {
-            try {
-                // 실제로는 Firebase에서 삭제
-                this.data.checklists = this.data.checklists.filter(c => c.docId !== docId);
-                
-                this.loadRecentHistory();
-                this.loadTodaySummary();
-                this.showNotification('체크리스트가 삭제되었습니다.', 'success');
-            } catch (error) {
-                console.error('체크리스트 삭제 오류:', error);
-                this.showNotification('체크리스트 삭제 중 오류가 발생했습니다.', 'error');
+    if (confirm(`${checklist.date} ${checklist.designer}님의 체크리스트를 삭제하시겠습니까?`)) {
+        try {
+            // 🔥 Firebase에서 실제 삭제 (soft delete)
+            if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                const db = firebase.firestore();
+                await db.collection('checklists').doc(docId).update({
+                    deleted: true,
+                    deletedAt: new Date().toISOString()
+                });
+                console.log('✅ Firebase에서 체크리스트 삭제 완료:', docId);
+            } else {
+                console.warn('⚠️ Firebase 연결 안됨 - 로컬에만 삭제');
             }
+            
+            // 로컬 데이터에서도 삭제
+            this.data.checklists = this.data.checklists.filter(c => c.docId !== docId);
+            
+            this.loadRecentHistory();
+            this.loadTodaySummary();
+            this.showNotification('체크리스트가 삭제되었습니다.', 'success');
+        } catch (error) {
+            console.error('체크리스트 삭제 오류:', error);
+            this.showNotification('체크리스트 삭제 중 오류가 발생했습니다: ' + error.message, 'error');
         }
     }
+}
 
     // 오늘의 요약 새로고침
     refreshTodaySummary() {
