@@ -53,6 +53,16 @@ constructor() {
         } catch (error) {
             console.error('체크리스트 페이지 초기화 오류:', error);
         }
+        // 권한에 따른 UI 조정
+if (this.currentUser && this.currentUser.role === '지점관리자') {
+    const historyFilter = document.getElementById('historyFilter');
+    if (historyFilter) {
+        historyFilter.style.display = 'none';
+        // 또는 비활성화
+        // historyFilter.disabled = true;
+        // historyFilter.value = 'mine';
+    }
+}
     }
 
     // 현재 사용자 정보 가져오기
@@ -385,15 +395,21 @@ async updateChecklistInFirebase(docId, checklistData) {
         }
     }
 
-    // 최근 기록 로드
-    loadRecentHistory() {
-        let checklists = [...this.data.checklists];
-        
-        // 필터 적용
+// 최근 기록 로드
+loadRecentHistory() {
+    let checklists = [...this.data.checklists];
+    
+    // 권한에 따른 필터링 - 지점관리자는 항상 자기 지점만 봄
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        checklists = checklists.filter(c => c.branch === this.currentUser.branch);
+        console.log(`🔒 지점관리자 필터링: ${this.currentUser.branch} - ${checklists.length}개`);
+    } else {
+        // 전체관리자는 필터 옵션에 따라 처리
         const filterValue = document.getElementById('historyFilter')?.value || 'all';
-        if (filterValue === 'mine' && this.currentUser && this.currentUser.role === 'leader') {
+        if (filterValue === 'mine' && this.currentUser && this.currentUser.branch) {
             checklists = checklists.filter(c => c.branch === this.currentUser.branch);
         }
+    }
 
         // 페이지네이션 적용
         this.pagination.totalItems = checklists.length;
