@@ -129,9 +129,6 @@ loadHistoryFilterOptions() {
     this.updateDesignerFilterOptions();
 }
         
-        // 디자이너 필터 옵션
-        this.updateDesignerFilterOptions();
-    }
 
     // 디자이너 필터 옵션 업데이트
     updateDesignerFilterOptions() {
