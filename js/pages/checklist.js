@@ -780,7 +780,6 @@ loadHistoryFilterOptions() {
 
 // 최근 기록 로드 (필터링 적용)
 loadRecentHistory() {
-    let checklists;
     
 // 원본 데이터 복사
 let checklists = [...this.data.checklists];
