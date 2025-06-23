@@ -1,22 +1,40 @@
 // 통계 분석 페이지 전용 로직
 
 class StatisticsManager {
-    constructor() {
-        this.data = {
-            checklists: [],
-            designers: [],
-            branches: []
-        };
-        this.currentPeriod = {
-            startDate: null,
-            endDate: null
-        };
-        this.charts = {
-            branchChart: null,
-            categoryChart: null
-        };
-        this.currentUser = null;
+constructor() {
+    this.data = {
+        checklists: [],
+        designers: [],
+        branches: []
+    };
+    this.charts = {
+        branchChart: null,
+        categoryChart: null
+    };
+    
+    // 🔥 기존 차트 정리 (재초기화 방지)
+    this.destroyExistingCharts();
+    
+    this.currentPeriod = {
+        startDate: null,
+        endDate: null
+    };
+    this.currentUser = null;
+}
+
+// 🔥 기존 차트 정리 메서드 추가
+destroyExistingCharts() {
+    try {
+        const branchCtx = document.getElementById('branchChart');
+        const categoryCtx = document.getElementById('categoryChart');
+        
+        if (branchCtx) Chart.getChart(branchCtx)?.destroy();
+        if (categoryCtx) Chart.getChart(categoryCtx)?.destroy();
+        
+    } catch (error) {
+        console.warn('기존 차트 정리 중 오류:', error);
     }
+}
 
 // 페이지 초기화
 async initialize() {
@@ -466,16 +484,28 @@ updateBranchChart(data) {
     const ctx = document.getElementById('branchChart');
     if (!ctx) return;
     
-    // 안전한 차트 파괴
-    try {
-        if (this.charts.branchChart && typeof this.charts.branchChart.destroy === 'function') {
-            this.charts.branchChart.destroy();
-            this.charts.branchChart = null;
-        }
-    } catch (error) {
-        console.warn('차트 파괴 중 오류:', error);
+// 강화된 차트 파괴
+const ctx = document.getElementById('branchChart');
+if (!ctx) return;
+
+// Chart.js 전역 차트 인스턴스 확인 및 파괴
+try {
+    // 1. 기존 차트 인스턴스 파괴
+    if (this.charts.branchChart) {
+        this.charts.branchChart.destroy();
         this.charts.branchChart = null;
     }
+    
+    // 2. Chart.js 전역 레지스트리에서 해당 캔버스 차트 찾아서 파괴
+    Chart.getChart(ctx)?.destroy();
+    
+    // 3. 캔버스 컨텍스트 초기화
+    ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height);
+    
+} catch (error) {
+    console.warn('차트 파괴 중 오류:', error);
+    this.charts.branchChart = null;
+}
         
         const labels = Object.keys(branchStats);
         const values = Object.values(branchStats);
@@ -531,12 +561,23 @@ updateBranchChart(data) {
 const ctx = document.getElementById('categoryChart');
 if (!ctx) return;
 
-// 안전한 차트 파괴
+const ctx = document.getElementById('categoryChart');
+if (!ctx) return;
+
+// 강화된 차트 파괴
 try {
-    if (this.charts.categoryChart && typeof this.charts.categoryChart.destroy === 'function') {
+    // 1. 기존 차트 인스턴스 파괴
+    if (this.charts.categoryChart) {
         this.charts.categoryChart.destroy();
         this.charts.categoryChart = null;
     }
+    
+    // 2. Chart.js 전역 레지스트리에서 해당 캔버스 차트 찾아서 파괴
+    Chart.getChart(ctx)?.destroy();
+    
+    // 3. 캔버스 컨텍스트 초기화
+    ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height);
+    
 } catch (error) {
     console.warn('카테고리 차트 파괴 중 오류:', error);
     this.charts.categoryChart = null;
