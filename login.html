@@ -104,7 +104,6 @@
     <!-- JavaScript Files -->
     <script src="js/config/firebase.js"></script>
     <script src="js/utils/data-manager.js"></script>
-    <script src="js/utils/auth.js"></script>
     <script src="js/utils/ui-utils.js"></script>
     
     <script>
@@ -204,16 +203,144 @@
                 signupPasswordConfirm.addEventListener('input', checkPasswordMatch);
             }
 
-// DataManager 먼저 초기화
-if (window.FirebaseDataManager) {
-    window.dataManager = new window.FirebaseDataManager();
-}
+// Firebase 직접 인증 처리
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    try {
+        console.log('🔍 로그인 시도:', email);
+        
+        if (!firebase || !firebase.apps.length) {
+            throw new Error('Firebase가 초기화되지 않았습니다');
+        }
+        
+        const db = firebase.firestore();
+        const userDoc = await db.collection('users').doc(email).get();
+        
+        if (!userDoc.exists) {
+            alert('이메일 또는 비밀번호가 잘못되었습니다.');
+            return;
+        }
+        
+        const userData = userDoc.data();
+        
+        if (userData.password !== password) {
+            alert('이메일 또는 비밀번호가 잘못되었습니다.');
+            return;
+        }
+        
+        if (userData.status === 'suspended') {
+            alert('정지된 계정입니다. 관리자에게 문의하세요.');
+            return;
+        }
+        
+        if (userData.status === 'pending') {
+            alert('아직 승인되지 않은 계정입니다. 관리자의 승인을 기다려주세요.');
+            return;
+        }
+        
+        // 로그인 성공 - 사용자 정보 저장
+        const user = {
+            id: userDoc.id,
+            email: userData.email,
+            name: userData.name,
+            role: userData.role,
+            branch: userData.branch,
+            branchCode: userData.branchCode,
+            phone: userData.phone,
+            status: userData.status,
+            lastLogin: new Date().toISOString()
+        };
+        
+        // 세션에 저장
+        sessionStorage.setItem('currentUser', JSON.stringify(user));
+        
+        // 최근 로그인 시간 업데이트
+        await db.collection('users').doc(email).update({
+            lastLogin: user.lastLogin
+        });
+        
+        console.log('✅ 로그인 성공:', user.name);
+        
+        // 대시보드로 이동
+        window.location.href = 'index.html';
+        
+    } catch (error) {
+        console.error('❌ 로그인 오류:', error);
+        alert('로그인 중 오류가 발생했습니다: ' + error.message);
+    }
+});
 
-// 인증 매니저 초기화
-if (window.AuthManager) {
-    window.authManager = new window.AuthManager();
-    window.setupAuthEventHandlers();
-}
+// 회원가입 폼 처리
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+    const name = document.getElementById('signupName').value;
+    const role = document.getElementById('signupRole').value;
+    const branch = document.getElementById('signupBranch').value;
+    
+    if (password !== passwordConfirm) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+    }
+    
+    try {
+        console.log('👤 회원가입 시도:', email);
+        
+        const db = firebase.firestore();
+        
+        // 이메일 중복 확인
+        const existingUser = await db.collection('users').doc(email).get();
+        if (existingUser.exists) {
+            alert('이미 사용 중인 이메일입니다.');
+            return;
+        }
+        
+        // 새 사용자 데이터
+        const newUser = {
+            name: name,
+            email: email,
+            role: role,
+            branch: branch,
+            password: password,
+            phone: '',
+            status: 'pending',
+            createdAt: new Date().toISOString().split('T')[0],
+            lastLogin: ''
+        };
+        
+        // 지점 코드 찾기
+        if (role === '지점관리자' && branch) {
+            const branchSnapshot = await db.collection('branches')
+                .where('name', '==', branch)
+                .get();
+            
+            if (!branchSnapshot.empty) {
+                const branchData = branchSnapshot.docs[0].data();
+                newUser.branchCode = branchData.code;
+            }
+        }
+        
+        // Firestore에 저장
+        await db.collection('users').doc(email).set(newUser);
+        
+        console.log('✅ 회원가입 성공:', email);
+        alert('가입이 완료되었습니다. 관리자의 승인을 기다려주세요.');
+        
+        // 로그인 페이지로 이동
+        showLogin();
+        
+    } catch (error) {
+        console.error('❌ 회원가입 오류:', error);
+        alert('가입 중 오류가 발생했습니다: ' + error.message);
+    }
+});
         });
 
         console.log('🔑 로그인 페이지 로드 완료');
