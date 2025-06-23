@@ -782,19 +782,19 @@ loadHistoryFilterOptions() {
 loadRecentHistory() {
     let checklists;
     
-    // 필터가 적용된 경우 해당 데이터 사용, 아니면 전체 데이터 사용
-    if (this.filteredChecklists && this.filteredChecklists.length >= 0 && 
-        (this.filters.startDate || this.filters.endDate || 
-         this.filters.branch || this.filters.designer)) {
-        checklists = [...this.filteredChecklists];
-    } else {
-        checklists = [...this.data.checklists];
-        
-        // 권한에 따른 기본 필터링
-        if (this.currentUser && this.currentUser.role === '지점관리자') {
-            checklists = checklists.filter(c => c.branch === this.currentUser.branch);
-        }
-    }
+// 원본 데이터 복사
+let checklists = [...this.data.checklists];
+
+// 권한에 따른 기본 필터링 (항상 적용)
+if (this.currentUser && this.currentUser.role === '지점관리자') {
+    checklists = checklists.filter(c => c.branch === this.currentUser.branch);
+}
+
+// 필터가 설정된 경우 filteredChecklists 사용
+if (this.filters.startDate || this.filters.endDate || 
+    this.filters.branch || this.filters.designer) {
+    checklists = [...this.filteredChecklists];
+}
     
     // 나머지 코드는 그대로...
 
