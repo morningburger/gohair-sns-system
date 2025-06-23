@@ -204,11 +204,16 @@
                 signupPasswordConfirm.addEventListener('input', checkPasswordMatch);
             }
 
-            // 인증 매니저 초기화
-            if (window.AuthManager) {
-                window.authManager = new window.AuthManager();
-                window.setupAuthEventHandlers();
-            }
+// DataManager 먼저 초기화
+if (window.FirebaseDataManager) {
+    window.dataManager = new window.FirebaseDataManager();
+}
+
+// 인증 매니저 초기화
+if (window.AuthManager) {
+    window.authManager = new window.AuthManager();
+    window.setupAuthEventHandlers();
+}
         });
 
         console.log('🔑 로그인 페이지 로드 완료');
