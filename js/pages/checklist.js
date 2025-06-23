@@ -880,16 +880,28 @@ if (!designer) {
         }
     }
 
-    // 디자이너 선택하기 버튼 클릭
-    selectDesigner() {
-        const designerId = document.getElementById('checklistDesigner').value;
-        if (designerId) {
-            this.loadSelectedDesignerInfo(designerId);
-            this.showNotification('디자이너 정보가 로드되었습니다.', 'success');
-        } else {
-            alert('먼저 디자이너를 선택해주세요.');
-        }
+// 디자이너 선택하기 버튼 클릭
+selectDesigner() {
+    console.log('🔍 selectDesigner() 호출됨');
+    
+    const designerSelect = document.getElementById('checklistDesigner');
+    const designerId = designerSelect?.value;
+    
+    console.log('🔍 디자이너 선택 요소:', designerSelect);
+    console.log('🔍 선택된 디자이너 ID:', designerId);
+    console.log('🔍 전체 디자이너 옵션들:', Array.from(designerSelect?.options || []).map(opt => opt.value));
+    
+    if (designerId) {
+        console.log('✅ 디자이너 ID가 있음, 정보 로딩 시작');
+        this.loadSelectedDesignerInfo(designerId);
+        
+        // showNotification 대신 간단한 alert 사용
+        alert('디자이너 정보가 로드되었습니다!');
+    } else {
+        console.log('❌ 디자이너 ID가 없음');
+        alert('먼저 디자이너를 선택해주세요.');
     }
+}
 
     // 이벤트 리스너 설정
     setupEventListeners() {
