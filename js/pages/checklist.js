@@ -659,14 +659,81 @@ loadRecentHistory() {
         this.loadRecentHistory();
     }
 
-// 선택된 디자이너 정보 로드 - 수정됨
+// 선택된 디자이너 정보 로드 - 디버깅 강화
 loadSelectedDesignerInfo(designerId) {
-    // 🔍 디버깅 정보
-    console.log('🔍 선택된 디자이너 정보 로딩:', designerId);
+    console.log('========== 디자이너 정보 로딩 시작 ==========');
+    console.log('🔍 받은 designerId:', designerId);
     console.log('🔍 designerId 타입:', typeof designerId);
-    console.log('🔍 전체 디자이너 목록:', this.data.designers);
-    console.log('🔍 디자이너 ID들:', this.data.designers.map(d => `${d.id} (${typeof d.id})`));
-    console.log('🔍 전체 체크리스트 수:', this.data.checklists.length);
+    
+    // 1. selectedDesignerInfo 요소 확인
+    const targetElement = document.getElementById('selectedDesignerInfo');
+    console.log('🔍 타겟 요소 존재:', !!targetElement);
+    
+    if (!targetElement) {
+        console.error('❌ selectedDesignerInfo 요소를 찾을 수 없음!');
+        return;
+    }
+    
+    // 2. 디자이너 데이터 확인
+    console.log('🔍 전체 디자이너 수:', this.data.designers.length);
+    console.log('🔍 전체 디자이너 목록:', this.data.designers.map(d => ({id: d.id, name: d.name})));
+    
+    if (!designerId) {
+        console.log('⚠️ designerId가 비어있음');
+        targetElement.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">ℹ️</div>
+                <p>디자이너를 선택하면 정보가 표시됩니다.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // 3. 디자이너 찾기
+    const designer = this.data.designers.find(d => 
+        d.id === designerId || 
+        d.id === String(designerId) || 
+        String(d.id) === String(designerId) ||
+        d.docId === designerId
+    );
+    
+    console.log('🔍 찾은 디자이너:', designer);
+
+    if (!designer) {
+        console.error('❌ 디자이너를 찾을 수 없음:', designerId);
+        console.error('❌ 사용 가능한 디자이너 ID들:', this.data.designers.map(d => d.id));
+        
+        targetElement.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">❌</div>
+                <p>선택된 디자이너 정보를 찾을 수 없습니다.</p>
+                <small>디자이너 ID: ${designerId}</small>
+            </div>
+        `;
+        return;
+    }
+
+    console.log('✅ 디자이너 찾기 성공:', designer.name);
+
+    // 4. 간단한 정보부터 표시
+    const simpleHTML = `
+        <div style="padding: 1rem; background: #f0f9ff; border-radius: 8px; border: 2px solid #0ea5e9;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #0c4a6e;">✅ 디자이너 정보 로드 성공!</h4>
+            <p><strong>이름:</strong> ${designer.name}</p>
+            <p><strong>지점:</strong> ${designer.branch}</p>
+            <p><strong>직급:</strong> ${designer.position}</p>
+            <p><strong>전화번호:</strong> ${designer.phone}</p>
+            <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                디자이너 ID: ${designer.id} (타입: ${typeof designer.id})
+            </p>
+        </div>
+    `;
+    
+    console.log('🔍 HTML 생성 완료, 요소에 삽입 중...');
+    targetElement.innerHTML = simpleHTML;
+    console.log('✅ HTML 삽입 완료');
+    console.log('========== 디자이너 정보 로딩 끝 ==========');
+}
         
         if (!designerId) {
             document.getElementById('selectedDesignerInfo').innerHTML = `
