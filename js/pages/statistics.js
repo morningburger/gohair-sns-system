@@ -118,11 +118,18 @@ updateUserDisplay() {
             
             const db = firebase.firestore();
             
-            // 체크리스트 데이터 로드
-            const checklistsSnapshot = await db.collection('checklists').get();
+// 체크리스트 데이터 로드
+const checklistsSnapshot = await db.collection('checklists').get();
 this.data.checklists = [];
 checklistsSnapshot.forEach(doc => {
     const data = doc.data();
+    
+    // 🔥 삭제된 항목은 제외
+    if (data.deleted === true) {
+        console.log(`🗑️ 삭제된 체크리스트 제외: ${doc.id}`);
+        return; // forEach에서 continue 역할
+    }
+    
     this.data.checklists.push({
         id: doc.id,
         docId: doc.id,
