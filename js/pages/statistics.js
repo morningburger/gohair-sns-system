@@ -268,20 +268,13 @@ loadBranchFilterOptions() {
 getFilteredData() {
     let filtered = this.data.checklists;
     
-    // 🔥 1단계: 삭제된 디자이너/지점 데이터 제외
-    const currentDesignerNames = this.data.designers.map(d => d.name);
-    const currentBranchNames = this.data.branches.map(b => b.name);
-    
-    filtered = filtered.filter(item => {
-        // 디자이너가 현재 존재하는지 확인
-        const hasValidDesigner = item.designer && currentDesignerNames.includes(item.designer);
-        // 지점이 현재 존재하는지 확인  
-        const hasValidBranch = item.branch && currentBranchNames.includes(item.branch);
-        
-        return hasValidDesigner && hasValidBranch;
-    });
-    
-    console.log(`🔍 삭제된 데이터 제외 후: ${filtered.length}개 체크리스트`);
+// 🔥 1단계: 기본 데이터 검증만 수행 (과도한 필터링 제거)
+filtered = filtered.filter(item => {
+    // 기본적인 데이터 유효성만 검사
+    return item.designer && item.branch && item.date;
+});
+
+console.log(`🔍 기본 검증 후: ${filtered.length}개 체크리스트`);
     
     // 사용자 권한에 따른 필터링
     if (this.currentUser && this.currentUser.role === '지점관리자') {
