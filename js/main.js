@@ -442,8 +442,30 @@ async function loadDashboard() {
         const startDate = document.getElementById('dashboardStartDate')?.value;
         const endDate = document.getElementById('dashboardEndDate')?.value;
         
-        // Firebase에서 직접 데이터 가져오기
-        let checklists = await window.dataManager.getChecklists();
+// Firebase에서 직접 최신 데이터 가져오기 (DataManager 우회)
+let checklists = [];
+try {
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('checklists')
+            .orderBy('date', 'desc')
+            .get();
+        
+        checklists = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        console.log(`🔥 대시보드 직접 데이터 로딩: ${checklists.length}개`);
+    } else {
+        // 백업: DataManager 사용
+        checklists = await window.dataManager.getChecklists();
+    }
+} catch (error) {
+    console.error('대시보드 데이터 로딩 오류:', error);
+    // 백업: DataManager 사용
+    checklists = await window.dataManager.getChecklists();
+}
         
         // 사용자 권한에 따른 데이터 필터링
         try {
@@ -499,8 +521,28 @@ async function loadDashboard() {
 // 지점별 순위 로드 - Firebase에서 직접 지점 데이터 가져오기
 async function loadBranchRankings(checklists) {
     try {
-        // Firebase에서 직접 지점 데이터 가져오기
-        const branches = await window.dataManager.getBranches();
+// Firebase에서 직접 최신 지점 데이터 가져오기
+let branches = [];
+try {
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('branches').get();
+        
+        branches = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        console.log(`🔥 지점 직접 데이터 로딩: ${branches.length}개`);
+    } else {
+        // 백업: DataManager 사용
+        branches = await window.dataManager.getBranches();
+    }
+} catch (error) {
+    console.error('지점 데이터 로딩 오류:', error);
+    // 백업: DataManager 사용
+    branches = await window.dataManager.getBranches();
+}
         
         // 사용자 권한에 따른 지점 필터링
         let userBranches = branches;
