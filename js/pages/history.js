@@ -182,9 +182,16 @@ adjustUIForPermissions() {
             const snapshot = await db.collection('designers').get();
             
             const designers = [];
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                designers.push({
+snapshot.forEach(doc => {
+    const data = doc.data();
+    
+    // 🔥 삭제된 항목은 제외
+    if (data.deleted === true) {
+        console.log(`🗑️ 삭제된 체크리스트 제외: ${doc.id}`);
+        return;
+    }
+    
+    checklists.push({
                     id: doc.id,
                     docId: doc.id,
                     name: data.name || '',
