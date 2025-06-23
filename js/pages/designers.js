@@ -298,9 +298,16 @@ return designers;
                 .get();
             
             const checklists = [];
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                checklists.push({
+snapshot.forEach(doc => {
+    const data = doc.data();
+    
+    // 🔥 삭제된 항목은 제외
+    if (data.deleted === true) {
+        console.log(`🗑️ 삭제된 체크리스트 제외: ${doc.id}`);
+        return;
+    }
+    
+    checklists.push({
                     id: doc.id,
                     docId: doc.id,
                     designerId: data.designerId || '',
