@@ -481,9 +481,6 @@ updateBranchChart(data) {
                                   (item.naverExperience || 0) + (item.instaReels || 0) + (item.instaPhotos || 0);
     });
     
-    const ctx = document.getElementById('branchChart');
-    if (!ctx) return;
-    
 // 강화된 차트 파괴
 const ctx = document.getElementById('branchChart');
 if (!ctx) return;
@@ -557,9 +554,6 @@ try {
             instaReels: 0,
             instaPhotos: 0
         });
-        
-const ctx = document.getElementById('categoryChart');
-if (!ctx) return;
 
 const ctx = document.getElementById('categoryChart');
 if (!ctx) return;
