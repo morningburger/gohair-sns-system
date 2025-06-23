@@ -3,6 +3,62 @@
 let currentPage = 'dashboard';
 let sortOrder = {};
 
+// 기간 필터링 함수
+window.filterDataByPeriod = function(data, period, startDate, endDate) {
+    if (!data || data.length === 0) return data;
+    
+    const now = new Date();
+    let filterDate;
+    
+    switch (period) {
+        case 'today':
+            filterDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            return data.filter(item => {
+                const itemDate = new Date(item.date);
+                return itemDate >= filterDate;
+            });
+            
+        case 'week':
+            filterDate = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+            return data.filter(item => {
+                const itemDate = new Date(item.date);
+                return itemDate >= filterDate;
+            });
+            
+        case 'month':
+            filterDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            return data.filter(item => {
+                const itemDate = new Date(item.date);
+                return itemDate >= filterDate;
+            });
+            
+        case 'custom':
+            if (startDate && endDate) {
+                return data.filter(item => {
+                    const itemDate = new Date(item.date);
+                    return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+                });
+            }
+            return data;
+            
+        case 'all':
+        default:
+            return data;
+    }
+};
+
+// DateUtils 유틸리티
+window.DateUtils = {
+    today: function() {
+        return new Date().toISOString().split('T')[0];
+    }
+};
+
+// 파일 가져오기 설정 (임시)
+window.setupFileImport = function() {
+    console.log('파일 가져오기 설정 완료');
+};
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🏠 메인 시스템 로드 시작');
