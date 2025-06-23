@@ -581,12 +581,14 @@ loadRecentHistory() {
         this.loadRecentHistory();
     }
 
-    // 선택된 디자이너 정보 로드 - 수정됨
-    loadSelectedDesignerInfo(designerId) {
-        // 🔍 디버깅 정보
-        console.log('🔍 선택된 디자이너 정보 로딩:', designerId);
-        console.log('🔍 전체 디자이너 목록:', this.data.designers);
-        console.log('🔍 전체 체크리스트 수:', this.data.checklists.length);
+// 선택된 디자이너 정보 로드 - 수정됨
+loadSelectedDesignerInfo(designerId) {
+    // 🔍 디버깅 정보
+    console.log('🔍 선택된 디자이너 정보 로딩:', designerId);
+    console.log('🔍 designerId 타입:', typeof designerId);
+    console.log('🔍 전체 디자이너 목록:', this.data.designers);
+    console.log('🔍 디자이너 ID들:', this.data.designers.map(d => `${d.id} (${typeof d.id})`));
+    console.log('🔍 전체 체크리스트 수:', this.data.checklists.length);
         
         if (!designerId) {
             document.getElementById('selectedDesignerInfo').innerHTML = `
@@ -598,11 +600,28 @@ loadRecentHistory() {
             return;
         }
 
-        const designer = this.data.designers.find(d => d.id === designerId);
-        if (!designer) {
-            console.error('❌ 디자이너를 찾을 수 없음:', designerId);
-            return;
-        }
+// 디자이너 찾기 (문자열과 숫자 모두 고려)
+const designer = this.data.designers.find(d => 
+    d.id === designerId || 
+    d.id === String(designerId) || 
+    String(d.id) === String(designerId) ||
+    d.docId === designerId
+);
+
+if (!designer) {
+    console.error('❌ 디자이너를 찾을 수 없음:', designerId);
+    console.error('❌ 사용 가능한 디자이너 ID들:', this.data.designers.map(d => d.id));
+    
+    // 빈 상태 표시
+    document.getElementById('selectedDesignerInfo').innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">❌</div>
+            <p>선택된 디자이너 정보를 찾을 수 없습니다.</p>
+            <small>디자이너 ID: ${designerId}</small>
+        </div>
+    `;
+    return;
+}
 
         console.log('✅ 찾은 디자이너:', designer);
 
@@ -793,13 +812,17 @@ fillSampleData() {
 
     // 이벤트 리스너 설정
     setupEventListeners() {
-        // 디자이너 선택 변경
-        const designerSelect = document.getElementById('checklistDesigner');
-        if (designerSelect) {
-            designerSelect.addEventListener('change', (e) => {
-                this.loadSelectedDesignerInfo(e.target.value);
-            });
-        }
+// 디자이너 선택 변경
+const designerSelect = document.getElementById('checklistDesigner');
+if (designerSelect) {
+    designerSelect.addEventListener('change', (e) => {
+        console.log('🔍 디자이너 선택 변경됨:', e.target.value);
+        this.loadSelectedDesignerInfo(e.target.value);
+    });
+    console.log('✅ 디자이너 선택 이벤트 리스너 설정 완료');
+} else {
+    console.error('❌ checklistDesigner select 요소를 찾을 수 없음');
+}
 
         // 기록 필터 변경
         const historyFilter = document.getElementById('historyFilter');
