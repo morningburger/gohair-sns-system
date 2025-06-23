@@ -203,9 +203,22 @@ class ComparisonManager {
             // 체크리스트 데이터 로드 (실제 Firebase 데이터만)
             console.log('📋 체크리스트 데이터 로딩 중...');
             const checklistsSnapshot = await this.db.collection('checklists').get();
-            this.data.checklists = checklistsSnapshot.docs.map(doc => {
-                const data = doc.data();
-                return {
+this.data.checklists = [];
+checklistsSnapshot.docs.forEach(doc => {
+    const data = doc.data();
+    
+    // 🔥 삭제된 항목은 제외
+    if (data.deleted === true) {
+        console.log(`🗑️ 삭제된 체크리스트 제외: ${doc.id}`);
+        return;
+    }
+    
+    this.data.checklists.push({
+        id: doc.id,
+        ...data,
+        date: data.date ? (data.date.toDate ? data.date.toDate().toISOString().split('T')[0] : data.date) : null
+    });
+});
                     id: doc.id,
                     ...data,
                     // 날짜 형식 통일 (Firestore timestamp를 문자열로 변환)
