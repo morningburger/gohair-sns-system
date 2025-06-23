@@ -9,10 +9,118 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/responsive.css">
     <link rel="stylesheet" href="../css/checklist.css">
-        <!-- 🔥 Firebase CDN 추가 -->
+    <!-- Firebase CDN -->
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore-compat.js"></script>
-</head>
+    
+    <style>
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 120px;
+        }
+        
+        .filter-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: white;
+        }
+        
+        .date-range-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .date-range-group input {
+            width: 140px;
+        }
+        
+        .filter-actions {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .filter-actions button {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            height: 36px;
+        }
+        
+        .quick-stats {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-radius: 8px;
+            border: 1px solid #0ea5e9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0ea5e9;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        @media (max-width: 768px) {
+            .filters-container {
+                flex-direction: column;
+            }
+            
+            .date-range-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .date-range-group input {
+                width: 100%;
+            }
+            
+            .filter-actions {
+                justify-content: stretch;
+            }
+            
+            .filter-actions button {
+                flex: 1;
+            }
+        }
+    </style>
 </head>
 <body>
 <!-- Header -->
@@ -113,26 +221,26 @@
                     
                     <form id="checklistForm">
                         <div class="form-section">
-<div class="form-group">
-    <label>🏢 지점 선택 <span class="required">*</span></label>
-    <select id="checklistBranch" onchange="filterDesignersByBranch()" required>
-        <option value="">지점을 선택하세요</option>
-    </select>
-</div>
-<div class="form-group">
-    <label>👤 디자이너 선택 <span class="required">*</span></label>
-    <select id="checklistDesigner" required disabled>
-        <option value="">먼저 지점을 선택하세요</option>
-    </select>
-</div>
                             <div class="form-group">
-    <button type="button" id="selectDesignerBtn" class="btn btn-secondary" onclick="selectDesigner()" disabled>
-        👤 디자이너 선택하기
-    </button>
-    <div class="form-hint">
-        지점과 디자이너를 선택한 후 이 버튼을 클릭하세요
-    </div>
-</div>
+                                <label>🏢 지점 선택 <span class="required">*</span></label>
+                                <select id="checklistBranch" onchange="filterDesignersByBranch()" required>
+                                    <option value="">지점을 선택하세요</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>👤 디자이너 선택 <span class="required">*</span></label>
+                                <select id="checklistDesigner" required disabled>
+                                    <option value="">먼저 지점을 선택하세요</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="selectDesignerBtn" class="btn btn-secondary" onclick="selectDesigner()" disabled>
+                                    👤 디자이너 선택하기
+                                </button>
+                                <div class="form-hint">
+                                    지점과 디자이너를 선택한 후 이 버튼을 클릭하세요
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label>📅 날짜 <span class="required">*</span></label>
                                 <input type="date" id="checklistDate" required>
@@ -277,11 +385,84 @@
                 <div class="card-header">
                     <h3 class="text-xl font-bold">📈 최근 제출 기록</h3>
                     <div class="header-actions">
-                        <select id="historyFilter" onchange="loadRecentHistory()">
-                            <option value="all">전체 디자이너</option>
-                            <option value="mine">내 담당 디자이너만</option>
-                        </select>
                         <button onclick="loadRecentHistory()" class="btn btn-sm">🔄 새로고침</button>
+                        <button onclick="exportFilteredHistory()" class="btn btn-sm">📊 내보내기</button>
+                    </div>
+                </div>
+                
+                <!-- 필터링 영역 -->
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label>📅 기간 필터</label>
+                        <select id="periodFilter" onchange="applyPeriodFilter()">
+                            <option value="today">당일</option>
+                            <option value="week">이번주</option>
+                            <option value="month" selected>이번달</option>
+                            <option value="quarter">분기</option>
+                            <option value="half">반기</option>
+                            <option value="year">1년</option>
+                            <option value="all">전체</option>
+                            <option value="custom">사용자 지정</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>📅 시작일</label>
+                        <input type="date" id="startDate" onchange="applyDateFilter()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>📅 종료일</label>
+                        <input type="date" id="endDate" onchange="applyDateFilter()">
+                    </div>
+                    
+                    <div class="filter-group" id="branchFilterGroup">
+                        <label>🏢 지점 필터</label>
+                        <select id="historyBranchFilter" onchange="applyHistoryFilters()">
+                            <option value="">전체 지점</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>👤 디자이너 필터</label>
+                        <select id="historyDesignerFilter" onchange="applyHistoryFilters()">
+                            <option value="">전체 디자이너</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button onclick="resetFilters()" class="btn btn-secondary btn-sm">🔄 초기화</button>
+                        <button onclick="applyAllFilters()" class="btn btn-sm">🔍 적용</button>
+                    </div>
+                </div>
+                
+                <!-- 빠른 통계 -->
+                <div class="quick-stats" id="quickStats">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="statsTotal">0</div>
+                            <div class="stat-label">총 기록 수</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statsReviews">0</div>
+                            <div class="stat-label">총 리뷰</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statsPosts">0</div>
+                            <div class="stat-label">총 포스팅</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statsReels">0</div>
+                            <div class="stat-label">총 릴스</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statsPhotos">0</div>
+                            <div class="stat-label">총 사진</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statsActivity">0</div>
+                            <div class="stat-label">총 활동량</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -366,49 +547,48 @@
     <script src="../js/utils/data-manager.js"></script>
     <script src="../js/utils/auth.js"></script>
     <script src="../js/utils/ui-utils.js"></script>
-    <script src="../js/utils/navigation.js"></script>  <!-- 이 라인 추가 -->
+    <script src="../js/utils/navigation.js"></script>
     <script src="../js/pages/checklist.js"></script>
-
 
     <!-- 페이지 네비게이션 함수 -->
     <script>
-// 단일 초기화 함수
-function initializeChecklistPage() {
-    console.log('📋 Checklist 페이지 초기화 시작');
-    
-    // 네비게이션 확인
-    if (!window.navigationManager) {
-        console.warn('⚠️ 네비게이션이 아직 로드되지 않음');
-        return;
-    }
-    
-    try {
-        // 필터 매니저 초기화
-        if (typeof initializePageFilters === 'function') {
-            initializePageFilters();
+        // 단일 초기화 함수
+        function initializeChecklistPage() {
+            console.log('📋 Checklist 페이지 초기화 시작');
+            
+            // 네비게이션 확인
+            if (!window.navigationManager) {
+                console.warn('⚠️ 네비게이션이 아직 로드되지 않음');
+                return;
+            }
+            
+            try {
+                // 필터 매니저 초기화
+                if (typeof initializePageFilters === 'function') {
+                    initializePageFilters();
+                }
+                
+                // 페이지 매니저 초기화
+                if (typeof ChecklistManager !== 'undefined') {
+                    window.checklistManager = new ChecklistManager();
+                    window.checklistManager.initialize();
+                }
+                
+                console.log('✅ Checklist 페이지 초기화 완료');
+            } catch (error) {
+                console.error('❌ 페이지 초기화 오류:', error);
+            }
         }
-        
-        // 페이지 매니저 초기화
-        if (typeof ChecklistManager !== 'undefined') {
-            window.checklistManager = new ChecklistManager();
-            window.checklistManager.initialize();
-        }
-        
-        console.log('✅ Checklist 페이지 초기화 완료');
-    } catch (error) {
-        console.error('❌ 페이지 초기화 오류:', error);
-    }
-}
 
-// DOM 로드 완료 후 초기화
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-        // 네비게이션 로드를 기다린 후 페이지 초기화
-        setTimeout(initializeChecklistPage, 500);
-    });
-} else {
-    setTimeout(initializeChecklistPage, 100);
-}
+        // DOM 로드 완료 후 초기화
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                // 네비게이션 로드를 기다린 후 페이지 초기화
+                setTimeout(initializeChecklistPage, 500);
+            });
+        } else {
+            setTimeout(initializeChecklistPage, 100);
+        }
     </script>
 </body>
 </html>
