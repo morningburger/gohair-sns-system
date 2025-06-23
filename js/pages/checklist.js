@@ -41,8 +41,8 @@ constructor() {
             this.setTodayDate();
 
             // 지점 옵션 로드
-this.loadBranchOptions();
-// 지점 옵션 로드
+            this.loadBranchOptions();
+            
             // 디자이너 옵션 로드
             this.loadDesignerOptions();
             
@@ -70,39 +70,60 @@ if (this.currentUser && this.currentUser.role === '지점관리자') {
 loadBranchOptions() {
     console.log('🏢 지점 옵션 로딩 중...');
     
+    const branchContainer = document.getElementById('checklistBranch').closest('.form-group');
+    
+    // 지점관리자는 지점 선택 필드 자체를 숨김
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        if (branchContainer) {
+            branchContainer.style.display = 'none';
+            console.log('🔒 지점관리자 - 지점 선택 필드 숨김');
+        }
+        
+        // 자동으로 지점을 설정하고 디자이너 필터링 실행
+        const branchSelect = document.getElementById('checklistBranch');
+        if (branchSelect) {
+            branchSelect.value = this.currentUser.branch;
+        }
+        setTimeout(() => this.filterDesignersByBranch(), 100);
+        return;
+    }
+    
+    // 전체관리자만 지점 선택 표시
     let branches = this.data.branches;
     
-    // 사용자 권한에 따른 필터링
-    if (this.currentUser && this.currentUser.role === '지점관리자') {
-        branches = branches.filter(b => b === this.currentUser.branch);
-        console.log(`🔒 지점관리자 지점 필터링: ${this.currentUser.branch}`);
-    }
+    console.log('🔍 로딩된 지점 데이터:', branches);
+    console.log('🔍 지점 수:', branches.length);
     
     const select = document.getElementById('checklistBranch');
     if (select) {
-        if (this.currentUser && this.currentUser.role === '지점관리자') {
-            // 지점관리자는 자신의 지점만 선택 가능하고 자동 선택
-            select.innerHTML = branches.map(b => `<option value="${b}" selected>${b}</option>`).join('');
-            select.disabled = true;
-            // 자동으로 디자이너 필터링 실행
-            setTimeout(() => this.filterDesignersByBranch(), 100);
-        } else {
-            // 전체관리자는 모든 지점 선택 가능
-            select.innerHTML = '<option value="">지점을 선택하세요</option>' +
-                branches.map(b => `<option value="${b}">${b}</option>`).join('');
+        if (!branches || branches.length === 0) {
+            console.error('❌ 지점 데이터가 없습니다!');
+            select.innerHTML = '<option value="">지점 데이터가 없습니다</option>';
+            return;
         }
-        console.log(`✅ 지점 옵션 ${branches.length}개 로딩 완료`);
+        
+        select.innerHTML = '<option value="">지점을 선택하세요</option>' +
+            branches.map(b => `<option value="${b}">${b}</option>`).join('');
+        
+        console.log(`✅ 지점 옵션 ${branches.length}개 로딩 완료:`, branches);
     }
 }
 // 지점별 디자이너 필터링
 filterDesignersByBranch() {
-    const selectedBranch = document.getElementById('checklistBranch').value;
     const designerSelect = document.getElementById('checklistDesigner');
+    let selectedBranch;
+    
+    // 지점관리자는 자신의 지점 사용
+    if (this.currentUser && this.currentUser.role === '지점관리자') {
+        selectedBranch = this.currentUser.branch;
+    } else {
+        // 전체관리자는 선택된 지점 사용
+        selectedBranch = document.getElementById('checklistBranch').value;
+    }
     
     console.log('🔍 지점별 디자이너 필터링:', selectedBranch);
     
     if (!selectedBranch) {
-        // 지점 미선택 시 디자이너 비활성화
         designerSelect.innerHTML = '<option value="">먼저 지점을 선택하세요</option>';
         designerSelect.disabled = true;
         return;
@@ -943,8 +964,12 @@ async handleSubmitChecklist() {
     this.isSubmitting = true;
     
     try {
-const selectedBranch = document.getElementById('checklistBranch').value;
-const designerId = document.getElementById('checklistDesigner').value;
+let selectedBranch;
+if (this.currentUser && this.currentUser.role === '지점관리자') {
+    selectedBranch = this.currentUser.branch;
+} else {
+    selectedBranch = document.getElementById('checklistBranch').value;
+}const designerId = document.getElementById('checklistDesigner').value;
 
 if (!selectedBranch) {
     alert('지점을 선택해주세요.');
