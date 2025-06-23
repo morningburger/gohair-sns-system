@@ -1127,11 +1127,8 @@ async deleteChecklist(docId) {
             // 🔥 Firebase에서 실제 삭제 (soft delete)
             if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                 const db = firebase.firestore();
-                await db.collection('checklists').doc(docId).update({
-                    deleted: true,
-                    deletedAt: new Date().toISOString(),
-                    deletedBy: this.currentUser?.email || 'unknown'
-                });
+await db.collection('checklists').doc(docId).delete(); // 완전 삭제
+
                 console.log('✅ Firebase에서 체크리스트 삭제 완료:', docId);
             } else {
                 console.warn('⚠️ Firebase 연결 안됨 - 로컬에만 삭제');
