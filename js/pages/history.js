@@ -299,7 +299,7 @@ adjustUIForPermissions() {
     }
 
 // 디자이너 옵션 로드
-loadDesignerOptions() {
+loadDesignerOptions(selectedBranch = '') {
     let designers = this.data.designers;
     
     // 사용자 권한에 따른 필터링
@@ -307,11 +307,23 @@ loadDesignerOptions() {
         designers = designers.filter(d => d.branch === this.currentUser.branch);
         console.log(`🔒 지점관리자 디자이너 필터링: ${this.currentUser.branch} - ${designers.length}개`);
     }
+    
+    // 지점 필터가 선택된 경우 해당 지점 디자이너만 표시
+    if (selectedBranch) {
+        designers = designers.filter(d => d.branch === selectedBranch);
+        console.log(`🏢 지점 필터 적용: ${selectedBranch} - ${designers.length}개`);
+    }
 
     const select = document.getElementById('historyDesigner');
     if (select) {
+        const currentValue = select.value; // 현재 선택된 값 저장
         select.innerHTML = '<option value="">디자이너를 선택하세요</option>' +
             designers.map(d => `<option value="${d.id}">${d.name} (${d.branch} - ${d.position})</option>`).join('');
+        
+        // 이전에 선택된 디자이너가 필터링 후에도 있으면 유지
+        if (currentValue && designers.some(d => d.id == currentValue)) {
+            select.value = currentValue;
+        }
     }
 }
 
@@ -781,11 +793,23 @@ return result;    }
             });
         }
         
-        if (branchSelect) {
-            branchSelect.addEventListener('change', () => {
-                this.pagination.currentPage = 1;
-            });
-        }
+if (branchSelect) {
+    branchSelect.addEventListener('change', (e) => {
+        const selectedBranch = e.target.value;
+        this.pagination.currentPage = 1;
+        
+        // 지점 변경 시 디자이너 옵션 다시 로드
+        this.loadDesignerOptions(selectedBranch);
+        
+        // 히스토리 내용 초기화
+        document.getElementById('historyContent').innerHTML = `
+            <div class="text-center" style="padding: 3rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">ℹ️</div>
+                <p style="color: #6b7280;">디자이너를 선택해주세요.</p>
+            </div>
+        `;
+    });
+}
     }
 
     // 히스토리 내보내기
