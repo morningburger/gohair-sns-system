@@ -102,10 +102,25 @@ updateUserDisplay() {
             
             // 체크리스트 데이터 로드
             const checklistsSnapshot = await db.collection('checklists').get();
-            this.data.checklists = checklistsSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+this.data.checklists = [];
+checklistsSnapshot.forEach(doc => {
+    const data = doc.data();
+    this.data.checklists.push({
+        id: doc.id,
+        docId: doc.id,
+        designerId: data.designerId || '',
+        designer: data.designer || '',
+        branch: data.branch || '',
+        date: data.date || '',
+        naverReviews: data.naverReviews || 0,
+        naverPosts: data.naverPosts || 0,
+        naverExperience: data.naverExperience || 0,
+        instaReels: data.instaReels || 0,
+        instaPhotos: data.instaPhotos || 0,
+        notes: data.notes || '',
+        createdAt: data.createdAt || new Date().toISOString()
+    });
+});
             
             // 디자이너 데이터 로드  
             const designersSnapshot = await db.collection('designers').get();
