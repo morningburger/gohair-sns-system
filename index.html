@@ -29,52 +29,10 @@
     <!-- 메인 시스템 (대시보드) -->
     <div id="mainSystem">
         <!-- 헤더 -->
-        <header class="header">
-            <div class="header-content">
-                <div class="header-top">
-                    <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
-                    <div class="header-actions">
-                        <span id="currentUser" style="color: #6b7280; font-size: 0.875rem; padding: 0.5rem;"></span>
-                        <button onclick="exportData()" class="btn btn-green">
-                            📥 내보내기
-                        </button>
-                        <button onclick="importData()" class="btn">
-                            📤 가져오기
-                        </button>
-                        <button onclick="logout()" class="btn btn-red">
-                            🚪 로그아웃
-                        </button>
-                    </div>
-                </div>
-                <nav class="nav">
-                    <button class="nav-btn active">
-                        🏠 대시보드
-                    </button>
-                    <button onclick="goToPage('designers')" class="nav-btn">
-                        👥 디자이너 관리
-                    </button>
-                    <button onclick="goToPage('branches')" class="nav-btn admin-only">
-                        🏢 지점 관리
-                    </button>
-                    <button onclick="goToPage('users')" class="nav-btn admin-only">
-                        👤 계정 관리
-                    </button>
-                    <button onclick="goToPage('history')" class="nav-btn">
-                        📈 디자이너 히스토리
-                    </button>
-                    <button onclick="goToPage('checklist')" class="nav-btn">
-                        📋 체크리스트 입력
-                    </button>
-                    <button onclick="goToPage('statistics')" class="nav-btn">
-                        📊 통계 분석
-                    </button>
-                    <button onclick="goToPage('comparison')" class="nav-btn admin-only">
-                        ⚖️ 지점 비교
-                    </button>
-                </nav>
-            </div>
-        </header>
-
+<!-- Header -->
+<div class="header">
+    <!-- 동적으로 생성됨 -->
+</div>
         <main class="container">
             <!-- 대시보드 (메인 페이지) -->
             <div id="dashboardPage">
@@ -185,6 +143,7 @@
     <script src="js/utils/data-manager.js"></script>
     <script src="js/utils/auth.js"></script>
     <script src="js/utils/ui-utils.js"></script>
+    <script src="js/utils/navigation.js"></script>
     <script src="js/main.js"></script>
     
     <!-- 페이지 네비게이션 및 초기화 -->
