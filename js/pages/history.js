@@ -326,7 +326,6 @@ loadDesignerOptions(selectedBranch = '') {
         }
     }
 }
-
 // 지점 옵션 로드
 loadBranchOptions() {
     const select = document.getElementById('historyBranch');
