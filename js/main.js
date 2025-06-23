@@ -451,10 +451,25 @@ try {
             .orderBy('date', 'desc')
             .get();
         
-        checklists = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+checklists = [];
+snapshot.forEach(doc => {
+    const data = doc.data();
+    checklists.push({
+        id: doc.id,
+        docId: doc.id,
+        designerId: data.designerId || '',
+        designer: data.designer || '',
+        branch: data.branch || '',
+        date: data.date || '',
+        naverReviews: data.naverReviews || 0,
+        naverPosts: data.naverPosts || 0,
+        naverExperience: data.naverExperience || 0,
+        instaReels: data.instaReels || 0,
+        instaPhotos: data.instaPhotos || 0,
+        notes: data.notes || '',
+        createdAt: data.createdAt || new Date().toISOString()
+    });
+});
         
         console.log(`🔥 대시보드 직접 데이터 로딩: ${checklists.length}개`);
     } else {
