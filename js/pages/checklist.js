@@ -107,19 +107,27 @@ class ChecklistManager {
         
         // 히스토리 필터 옵션 로드
         this.loadHistoryFilterOptions();
+
+        // 초기 필터 적용 추가
+        this.applyAllFilters();
     }
 
-    // 히스토리 필터 옵션 로드
-    loadHistoryFilterOptions() {
-        // 지점 필터 옵션 (전체관리자만)
-        if (this.currentUser && this.currentUser.role === '전체관리자') {
-            const branchFilter = document.getElementById('historyBranchFilter');
-            if (branchFilter) {
-                const branches = [...new Set(this.data.checklists.map(c => c.branch))].filter(Boolean);
-                branchFilter.innerHTML = '<option value="">전체 지점</option>' +
-                    branches.map(branch => `<option value="${branch}">${branch}</option>`).join('');
-            }
+// 히스토리 필터 옵션 로드
+loadHistoryFilterOptions() {
+    // 지점 필터 옵션 (전체관리자만)
+    if (this.currentUser && this.currentUser.role === '전체관리자') {
+        const branchFilter = document.getElementById('historyBranchFilter');
+        if (branchFilter) {
+            // branches 배열에서 직접 가져오기
+            const branches = this.data.branches;
+            branchFilter.innerHTML = '<option value="">전체 지점</option>' +
+                branches.map(branch => `<option value="${branch}">${branch}</option>`).join('');
         }
+    }
+    
+    // 디자이너 필터 옵션
+    this.updateDesignerFilterOptions();
+}
         
         // 디자이너 필터 옵션
         this.updateDesignerFilterOptions();
@@ -773,23 +781,25 @@ class ChecklistManager {
         }
     }
 
-    // 최근 기록 로드 (필터링 적용)
-    loadRecentHistory() {
-        let checklists;
+// 최근 기록 로드 (필터링 적용)
+loadRecentHistory() {
+    let checklists;
+    
+    // 필터가 적용된 경우 해당 데이터 사용, 아니면 전체 데이터 사용
+    if (this.filteredChecklists && this.filteredChecklists.length >= 0 && 
+        (this.filters.startDate || this.filters.endDate || 
+         this.filters.branch || this.filters.designer)) {
+        checklists = [...this.filteredChecklists];
+    } else {
+        checklists = [...this.data.checklists];
         
-        // 필터가 적용된 경우 해당 데이터 사용, 아니면 전체 데이터 사용
-        if (this.filteredChecklists.length > 0 || 
-            this.filters.startDate || this.filters.endDate || 
-            this.filters.branch || this.filters.designer) {
-            checklists = [...this.filteredChecklists];
-        } else {
-            checklists = [...this.data.checklists];
-            
-            // 권한에 따른 기본 필터링
-            if (this.currentUser && this.currentUser.role === '지점관리자') {
-                checklists = checklists.filter(c => c.branch === this.currentUser.branch);
-            }
+        // 권한에 따른 기본 필터링
+        if (this.currentUser && this.currentUser.role === '지점관리자') {
+            checklists = checklists.filter(c => c.branch === this.currentUser.branch);
         }
+    }
+    
+    // 나머지 코드는 그대로...
 
         // 페이지네이션 적용
         this.pagination.totalItems = checklists.length;
