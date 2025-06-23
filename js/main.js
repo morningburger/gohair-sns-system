@@ -454,6 +454,12 @@ try {
 checklists = [];
 snapshot.forEach(doc => {
     const data = doc.data();
+        
+    // 🔥 삭제된 항목은 제외
+    if (data.deleted === true) {
+        console.log(`🗑️ 삭제된 체크리스트 제외: ${doc.id}`);
+        return; // forEach에서 continue 역할
+    }
     checklists.push({
         id: doc.id,
         docId: doc.id,
