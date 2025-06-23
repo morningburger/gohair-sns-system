@@ -51,6 +51,9 @@ constructor() {
             
             // 최근 기록 로드
             this.loadRecentHistory();
+
+            // loadRecentHistory() 호출 후에 추가
+            this.updateSelectButton();
                     // 권한에 따른 UI 조정
 if (this.currentUser && this.currentUser.role === '지점관리자') {
     const historyFilter = document.getElementById('historyFilter');
@@ -149,8 +152,9 @@ filterDesignersByBranch() {
             </option>
         `).join('');
     
-    designerSelect.disabled = false;
-    console.log('✅ 디자이너 필터링 완료');
+designerSelect.disabled = false;
+this.updateSelectButton();
+console.log('✅ 디자이너 필터링 완료');
 }
 
     // 현재 사용자 정보 가져오기
@@ -856,32 +860,40 @@ if (!designer) {
             this.updateSectionTotal(section);
         }
     }
-
-    // 샘플 데이터 채우기
-fillSampleData() {
-    // 고정된 샘플 값 사용
-    document.getElementById('naverReviews').value = 3;
-    document.getElementById('naverPosts').value = 2;
-    document.getElementById('naverExperience').value = 1;
-    document.getElementById('instaReels').value = 2;
-    document.getElementById('instaPhotos').value = 5;
-    document.getElementById('checklistNotes').value = '샘플 데이터입니다.';
-    
-    this.updateSectionTotal('naver');
-    this.updateSectionTotal('instagram');
-}
-
-    // 폼 초기화
-    clearForm() {
-        document.getElementById('naverReviews').value = 0;
-        document.getElementById('naverPosts').value = 0;
-        document.getElementById('naverExperience').value = 0;
-        document.getElementById('instaReels').value = 0;
-        document.getElementById('instaPhotos').value = 0;
-        document.getElementById('checklistNotes').value = '';
+// 선택하기 버튼 상태 업데이트
+    updateSelectButton() {
+        const branchSelect = document.getElementById('checklistBranch');
+        const designerSelect = document.getElementById('checklistDesigner');
+        const selectBtn = document.getElementById('selectDesignerBtn');
         
-        this.updateSectionTotal('naver');
-        this.updateSectionTotal('instagram');
+        if (selectBtn) {
+            const branchSelected = branchSelect?.value || (this.currentUser?.role === '지점관리자' ? this.currentUser.branch : '');
+            const designerSelected = designerSelect?.value;
+            
+            if (branchSelected && designerSelected) {
+                selectBtn.disabled = false;
+                selectBtn.textContent = '👤 디자이너 정보 보기';
+            } else {
+                selectBtn.disabled = true;
+                selectBtn.textContent = '👤 디자이너 선택하기';
+            }
+        }
+    }
+
+    // 디자이너 선택하기 버튼 클릭
+    selectDesigner() {
+        const designerId = document.getElementById('checklistDesigner').value;
+        if (designerId) {
+            this.loadSelectedDesignerInfo(designerId);
+            this.showNotification('디자이너 정보가 로드되었습니다.', 'success');
+        } else {
+            alert('먼저 디자이너를 선택해주세요.');
+        }
+    }
+
+    // 이벤트 리스너 설정
+    setupEventListeners() {
+        // 기존 코드...
     }
 
     // 이벤트 리스너 설정
@@ -901,12 +913,12 @@ if (branchSelect) {
     });
 }
 
-// 디자이너 선택 변경
+// 디자이너 선택 변경 - 자동 정보 로드 제거
 const designerSelect = document.getElementById('checklistDesigner');
 if (designerSelect) {
     designerSelect.addEventListener('change', (e) => {
         console.log('🔍 디자이너 선택 변경됨:', e.target.value);
-        this.loadSelectedDesignerInfo(e.target.value);
+        this.updateSelectButton();
     });
     console.log('✅ 디자이너 선택 이벤트 리스너 설정 완료');
 } else {
@@ -1288,4 +1300,11 @@ function goToPage(pageId) {
 }
 function filterDesignersByBranch() {
     window.checklistManager?.filterDesignersByBranch();
+}
+function selectDesigner() {
+    window.checklistManager?.selectDesigner();
+}
+
+function updateSelectButton() {
+    window.checklistManager?.updateSelectButton();
 }
