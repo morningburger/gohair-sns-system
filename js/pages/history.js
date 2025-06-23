@@ -191,7 +191,7 @@ snapshot.forEach(doc => {
         return;
     }
     
-    checklists.push({
+    designers.push({
                     id: doc.id,
                     docId: doc.id,
                     name: data.name || '',
