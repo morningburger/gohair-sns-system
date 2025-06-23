@@ -6,7 +6,7 @@
     <title>IG SNS 마케팅 관리 시스템</title>
     
     <!-- GitHub Pages Base -->
-<base href="https://snshub.kr/">
+    <base href="https://snshub.kr/">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,86 +26,8 @@
     <!-- 연결 상태 표시 -->
     <div id="connectionStatus" class="connection-status connected">🟢 Firebase 연결됨</div>
 
-    <!-- 로그인 페이지 -->
-    <div id="loginPage">
-        <div class="login-container">
-            <div class="login-form">
-                <div class="logo">
-                    <h1>GOHAIR SNS 마케팅 관리 시스템</h1>
-                    <p>SNS 리더 로그인</p>
-                </div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>📧 이메일</label>
-                        <input type="email" id="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>🔒 비밀번호</label>
-                        <input type="password" id="password" required>
-                    </div>
-                    <button type="submit" class="btn" style="width: 100%;">🔑 로그인</button>
-                </form>
-                <div class="text-center" style="margin-top: 1rem;">
-                    <a href="#" onclick="showSignup()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">SNS 리더로 가입하기</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 가입 페이지 -->
-    <div id="signupPage" class="hidden">
-        <div class="login-container">
-            <div class="login-form">
-                <div class="logo">
-                    <h1>SNS 리더 가입</h1>
-                    <p>새로운 SNS 리더 계정을 생성합니다</p>
-                </div>
-<form id="signupForm">
-    <div class="form-group">
-        <label>👤 이름</label>
-        <input type="text" id="signupName" required>
-    </div>
-    <div class="form-group">
-        <label>👑 직급</label>
-        <select id="signupRole" required>
-            <option value="">직급을 선택하세요</option>
-            <option value="지점관리자">지점관리자</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label>📧 이메일</label>
-        <input type="email" id="signupEmail" required>
-    </div>
-    <div class="form-group">
-        <label>🔒 비밀번호</label>
-        <input type="password" id="signupPassword" required minlength="6">
-    </div>
-    <div class="form-group">
-        <label>🔒 비밀번호 확인</label>
-        <input type="password" id="signupPasswordConfirm" required minlength="6">
-        <div id="passwordMatchMessage" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
-    </div>
-    <div class="form-group">
-        <label>🏢 지점 선택</label>
-        <select id="signupBranch" required>
-            <option value="">지점을 선택하세요</option>
-            <!-- Firebase에서 동적으로 로드됨 -->
-        </select>
-        <div id="branchLoadingStatus" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
-            🔄 지점 목록을 불러오는 중...
-        </div>
-    </div>
-    <button type="submit" class="btn" style="width: 100%;">➕ 가입하기</button>
-</form>
-                <div class="text-center" style="margin-top: 1rem;">
-                    <a href="#" onclick="showLogin()" style="color: #6366f1; text-decoration: none; font-size: 0.875rem;">이미 계정이 있으신가요? 로그인하기</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 메인 시스템 (대시보드만) -->
-    <div id="mainSystem" class="hidden">
+    <!-- 메인 시스템 (대시보드) -->
+    <div id="mainSystem">
         <!-- 헤더 -->
         <header class="header">
             <div class="header-content">
@@ -131,8 +53,11 @@
                     <button onclick="goToPage('designers')" class="nav-btn">
                         👥 디자이너 관리
                     </button>
-                    <button onclick="goToPage('branches')" class="nav-btn admin-only hidden">
+                    <button onclick="goToPage('branches')" class="nav-btn admin-only">
                         🏢 지점 관리
+                    </button>
+                    <button onclick="goToPage('users')" class="nav-btn admin-only">
+                        👤 계정 관리
                     </button>
                     <button onclick="goToPage('history')" class="nav-btn">
                         📈 디자이너 히스토리
@@ -143,9 +68,9 @@
                     <button onclick="goToPage('statistics')" class="nav-btn">
                         📊 통계 분석
                     </button>
-<button onclick="goToPage('comparison')" class="nav-btn admin-only">
-    ⚖️ 지점 비교
-</button>
+                    <button onclick="goToPage('comparison')" class="nav-btn admin-only">
+                        ⚖️ 지점 비교
+                    </button>
                 </nav>
             </div>
         </header>
@@ -262,131 +187,86 @@
     <script src="js/utils/ui-utils.js"></script>
     <script src="js/main.js"></script>
     
-    <!-- 페이지 네비게이션 함수 -->
-<script>
-function goToPage(pageId) {
-    console.log('페이지 이동 시도:', pageId);
-    
-    // index.html에서 pages 폴더로 이동 (경로 수정!)
-    const pages = {
-        'designers': 'pages/designers.html',
-        'branches': 'pages/branches.html', 
-        'history': 'pages/history.html',
-        'checklist': 'pages/checklist.html', 
-        'statistics': 'pages/statistics.html',
-        'comparison': 'pages/comparison.html'
-    };
-    
-    if (pages[pageId]) {
-        console.log('이동할 경로:', pages[pageId]);
-        window.location.href = pages[pageId];
-    } else {
-        console.error('알 수 없는 페이지:', pageId);
-    }
-}
-
-    async function loadBranchesForSignup() {
-    try {
-        console.log('🏢 가입용 지점 목록 로드 시작');
-        
-        // Firebase 연결 확인
-        if (typeof firebase === 'undefined' || !firebase.apps.length) {
-            throw new Error('Firebase가 연결되지 않았습니다');
-        }
-        
-        const db = firebase.firestore();
-        const branchesSnapshot = await db.collection('branches').orderBy('name').get();
-        
-        const signupBranchSelect = document.getElementById('signupBranch');
-        const loadingStatus = document.getElementById('branchLoadingStatus');
-        
-        if (branchesSnapshot.empty) {
-            console.log('⚠️ 등록된 지점이 없습니다');
-            loadingStatus.innerHTML = '⚠️ 등록된 지점이 없습니다. 관리자에게 문의하세요.';
-            loadingStatus.style.color = '#dc2626';
-            return;
-        }
-        
-        // 기본 옵션 유지하고 Firebase 지점들 추가
-        let optionsHTML = '<option value="">지점을 선택하세요</option>';
-        
-        branchesSnapshot.docs.forEach(doc => {
-            const branchData = doc.data();
-            const branchName = branchData.name || branchData.branchName || doc.id;
-            optionsHTML += `<option value="${branchName}">${branchName}</option>`;
-        });
-        
-        signupBranchSelect.innerHTML = optionsHTML;
-        
-        loadingStatus.innerHTML = `✅ ${branchesSnapshot.size}개 지점 로드 완료`;
-        loadingStatus.style.color = '#059669';
-        
-        // 3초 후 로딩 메시지 숨김
-        setTimeout(() => {
-            loadingStatus.style.display = 'none';
-        }, 3000);
-        
-        console.log(`✅ ${branchesSnapshot.size}개 지점 로드 완료`);
-        
-    } catch (error) {
-        console.error('❌ 지점 목록 로드 실패:', error);
-        
-        const loadingStatus = document.getElementById('branchLoadingStatus');
-        if (loadingStatus) {
-            loadingStatus.innerHTML = '❌ 지점 목록 로드 실패. 새로고침 후 다시 시도하세요.';
-            loadingStatus.style.color = '#dc2626';
-        }
-    }
-}
-
-// 가입 페이지 표시 함수 수정
-function showSignup() {
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('signupPage').classList.remove('hidden');
-    
-    // 가입 페이지가 표시될 때 지점 목록 로드
-    setTimeout(() => {
-        loadBranchesForSignup();
-    }, 100);
-}
-
-// 로그인 페이지로 돌아가는 함수
-function showLogin() {
-    document.getElementById('signupPage').classList.add('hidden');
-    document.getElementById('loginPage').classList.remove('hidden');
-}
-// 비밀번호 확인 검증
-document.addEventListener('DOMContentLoaded', function() {
-    const signupPassword = document.getElementById('signupPassword');
-    const signupPasswordConfirm = document.getElementById('signupPasswordConfirm');
-    const passwordMatchMessage = document.getElementById('passwordMatchMessage');
-    
-    if (signupPassword && signupPasswordConfirm) {
-        function checkPasswordMatch() {
-            const password = signupPassword.value;
-            const confirmPassword = signupPasswordConfirm.value;
+    <!-- 페이지 네비게이션 및 초기화 -->
+    <script>
+        // 페이지 이동 함수
+        function goToPage(pageId) {
+            console.log('페이지 이동 시도:', pageId);
             
-            if (confirmPassword.length > 0) {
-                if (password === confirmPassword) {
-                    passwordMatchMessage.innerHTML = '✅ 비밀번호가 일치합니다.';
-                    passwordMatchMessage.style.color = '#059669';
-                } else {
-                    passwordMatchMessage.innerHTML = '❌ 비밀번호가 일치하지 않습니다.';
-                    passwordMatchMessage.style.color = '#dc2626';
-                }
+            const pages = {
+                'designers': 'pages/designers.html',
+                'branches': 'pages/branches.html', 
+                'users': 'pages/users.html',
+                'history': 'pages/history.html',
+                'checklist': 'pages/checklist.html', 
+                'statistics': 'pages/statistics.html',
+                'comparison': 'pages/comparison.html'
+            };
+            
+            if (pages[pageId]) {
+                console.log('이동할 경로:', pages[pageId]);
+                window.location.href = pages[pageId];
             } else {
-                passwordMatchMessage.innerHTML = '';
+                console.error('알 수 없는 페이지:', pageId);
             }
         }
-        
-        signupPassword.addEventListener('input', checkPasswordMatch);
-        signupPasswordConfirm.addEventListener('input', checkPasswordMatch);
-    }
-});
-// Firebase 연결 확인 후 지점 로드 준비
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Firebase 지점 연동 준비 완료');
-});
-</script>
+
+        // 로그아웃 함수
+        function logout() {
+            if (confirm('정말 로그아웃하시겠습니까?')) {
+                sessionStorage.removeItem('currentUser');
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 페이지 로드 시 인증 확인 및 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏠 대시보드 페이지 로드 시작');
+            
+            // 로그인 상태 확인
+            const userData = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
+            if (!userData) {
+                console.log('❌ 로그인되지 않음 - 로그인 페이지로 이동');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const currentUser = JSON.parse(userData);
+                console.log('✅ 로그인 확인:', currentUser);
+
+                // 사용자 정보 표시
+                const userElement = document.getElementById('currentUser');
+                if (userElement) {
+                    if (currentUser.role === '지점관리자') {
+                        userElement.textContent = `${currentUser.name} (${currentUser.role} - ${currentUser.branch})`;
+                        userElement.style.color = '#3b82f6';
+                        
+                        // 지점관리자는 일부 메뉴 숨김
+                        document.querySelectorAll('.admin-only').forEach(btn => {
+                            btn.style.display = 'none';
+                        });
+                    } else if (currentUser.role === '전체관리자') {
+                        userElement.textContent = `${currentUser.name} (${currentUser.role})`;
+                        userElement.style.color = '#059669';
+                    }
+                }
+
+                // 앱 초기화 (main.js의 initializeApp 호출)
+                if (typeof initializeApp === 'function') {
+                    initializeApp();
+                } else {
+                    console.warn('⚠️ initializeApp 함수를 찾을 수 없음');
+                }
+
+            } catch (error) {
+                console.error('❌ 사용자 정보 파싱 오류:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        console.log('🏠 대시보드 페이지 스크립트 로드 완료');
+    </script>
 </body>
 </html>
