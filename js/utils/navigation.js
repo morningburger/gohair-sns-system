@@ -224,12 +224,12 @@ function logout() {
             
             console.log('✅ 로그아웃 완료 - 세션 정리됨');
             
-            // 메인 페이지로 이동
+            // 로그인 페이지로 이동
             const currentPath = window.location.pathname;
             if (currentPath.includes('/pages/')) {
-                window.location.href = '../index.html';
+                window.location.href = '../login.html';
             } else {
-                window.location.href = '/index.html';
+                window.location.href = '/login.html';
             }
         } catch (error) {
             console.error('❌ 로그아웃 처리 중 오류:', error);
