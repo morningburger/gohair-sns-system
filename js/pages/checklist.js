@@ -546,7 +546,6 @@ loadHistoryFilterOptions() {
             const db = firebase.firestore();
             const snapshot = await db.collection('checklists')
                 .orderBy('createdAt', 'desc')
-                .limit(500)
                 .get();
             
             const checklists = [];
