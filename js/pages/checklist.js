@@ -545,7 +545,7 @@ loadHistoryFilterOptions() {
 
             const db = firebase.firestore();
             const snapshot = await db.collection('checklists')
-                .orderBy('createdAt', 'desc')
+                .orderBy('date', 'desc')
                 .get();
             
             const checklists = [];
@@ -582,7 +582,7 @@ loadHistoryFilterOptions() {
                 return [];
             }
             
-            return checklists.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            return checklists.sort((a, b) => new Date(b.date) - new Date(a.date));
         } catch (error) {
             console.error('❌ 체크리스트 데이터 로딩 실패:', error);
             console.log('🔧 Firebase 연결을 확인하세요');
