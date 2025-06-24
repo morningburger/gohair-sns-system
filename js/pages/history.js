@@ -232,7 +232,6 @@ snapshot.forEach(doc => {
             const db = firebase.firestore();
             const snapshot = await db.collection('checklists')
                 .orderBy('date', 'desc')
-                .limit(500)
                 .get();
             
             const checklists = [];
